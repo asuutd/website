@@ -1,1 +1,1 @@
-<p class="font-epilogue text-center p-20">Insert Carousel here</p>
+<h1 class="font-epilogue">INSERT CAROUSEL HERE</h1>

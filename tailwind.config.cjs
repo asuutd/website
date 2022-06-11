@@ -6,6 +6,5 @@ module.exports = {
 				epilogue: ['"Epilogue"', 'sans-serif']
 			}
 		}
-	},
-	plugins: []
+	}
 };

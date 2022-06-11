@@ -55,10 +55,6 @@
 		/>
 	</div>
 	<div class="p-4">
-		<button
-			type="submit"
-			class="p-4 w-20 shadow-sm rounded bg-purple-500 hover:bg-purple-400 text-black py-2"
-			>Submit</button
-		>
+		<button type="submit" class="btn">Submit</button>
 	</div>
 </form>

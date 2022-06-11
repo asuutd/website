@@ -1,14 +1,51 @@
 <script>
-	import Carousel from '../components/Carousel.svelte';
 	import Event from '../components/Event.svelte';
+	import Carousel from '../components/Carousel.svelte';
+	import { events, events as eventsData, getData } from '../stores/eventStore';
+
+	const b = getData(4);
+	let a = new Array(4).fill(null);
+
+	let loading = true;
+	eventsData.subscribe((val) => {
+		if (val.length > 0) loading = false;
+	});
 </script>
 
-<h1 class="text-center font-epilogue font-black text-5xl p-2">ASU UTD</h1>
-
 <Carousel />
-<p class="mx-4 font-epilogue p-4">
+<p class="mx-4 font-epilogue p-4 ">
 	Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum aliquam repellat harum laborum non
 	impedit error officia, fugit quis? Libero atque dicta quaerat ut harum laborum alias veniam minus!
 	Nisi.
 </p>
-<Event />
+
+<div class="flex justify-between">
+	<h2 class="font-epilogue text-3xl font-black p-5">Events</h2>
+
+	<a href="/events" class="p-5 font-epilogue font-medium">See All</a>
+</div>
+
+<div class="flex overflow-x-auto md:grid md:grid-cols-4 ">
+	{#if !loading}
+		{#each $eventsData as event}
+			<div class="m-2 flex-shrink-0" on:click={() => console.log("Hello I'm pelps")}>
+				<Event
+					{event}
+					disabled={Date.now() > Math.floor(new Date(event.date).getTime() / 1000)}
+					{loading}
+				/>
+			</div>
+		{/each}
+	{:else}
+		{#each a as event}
+			<div class="m-2 ">
+				<Event
+					{event}
+					disabled={event?.date !== undefined &&
+						Date.now() > Math.floor(new Date(event.date).getTime() / 1000)}
+					{loading}
+				/>
+			</div>
+		{/each}
+	{/if}
+</div>
