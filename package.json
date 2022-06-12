@@ -18,6 +18,8 @@
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^3.2.1",
+		"flowbite": "^1.4.7",
+		"flowbite-svelte": "^0.17.2",
 		"postcss": "^8.4.5",
 		"prettier": "^2.4.1",
 		"prettier-plugin-svelte": "^2.4.0",
@@ -28,6 +30,7 @@
 	"dependencies": {
 		"@supabase/supabase-js": "^1.29.2",
 		"daisyui": "^2.15.1",
-		"isomorphic-dompurify": "^0.19.0"
+		"isomorphic-dompurify": "^0.19.0",
+		"svelte-preprocess": "^4.10.7"
 	}
 }

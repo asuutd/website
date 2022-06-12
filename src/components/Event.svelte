@@ -10,21 +10,28 @@
 	console.log(Date.now());
 </script>
 
-<div
-	class="flex justify-center {Math.floor(new Date(event?.date).getTime()) < Date.now()
-		? 'grayscale'
-		: ''}"
->
-	<div class="rounded-lg shadow-lg bg-gray-700 max-w-xs md:max-w-md max-h-sm">
-		<div class="">
-			<img
-				class="rounded-t-lg object-scale-down"
-				src={`${event?.image}-/scale_crop/500x500/smart/`}
-				alt="It is what is it is"
+<div class="flex justify-center {disabled ? 'grayscale' : ''}">
+	<div class="rounded-lg shadow-lg bg-gray-700 min-w-full max-w-xs md:max-w-md max-h-full">
+		{#if event?.description !== undefined}
+			<div class="">
+				<img
+					class="rounded-t-lg object-scale-down"
+					src={`${event?.image}-/scale_crop/500x500/smart/`}
+					alt="It is what is it is"
+				/>
+			</div>
+		{:else}
+			<div
+				class="lg:h-48 bg-gray-400 h-80 w-80 object-cover object-center rounded-t-lg animate-pulse"
 			/>
-		</div>
+		{/if}
 		<div class="p-6">
-			<h5 class="text-slate-100 text-lg font-epilogue font-bold mb-2">{event?.description}</h5>
+			{#if event?.description !== undefined}
+				<h5 class="text-slate-100 text-lg font-epilogue font-bold mb-2">{event?.description}</h5>
+			{:else}
+				<!-- svelte-ignore a11y-missing-content -->
+				<h5 class="bg-gray-400 animate-pulse h-7 w-2/3 mb-2" />
+			{/if}
 			<p class="text-gray-50 text-base mb-4">
 				Some quick example text to build on the card title and make up the bulk of the card's
 				content.
