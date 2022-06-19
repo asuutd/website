@@ -5,6 +5,12 @@ import DOMPurify from 'isomorphic-dompurify';
 export async function post({ request }) {
 	const ans = await request.formData();
 	const email: string = DOMPurify.sanitize(ans.get('email'));
+	if (!validateEmail(email)) {
+		return {
+			status: 400,
+			body: 'Not a valid email'
+		};
+	}
 	console.log(ans);
 	const { data, error } = await supabase.from('Mailing List').insert([{ email: email }]);
 	if (!error) {
@@ -18,3 +24,9 @@ export async function post({ request }) {
 		};
 	}
 }
+
+const validateEmail = (email: string) => {
+	return email.match(
+		/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+	);
+};

@@ -10,6 +10,6 @@
 		showCaptions={false}
 		showThumbs={false}
 		duration={5000}
-		divClass="w-full p-2 "
+		divClass="w-full p-2"
 	/>
 </div>

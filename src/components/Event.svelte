@@ -10,7 +10,7 @@
 	console.log(Date.now());
 </script>
 
-<div class="flex justify-center {disabled ? 'grayscale' : ''}">
+<div class="max-w-xs md:max-w-md flex justify-center {disabled ? 'grayscale' : ''}">
 	<div class="rounded-lg shadow-lg bg-gray-700 min-w-full max-w-xs md:max-w-md max-h-full">
 		{#if event?.description !== undefined}
 			<div class="">

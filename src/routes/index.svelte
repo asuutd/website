@@ -27,6 +27,13 @@
 </script>
 
 <Carousel {images} />
+<svelte:head>
+	<title>ASU UTDallas</title>
+	<meta
+		name="description"
+		content="Connect more with the African community at UTDallas. From volunteering events to galas, ASU UTD has activities for "
+	/>
+</svelte:head>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <p class="mx-4 font-epilogue p-4 ">
 	Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum aliquam repellat harum laborum non
