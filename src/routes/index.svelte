@@ -34,7 +34,7 @@
 		content="Connect more with the African community at UTDallas. From volunteering events to galas, ASU UTD has activities for "
 	/>
 </svelte:head>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> -->
 <p class="mx-4 font-epilogue p-4 ">
 	Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum aliquam repellat harum laborum non
 	impedit error officia, fugit quis? Libero atque dicta quaerat ut harum laborum alias veniam minus!
@@ -47,10 +47,10 @@
 	<a href="/events" class="p-5 font-epilogue font-medium">See All</a>
 </div>
 
-<div class="flex overflow-x-auto md:grid md:grid-cols-4 ">
+<div class="flex overflow-x-auto md:grid md:grid-cols-4 snap-x snap-mandatory">
 	{#if !loading}
 		{#each $eventsData as event}
-			<div class="m-2 flex-shrink-0" on:click={() => console.log("Hello I'm pelps")}>
+			<div class="m-2 flex-shrink-0 snap-center" on:blur={() => console.log("Hello I'm pelps")}>
 				<Event
 					{event}
 					disabled={Date.now() > Math.floor(new Date(event.date).getTime())}

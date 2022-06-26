@@ -88,7 +88,7 @@
 
 <form
 	id="registration"
-	class="my-5 mx-1 px-3 py-5 rounded-lg shadow-lg bg-gray-700"
+	class="my-5 mx-1 px-3 py-5 rounded-lg "
 	on:submit|preventDefault={submitHandler}
 >
 	<div class="grid grid-cols-2 gap-6">

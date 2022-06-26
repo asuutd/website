@@ -1,4 +1,6 @@
 <script>
+	import { claim_svg_element } from 'svelte/internal';
+
 	export let event;
 	export let disabled;
 	export let loading;
@@ -8,15 +10,34 @@
 	console.log(disabled);
 	console.log(Math.floor(new Date(event?.date).getTime()));
 	console.log(Date.now());
+	let useGIF = false;
+
+	const startGIF = () => {
+		console.log(event?.GIF);
+		useGIF = true;
+	};
+	const stopGIF = () => {
+		useGIF = false;
+	};
 </script>
 
 <div class="max-w-xs md:max-w-md flex justify-center {disabled ? 'grayscale' : ''}">
 	<div class="rounded-lg shadow-lg bg-gray-700 min-w-full max-w-xs md:max-w-md max-h-full">
 		{#if event?.description !== undefined}
-			<div class="">
+			<div
+				class=""
+				on:touchstart={() => startGIF()}
+				on:mouseenter={() => startGIF()}
+				on:mouseleave={() => stopGIF()}
+				on:click={() => console.log('FUCK OFF')}
+			>
 				<img
 					class="rounded-t-lg object-scale-down"
-					src={`${event?.image}-/scale_crop/500x500/smart/`}
+					src={!useGIF
+						? `${event?.image}`
+						: event?.GIF !== null
+						? `${event?.GIF}`
+						: `${event?.image}`}
 					alt="It is what is it is"
 				/>
 			</div>
