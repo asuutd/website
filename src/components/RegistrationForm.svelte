@@ -88,7 +88,7 @@
 
 <form
 	id="registration"
-	class="my-5 mx-1 px-3 py-5 rounded-lg "
+	class="my-5 mx-auto px-3 py-5 rounded-lg max-w-2xl"
 	on:submit|preventDefault={submitHandler}
 >
 	<div class="grid grid-cols-2 gap-6">
@@ -190,12 +190,7 @@
 		</div>
 
 		<div class="relative z-0 w-full mb-6 group">
-			<select
-				class="rounded-lg block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 px-4 pr-6 h-12 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-				form="registration"
-				bind:value={values.class}
-				id="grid-state"
-			>
+			<select class="select" form="registration" bind:value={values.class} id="grid-state">
 				<option>Freshman</option>
 				<option>Sophomore</option>
 				<option>Junior</option>
@@ -209,20 +204,11 @@
 	</div>
 
 	<div class="relative z-0 w-full mb-6 group">
-		<input
-			bind:checked={values.dance}
-			id="checked-checkbox"
-			type="checkbox"
-			class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-		/>
+		<input bind:checked={values.dance} id="checked-checkbox" type="checkbox" class="checkbox" />
 		<label for="checked-checkbox" class="ml-2 text-sm font-normal text-slate-100 dark:text-gray-300"
 			>Join the Dance Team</label
 		>
 	</div>
 
-	<button
-		type="submit"
-		class=" text-white bg-[#79535C] hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-[#79535C] dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-		>Submit</button
-	>
+	<button type="submit" class=" btn">Submit</button>
 </form>

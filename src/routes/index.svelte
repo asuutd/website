@@ -2,12 +2,14 @@
 	import Carousel from '../components/Carousel.svelte';
 
 	let images = [
-		{ id: 0, name: '1', imgurl: '/static/images/c1.jpg' },
-		{ id: 1, name: '2', imgurl: '/static/images/c2.jpg' },
-		{ id: 2, name: '3', imgurl: '/static/images/c3.jpg' },
-		{ id: 3, name: '4', imgurl: '/static/images/c4.jpg' },
-		{ id: 4, name: '5', imgurl: '/static/images/c5.webp' },
-		{ id: 5, name: '6', imgurl: '/static/images/c6.webp' }
+		{ id: 0, name: '1', imgurl: 'https://ucarecdn.com/323827ea-002a-4d40-b253-07f781db6295/' },
+		{ id: 1, name: '2', imgurl: 'https://ucarecdn.com/7d65c601-b673-4788-88bb-e5f64e1e7317/' },
+		{ id: 2, name: '3', imgurl: 'https://ucarecdn.com/9bfd0001-9ca4-4601-8ea2-6b35955d5371/' },
+		{
+			id: 3,
+			name: '3',
+			imgurl: 'https://ucarecdn.com/2b0e2129-6bfa-4eb3-aab8-4f6de7c13360/'
+		}
 	];
 	//export const prerender = true;
 </script>
@@ -35,11 +37,11 @@
 	/>
 </svelte:head>
 <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> -->
-<p class="mx-4 font-epilogue p-4 ">
+<!-- <p class="mx-4 font-epilogue p-4 ">
 	Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum aliquam repellat harum laborum non
 	impedit error officia, fugit quis? Libero atque dicta quaerat ut harum laborum alias veniam minus!
 	Nisi.
-</p>
+</p> -->
 
 <div class="flex justify-between">
 	<h2 class="font-epilogue text-3xl font-black p-5">Events</h2>

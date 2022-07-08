@@ -30,6 +30,15 @@ export async function post({ request }) {
 			is_member: false
 		}
 	]);
+
+	const { data: data2, error: error2 } = await supabase.from('Dance Interest').insert([
+		{
+			name: ans.get('first_name') + ' ' + ans.get('last_name'),
+			phone_number: ans.get('phone'),
+			netID: ans.get('netID')
+		}
+	]);
+
 	if (!error) {
 		return {
 			status: 201
