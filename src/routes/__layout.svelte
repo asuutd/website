@@ -1,6 +1,8 @@
 <script>
 	import Navbar from '../components/Navbar.svelte';
 	import Footer from '../components/Footer.svelte';
+	import { page } from '$app/stores';
+	import { LogoFooter } from 'flowbite-svelte';
 
 	let links = [
 		{ href: '/', name: 'Home' },
@@ -8,6 +10,8 @@
 		{ href: '/board', name: 'Meet the Board' },
 		{ href: '/register', name: 'JOIN ASU' }
 	];
+
+	console.log($page.url.pathname);
 </script>
 
 <div class="drawer p-0  mx-auto m-0 drawer-end">
@@ -25,18 +29,23 @@
 	</div>
 	<div class="drawer-side">
 		<label for="my-drawer-3" class="drawer-overlay" />
-		<ul class="menu p-4 overflow-y-auto w-80 bg-base-100 justify-start">
-			<!-- Sidebar content here -->
-			{#each links as link}
-				<li
-					class={`max-w-sm py-3 justify-items-center text-2xl ${
-						link.name === 'JOIN ASU' ? 'bg-[#79424C]' : null
-					}`}
-				>
-					<a href={link.href}>{link.name}</a>
-				</li>
-			{/each}
-		</ul>
+		<div class="overflow-y-auto h-screen">
+			<div class="w-64 bg-base-100 h-screen">
+				<div class="grid grid-rows-3 p-4">
+					{#each links as link}
+						<div class="mx-2">
+							<a
+								role="button"
+								on:mouseenter={() => console.log(link.href + ' ' + $page.url.pathname)}
+								class={`p-4 btn btn-primary mx-2 my-4 btn-lg w-full
+									${$page.url.pathname !== link.href && 'btn-outline'}`}
+								href={link.href}>{link.name}</a
+							>
+						</div>
+					{/each}
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 
