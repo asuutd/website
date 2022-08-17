@@ -1,7 +1,4 @@
 <script>
-	import { LogoFooter } from 'flowbite-svelte';
-	import { claim_svg_element } from 'svelte/internal';
-
 	export let event;
 	export let disabled;
 	export let loading;
@@ -9,6 +6,7 @@
 	console.log(loading);
 
 	console.log(disabled);
+	console.log(event?.link);
 	console.log(Math.floor(new Date(event?.date).getTime()));
 	console.log(Date.now());
 	let useGIF = false;
@@ -22,8 +20,8 @@
 	};
 </script>
 
-<div class="max-w-xs md:max-w-md flex justify-center {disabled ? 'grayscale' : ''}">
-	<div class="rounded-lg shadow-lg bg-gray-700 min-w-full max-w-xs md:max-w-md max-h-full">
+<div class="w-80 max-w-xs md:max-w-md flex justify-center {disabled ? 'grayscale' : ''}">
+	<div class="rounded-lg shadow-lg bg-secondary min-w-full max-w-xs md:max-w-md max-h-full">
 		{#if event?.description !== undefined}
 			<div
 				class=""
@@ -33,7 +31,7 @@
 				on:click={() => console.log('FUCK OFF')}
 			>
 				<img
-					class="rounded-t-lg object-scale-down "
+					class="rounded-t-lg object-fill h-80 w-full"
 					src={!useGIF
 						? `${event?.image}`
 						: event?.GIF !== null
@@ -43,13 +41,13 @@
 				/>
 			</div>
 		{:else}
-			<div
-				class="lg:h-48 bg-gray-400 h-80 w-80 object-cover object-center rounded-t-lg animate-pulse"
-			/>
+			<div class=" bg-gray-400 h-80 w-80 object-cover object-center rounded-t-lg animate-pulse" />
 		{/if}
-		<div class="p-6">
+		<div class="p-6 mx-auto">
 			{#if event?.description !== undefined}
-				<h5 class="text-slate-100 text-lg font-epilogue font-bold mb-2">{event?.description}</h5>
+				<h5 class="text-base-100 text-lg font-epilogue font-bold mb-2 ">
+					{event?.description}
+				</h5>
 			{:else}
 				<!-- svelte-ignore a11y-missing-content -->
 				<h5 class="bg-gray-400 animate-pulse h-7 w-2/3 mb-2" />
@@ -57,8 +55,9 @@
 
 			<button
 				type="button"
-				class=" inline-block px-6 py-2.5 bg-[#79535C] text-slate-100 font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-[#79424C] hover:shadow-lg focus:bg-[#79424C] focus:shadow-lg focus:outline-none focus:ring-0 active:bg-[#793B48] active:shadow-lg transition duration-150 ease-in-out"
-				>REGISTER</button
+				class={` ${
+					event?.link === null ? 'btn-disabled' : 'btn-primary'
+				} btn  mx-auto justify-self-center`}><a href={event?.link}>REGISTER</a></button
 			>
 		</div>
 	</div>

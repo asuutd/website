@@ -12,9 +12,19 @@
 		}
 	];
 	//export const prerender = true;
+
+	let sponsors = [
+		{
+			id: 0,
+			name: 'Aso Rock',
+			imgurl: 'https://ucarecdn.com/3620a88e-dda2-4f64-b047-f8e4f9f2fcd3/',
+			link: 'https://www.asorockmarket.com/'
+		}
+	];
 </script>
 
 <script>
+	import Sponsors from '../components/Sponsors.svelte';
 	import Event from '../components/Event.svelte';
 
 	import { events, events as eventsData, getData } from '../stores/eventStore';
@@ -43,13 +53,13 @@
 	Nisi.
 </p> -->
 
-<div class="flex justify-between">
-	<h2 class="font-epilogue text-3xl font-black p-5">Events</h2>
+<div class="flex">
+	<h2 class="font-epilogue text-4xl text-secondary p-5 mx-auto font-black">EVENTS</h2>
 
-	<a href="/events" class="p-5 font-epilogue font-medium">See All</a>
+	<!-- <a href="/events" class="p-5 font-epilogue font-medium">See All</a> -->
 </div>
 
-<div class="flex overflow-x-auto md:grid md:grid-cols-4 snap-x snap-mandatory">
+<div class="flex overflow-x-auto xl:grid xl:grid-cols-4 snap-x snap-mandatory">
 	{#if !loading}
 		{#each $eventsData as event}
 			<div class="m-2 flex-shrink-0 snap-center" on:blur={() => console.log("Hello I'm pelps")}>
@@ -73,3 +83,7 @@
 		{/each}
 	{/if}
 </div>
+<div class="flex ">
+	<h2 class="font-epilogue text-3xl text-secondary font-black p-5 mx-auto">SPONSOR</h2>
+</div>
+<Sponsors {sponsors} />

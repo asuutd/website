@@ -11,7 +11,6 @@
 	//import { events, getData } from '../../stores/eventStore';
 	import Form from '../../components/Form.svelte';
 
-	console.log(id);
 	//getData();
 </script>
 

@@ -3,6 +3,4 @@
 	import Notifications from 'svelte-notifications';
 </script>
 
-<Notifications>
-	<RegistrationForm />
-</Notifications>
+<RegistrationForm />

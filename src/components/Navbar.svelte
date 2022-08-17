@@ -1,34 +1,49 @@
-<script>
+<script lang="ts">
 	import Menu from '../components/Menu.svelte';
 
 	import { fly } from 'svelte/transition';
+	import { page } from '$app/stores';
 	import Hamburger from '../components/Hamburger.svelte';
-	export let open = false;
+	export let open: boolean = false;
 	export const onClick = () => {
 		open = !open;
 		console.log(open);
 	};
 
-	export let links;
+	export let links: { href: string; name: string }[];
 </script>
 
-<header class="relative z-[2]">
+<header class="relative z-[2] mb-7 drop-shadow">
 	<div class="navbar">
 		<div class="navbar-start">
-			<img
-				class="mask mask-circle h-20"
-				src="https://ucarecdn.com/7288b6f4-6c2b-4e35-9da0-af992265a636/"
-				alt="Hehe"
-			/>
+			<a href="/">
+				<img
+					class="mask mask-circle h-20"
+					src="https://ucarecdn.com/7288b6f4-6c2b-4e35-9da0-af992265a636/"
+					alt="Hehe"
+				/>
+			</a>
 		</div>
-		<div class="navbar-center">
-			<a class="btn btn-ghost normal-case text-xl font-epilogue font-bold" href="/">UTD ASU</a>
+		<div class="hidden md:navbar-center md:block">
+			<ul class="menu menu-horizontal">
+				{#each links.filter((link) => link.name !== 'JOIN ASU') as link}
+					<li class={`max-w-sm py-2 px-2 mx-2 `}>
+						<a
+							role="button"
+							href={link.href}
+							class={`rounded-md font-semibold ${
+								$page.url.pathname === link.href && 'text-primary'
+							}`}>{link.name}</a
+						>
+					</li>
+				{/each}
+			</ul>
 		</div>
 		<div class="navbar-end">
-			<label tabindex="0" class="btn btn-ghost btn-circle lg:hidden" for="my-drawer-3">
+			<label tabindex="0" class="btn btn-ghost btn-circle md:hidden" for="my-drawer-3">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
-					class="h-5 w-5"
+					class="h-5 w-5 stroke-primary"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
@@ -41,19 +56,14 @@
 				>
 			</label>
 
-			<div class="flex-none hidden lg:block">
-				<ul class="menu menu-horizontal">
-					<!-- Navbar menu content here -->
-					{#each links as link}
-						<li class={`max-w-sm py-2 px-2 mx-2 `}>
-							<a
-								role="button"
-								href={link.href}
-								class={`rounded-md ${link.name === 'JOIN ASU' && 'btn-primary'}`}>{link.name}</a
-							>
-						</li>
-					{/each}
-				</ul>
+			<div class="flex-none hidden md:block">
+				<div class="max-w-sm py-2 px-2 mx-2 ">
+					<a
+						role="button"
+						href="/register"
+						class={`rounded-md btn-primary btn-lg font-bold px-5 py-4 `}>JOIN ASU</a
+					>
+				</div>
 			</div>
 		</div>
 	</div>

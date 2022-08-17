@@ -1,9 +1,11 @@
 <script context="module">
 	import { object, string } from 'yup';
+	import { fly, scale } from 'svelte/transition';
+	import { goto } from '$app/navigation';
 </script>
 
 <script>
-	import { getNotificationsContext } from 'svelte-notifications';
+	import { Input, LogoFooter } from 'flowbite-svelte';
 	import { phoneNumberAutoFormat } from '$lib/format';
 
 	const onChange = (e) => {
@@ -11,22 +13,43 @@
 		values.phone = targetValue;
 	};
 
-	const { addNotification } = getNotificationsContext();
-
 	const netIDRegex = /[a-zA-z]{3}[0-9]{6}/;
 	const phoneRegex = /[0-9]{3}-[0-9]{3}-[0-9]{4}/;
 	const schema = object({
-		first_name: string().required(),
-		last_name: string().required(),
+		first_name: string().required('Please enter first name'),
+		last_name: string().required('Please enter last name'),
 		email: string()
-			.required('Please Provide your email')
+			.required('Please provide your email')
 			.email("Email doesn't look right")
 			.lowercase(),
-		netID: string().required().matches(netIDRegex, 'netID is not valid'),
-		phone: string().required().matches(phoneRegex, 'phone number is not valid')
+		netID: string()
+			.required('netID is required')
+			.matches(netIDRegex, 'netID is not valid')
+			.test(
+				'len',
+				'netIDs follow the format abc123456',
+				(val) =>
+					val &&
+					val.length === 9 &&
+					/[a-zA-z]{3}/.test(val.slice(0, 3)) &&
+					/[0-9]{6}/.test(val.slice(3))
+			),
+		phone: string()
+			.required('Phone number is required')
+			.matches(phoneRegex, 'phone number is not valid')
 	});
 	let values = {};
 	let errors = {};
+	let error_msgs = {};
+
+	const showError = (id, message) => {
+		console.log(id);
+		const error_element = document.getElementById(id);
+		console.log(error_element);
+		error_msgs[id] = message;
+		error_element.style.visibility = 'visible';
+		console.log(values);
+	};
 
 	async function submitHandler(event) {
 		try {
@@ -47,30 +70,21 @@
 			if (!res.ok) {
 				if (result.message.includes('duplicate key')) {
 					if (result.message.includes('netID')) {
-						addNotification({
-							id: result.code,
-							text: 'netID already exists',
-							position: 'top-right',
-							removeAfter: 2000,
-							type: 'danger'
-						});
+						showError('netID_error', 'netID already exists');
 					}
 				}
+			} else {
+				goto('/pay');
 			}
-			console.log(result);
+
 			//alert(JSON.stringify(values, null, 2));
 			//console.log(formData.get('last_name'));
 		} catch (err) {
 			errors = extractErrors(err);
-			Object.entries(errors).forEach((message) =>
-				addNotification({
-					id: message[0],
-					text: message[1],
-					position: 'top-right',
-					removeAfter: 2000,
-					type: 'danger'
-				})
-			);
+			Object.entries(errors).forEach((message) => {
+				console.log(message);
+				showError(message[0] + '_error', message[1]);
+			});
 		}
 	}
 	/**
@@ -82,135 +96,205 @@
 			return { ...acc, [err.path]: err.message };
 		}, {});
 	}
+
+	const resetErrorField = (name) => {
+		error_msgs[name] = null;
+		const error_element = document.getElementById(name);
+		error_element.style.visibility = 'hidden';
+	};
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-
-<form
-	id="registration"
-	class="my-5 mx-auto px-3 py-5 rounded-lg max-w-2xl"
-	on:submit|preventDefault={submitHandler}
->
-	<div class="grid grid-cols-2 gap-6">
-		<div class="relative z-0 w-full mb-6 group">
-			<input
-				type="text"
-				name="floating_first_name"
-				id="floating_first_name"
-				class="block py-2.5 px-0 w-full text-sm text-slate-100 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-slate-100 dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-white peer"
-				placeholder=" "
-				bind:value={values.first_name}
-			/>
-			<label
-				for="floating_first_name"
-				class="peer-focus:font-medium absolute text-sm text-slate-100 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-slate-100 peer-focus:dark:text-slate-100 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>First name</label
-			>
-		</div>
-		<div class="relative z-0 w-full mb-6 group">
-			<input
-				type="text"
-				name="floating_last_name"
-				id="floating_last_name"
-				class="block py-2.5 px-0 w-full text-sm text-slate-100 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-slate-100 dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-white peer"
-				placeholder=" "
-				bind:value={values.last_name}
-			/>
-			<label
-				for="floating_last_name"
-				class="peer-focus:font-medium absolute text-sm text-slate-100 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-slate-100 peer-focus:dark:text-slate-100 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>Last name</label
-			>
-		</div>
+<div class="lg:grid lg:grid-cols-2">
+	<div class="hidden lg:block">
+		<p>hELLO HUMAN BEINGS</p>
 	</div>
-	<div class="relative z-0 w-full mb-6 group">
-		<input
-			type="email"
-			name="floating_email"
-			class="block py-2.5 px-0 w-full text-sm text-slate-100 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-slate-100 dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-white peer"
-			placeholder=" "
-			bind:value={values.email}
-		/>
-		<label
-			for="floating_email"
-			class="peer-focus:font-medium absolute text-sm text-slate-100 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-slate-100 peer-focus:dark:text-slate-100 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-			>Email address</label
+	<div>
+		<form
+			id="registration"
+			class="my-5 mx-6 px-3 py-5 rounded-lg max-w-2xl"
+			on:submit|preventDefault={submitHandler}
 		>
+			<div class="relative z-0 w-full mb-6 ">
+				<input
+					type="text"
+					color="green"
+					name="floating_first_name"
+					on:focus={() => resetErrorField('first_name_error')}
+					id="first_name"
+					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+						error_msgs.first_name_error == null
+							? 'border-gray-300 text-neutral'
+							: 'border-error text-error'
+					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+					placeholder=" "
+					bind:value={values.first_name}
+				/>
+				<label
+					for="first_name"
+					class={`peer-focus:font-medium absolute text-lg ${
+						error_msgs.first_name_error == null ? 'text-neutral' : 'text-error'
+					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					>First Name</label
+				>
+				<p
+					class={`invisible ${error_msgs.first_name_error != null && 'text-error'}`}
+					id="first_name_error"
+				>
+					{error_msgs.first_name_error}
+				</p>
+			</div>
+			<div class="relative z-0 w-full mb-6" in:fly={{ delay: 100, duration: 200 }}>
+				<input
+					type="text"
+					name="floating_last_name"
+					id="last_name"
+					on:focus={() => resetErrorField('last_name_error')}
+					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+						error_msgs.last_name_error == null
+							? 'border-gray-300 text-neutral'
+							: 'border-error text-error'
+					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+					placeholder=" "
+					bind:value={values.last_name}
+				/>
+				<label
+					for="last_name"
+					class={`peer-focus:font-medium absolute text-lg ${
+						error_msgs.last_name_error == null ? 'text-neutral' : 'text-error'
+					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					>Last Name</label
+				>
+				<p
+					class={`invisible ${error_msgs.last_name_error != null && 'text-error'}`}
+					id="last_name_error"
+				>
+					{error_msgs.last_name_error}
+				</p>
+			</div>
+
+			<div class="relative z-0 w-full mb-4 group">
+				<input
+					type="email"
+					name="floating_email"
+					on:focus={() => resetErrorField('email_error')}
+					class={` text-xl block py-2.5 px-0 w-full  bg-transparent border-0 border-b-2 ${
+						error_msgs.email_error == null
+							? 'border-gray-300  text-neutral'
+							: 'border-error text-error'
+					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+					placeholder=" "
+					bind:value={values.email}
+				/>
+				<label
+					for="floating_email"
+					class={`peer-focus:font-medium absolute text-lg ${
+						error_msgs.email_error == null ? 'text-neutral' : 'text-error'
+					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					>Email Address</label
+				>
+				<p class={`invisible ${error_msgs.email_error != null && 'text-error'}`} id="email_error">
+					{error_msgs.email_error}
+				</p>
+			</div>
+
+			<div class="relative z-0  mb-6 group">
+				<input
+					type="text"
+					name="netID"
+					on:focus={() => resetErrorField('netID_error')}
+					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+						error_msgs.netID_error == null
+							? 'border-gray-300 text-neutral'
+							: 'border-error text-error'
+					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+					placeholder=" "
+					bind:value={values.netID}
+				/>
+				<label
+					for="netID"
+					class={`peer-focus:font-medium absolute text-lg ${
+						error_msgs.netID_error == null ? 'text-neutral' : 'text-error'
+					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					>netID</label
+				>
+				<p class={`invisible ${error_msgs.netID_error != null && 'text-error'}`} id="netID_error">
+					{error_msgs.netID_error}
+				</p>
+			</div>
+
+			<div class="relative z-0 w-full mb-6 group col-span-2 ">
+				<input
+					type="tel"
+					name="floating_phone"
+					id="floating_phone"
+					on:input={onChange}
+					on:focus={() => resetErrorField('phone_error')}
+					class={` text-xl block py-2.5 px-0 w-full  text-neutral bg-transparent border-0 border-b-2 ${
+						error_msgs.phone_error == null ? 'border-gray-300' : 'border-error'
+					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+					placeholder=" "
+					maxlength="12"
+					bind:value={values.phone}
+				/>
+				<label
+					for="floating_phone"
+					class={`peer-focus:font-medium absolute text-lg ${
+						error_msgs.phone_error == null ? 'text-neutral' : 'text-error'
+					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					>Phone number</label
+				>
+				<p class={`invisible ${error_msgs.phone_error != null && 'text-error'}`} id="phone_error">
+					{error_msgs.phone_error}
+				</p>
+			</div>
+
+			<div class="relative z-0 w-full mb-6 group ">
+				<input
+					type="text"
+					name="major"
+					class="block py-2.5 px-0 w-full text-xl text-neutral bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer"
+					placeholder=" "
+					bind:value={values.major}
+				/>
+				<label
+					for="major"
+					class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+					>Major</label
+				>
+				<p class="invisible" id="major_error">{error_msgs.major_error}</p>
+			</div>
+
+			<div class="relative z-0 w-full mb-6 group">
+				<select
+					class="select select-secondary "
+					form="registration"
+					bind:value={values.class}
+					id="grid-state"
+				>
+					<option>Freshman</option>
+					<option>Sophomore</option>
+					<option>Junior</option>
+					<option>Senior</option>
+					<option>Graduate</option>
+				</select>
+			</div>
+
+			<div class="relative z-0 w-full mb-6 group">
+				<input
+					bind:checked={values.dance}
+					id="checked-checkbox"
+					type="checkbox"
+					class="checkbox checkbox-secondary"
+				/>
+				<label
+					for="checked-checkbox"
+					class="ml-2 text-sm font-normal text-neutral dark:text-gray-300"
+					>Join the Dance Team</label
+				>
+			</div>
+
+			<button type="submit" class=" btn btn-primary">Submit</button>
+		</form>
 	</div>
-
-	<div class="grid grid-cols-3 gap-6">
-		<div class="relative z-0 w-full mb-6 group">
-			<input
-				type="text"
-				name="netID"
-				class="block py-2.5 px-0 w-full text-sm text-slate-100 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-slate-100 dark:border-gray-600 dark:focus:border-slate-100 focus:outline-none focus:ring-0 focus:border-slate-100 peer"
-				placeholder=" "
-				bind:value={values.netID}
-			/>
-			<label
-				for="netID"
-				class="peer-focus:font-medium absolute text-sm text-slate-100 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-slate-100 peer-focus:dark:text-slate-100 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>netID</label
-			>
-		</div>
-
-		<div class="relative z-0 w-full mb-6 group col-span-2">
-			<input
-				type="tel"
-				name="floating_phone"
-				id="floating_phone"
-				on:input={onChange}
-				class="block py-2.5 px-0 w-full text-sm text-slate-100 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-slate-100 dark:border-gray-600 dark:focus:border-slate-100 focus:outline-none focus:ring-0 focus:border-slate-100 peer"
-				placeholder=" "
-				maxlength="12"
-				bind:value={values.phone}
-			/>
-			<label
-				for="floating_phone"
-				class="peer-focus:font-medium absolute text-sm text-slate-100 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-slate-100 peer-focus:dark:text-slate-100 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>Phone number (No spaces)</label
-			>
-		</div>
-	</div>
-
-	<div class="grid grid-cols-2 gap-6">
-		<div class="relative z-0 w-full mb-6 group ">
-			<input
-				type="text"
-				name="major"
-				class="block py-2.5 px-0 w-full text-sm text-slate-100 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-slate-100 dark:border-gray-600 dark:focus:border-slate-100 focus:outline-none focus:ring-0 focus:border-slate-100 peer"
-				placeholder=" "
-				bind:value={values.major}
-			/>
-			<label
-				for="major"
-				class="peer-focus:font-medium absolute text-sm text-slate-100 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-slate-100 peer-focus:dark:text-slate-100 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>Major</label
-			>
-		</div>
-
-		<div class="relative z-0 w-full mb-6 group">
-			<select
-				class="select select-primary"
-				form="registration"
-				bind:value={values.class}
-				id="grid-state"
-			>
-				<option>Freshman</option>
-				<option>Sophomore</option>
-				<option>Junior</option>
-				<option>Senior</option>
-				<option>Graduate</option>
-			</select>
-		</div>
-	</div>
-
-	<div class="relative z-0 w-full mb-6 group">
-		<input bind:checked={values.dance} id="checked-checkbox" type="checkbox" class="checkbox" />
-		<label for="checked-checkbox" class="ml-2 text-sm font-normal text-slate-100 dark:text-gray-300"
-			>Join the Dance Team</label
-		>
-	</div>
-
-	<button type="submit" class=" btn btn-primary">Submit</button>
-</form>
+</div>

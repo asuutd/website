@@ -19,14 +19,21 @@ export const getPerson = async (firstName, lastName) => {
 	console.log(personId);
 };
 
+export const getPersonByNetId = async (netID) => {
+	const { data, error } = await supabase.from('people').select('*').eq('netID', netID);
+	if (data.length === 0) {
+	}
+	personId.set(data);
+};
+
 export const getPeople = async () => {
 	const { data, error } = await supabase.from('people').select('*');
-	if (data.length === 0) {
+	if (data && data.length === 0) {
 		console.log('Error here');
 		throw new Error('Invalid First or Last Name');
 	}
 	console.log(data);
-	personId.set(data);
+	data && personId.set(data);
 	console.log(personId);
 };
 
