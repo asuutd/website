@@ -4,25 +4,30 @@
 	import { cubicIn, circIn, expoInOut, cubicOut } from 'svelte/easing';
 </script>
 
+<svelte:head>
+	<title>Payment - ASU UTDallas</title>
+	<meta name="description" content="Pay dues for ASU UTDallas and enjoy paid privileges" />
+</svelte:head>
+
 <div class="flex flex-col p-2">
 	<h2
 		in:fade={{ delay: 700, duration: 750, easing: circIn }}
-		class="text-3xl font-epilogue font-semibold text-primary m-2"
+		class="text-3xl font-epilogue font-semibold text-primary m-2 lg:text-center"
 	>
 		BECOME A PAID MEMBER!
 	</h2>
 
 	<h3
 		in:fade={{ delay: 1300, duration: 750, easing: circIn }}
-		class="text-2xl font-epilogue font-semibold text-secondary mb-5 m-2"
+		class="text-2xl font-epilogue font-semibold lg:text-center text-secondary mb-5 m-2"
 	>
 		For $35, Perks Include
 	</h3>
 
-	<div class="grid grid-cols-2 gap-2">
+	<div class="grid grid-cols-2 gap-2 justify-center">
 		<div
 			in:scale={{ delay: 1700, duration: 1000, easing: expoInOut }}
-			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-full max-w-sm "
+			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-3xl max-w-sm mx-auto"
 		>
 			<div class="col-span-2 bg-base-100 rounded-full max-w-sm w-12 h-12 my-auto md:w-24 md:h-24">
 				<svg
@@ -65,7 +70,7 @@
 		</div>
 		<div
 			in:scale={{ delay: 2500, duration: 1000, easing: expoInOut }}
-			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-full max-w-sm "
+			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-3xl max-w-sm  mx-auto "
 		>
 			<div class="col-span-2 bg-base-100 rounded-full max-w-sm w-12 h-12 my-auto md:w-24 md:h-24">
 				<svg
@@ -122,7 +127,7 @@
 		</div>
 		<div
 			in:scale={{ delay: 3300, duration: 1000, easing: expoInOut }}
-			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-full max-w-sm "
+			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-3xl max-w-sm  mx-auto"
 		>
 			<div class="col-span-2 bg-base-100 rounded-full max-w-sm w-12 h-12 my-auto md:w-24 md:h-24">
 				<svg
@@ -187,7 +192,7 @@
 		</div>
 		<div
 			in:scale={{ delay: 4100, duration: 1000, easing: expoInOut }}
-			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-full max-w-sm "
+			class="grid grid-cols-5 p-3 m-2 bg-secondary rounded-3xl max-w-sm  mx-auto"
 		>
 			<div class="col-span-2 bg-base-100 rounded-full max-w-sm w-12 h-12 my-auto md:w-24 md:h-24">
 				<svg

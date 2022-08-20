@@ -55,8 +55,8 @@
 
 			<button
 				type="button"
-				class={` ${
-					event?.link === null ? 'btn-disabled' : 'btn-primary'
+				class={`btn-primary ${
+					event?.link === undefined || event?.link === null || event?.link === '' ? 'invisible' : ''
 				} btn  mx-auto justify-self-center`}><a href={event?.link}>REGISTER</a></button
 			>
 		</div>

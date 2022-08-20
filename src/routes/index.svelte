@@ -27,7 +27,7 @@
 	import Sponsors from '../components/Sponsors.svelte';
 	import Event from '../components/Event.svelte';
 
-	import { events, events as eventsData, getData } from '../stores/eventStore';
+	import { events as eventsData, getData } from '../stores/eventStore';
 
 	const b = getData(4);
 	let a = new Array(4).fill(null);

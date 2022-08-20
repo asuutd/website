@@ -1,11 +1,12 @@
 <script context="module">
-	import { object, string } from 'yup';
+	import { object, string, bool, addMethod } from 'yup';
 	import { fly, scale } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 </script>
 
 <script>
 	import { Input, LogoFooter } from 'flowbite-svelte';
+
 	import { phoneNumberAutoFormat } from '$lib/format';
 
 	const onChange = (e) => {
@@ -41,6 +42,7 @@
 	let values = {};
 	let errors = {};
 	let error_msgs = {};
+	let im_visible = false;
 
 	const showError = (id, message) => {
 		console.log(id);
@@ -105,8 +107,8 @@
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<div class="lg:grid lg:grid-cols-2">
-	<div class="hidden lg:block">
+<div class="justify-self-center">
+	<div class="hidden ">
 		<p>hELLO HUMAN BEINGS</p>
 	</div>
 	<div>
@@ -134,7 +136,7 @@
 					for="first_name"
 					class={`peer-focus:font-medium absolute text-lg ${
 						error_msgs.first_name_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
 					>First Name</label
 				>
 				<p
@@ -162,7 +164,7 @@
 					for="last_name"
 					class={`peer-focus:font-medium absolute text-lg ${
 						error_msgs.last_name_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
 					>Last Name</label
 				>
 				<p
@@ -190,7 +192,7 @@
 					for="floating_email"
 					class={`peer-focus:font-medium absolute text-lg ${
 						error_msgs.email_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
 					>Email Address</label
 				>
 				<p class={`invisible ${error_msgs.email_error != null && 'text-error'}`} id="email_error">
@@ -215,7 +217,7 @@
 					for="netID"
 					class={`peer-focus:font-medium absolute text-lg ${
 						error_msgs.netID_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
 					>netID</label
 				>
 				<p class={`invisible ${error_msgs.netID_error != null && 'text-error'}`} id="netID_error">
@@ -241,7 +243,7 @@
 					for="floating_phone"
 					class={`peer-focus:font-medium absolute text-lg ${
 						error_msgs.phone_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
+					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
 					>Phone number</label
 				>
 				<p class={`invisible ${error_msgs.phone_error != null && 'text-error'}`} id="phone_error">
@@ -259,7 +261,7 @@
 				/>
 				<label
 					for="major"
-					class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+					class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8"
 					>Major</label
 				>
 				<p class="invisible" id="major_error">{error_msgs.major_error}</p>
@@ -290,9 +292,58 @@
 				<label
 					for="checked-checkbox"
 					class="ml-2 text-sm font-normal text-neutral dark:text-gray-300"
-					>Join the Dance Team</label
+					>Are you interested in joining the Dance Team?</label
 				>
 			</div>
+
+			<div class="relative z-0 w-full mb-6 group">
+				<input
+					bind:checked={im_visible}
+					id="checked-checkbox"
+					type="checkbox"
+					class="checkbox checkbox-secondary"
+				/>
+				<label
+					for="checked-checkbox"
+					class="ml-2 text-sm font-normal text-neutral dark:text-gray-300"
+					>Are you interested in Intermurals?</label
+				>
+			</div>
+
+			{#if im_visible}
+				<div transition:fly={{ y: 20, duration: 400 }} class="flex justify-between">
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="label-text mr-3 text-neutral">Basketball</span>
+							<input
+								type="checkbox"
+								class="checkbox checkbox-secondary"
+								bind:checked={values.basketball}
+							/>
+						</label>
+					</div>
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="label-text mr-3 text-neutral">Vollyeball</span>
+							<input
+								type="checkbox"
+								class="checkbox checkbox-secondary"
+								bind:checked={values.volleyball}
+							/>
+						</label>
+					</div>
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="label-text mr-3 text-neutral">Soccer</span>
+							<input
+								type="checkbox"
+								class="checkbox checkbox-secondary"
+								bind:checked={values.soccer}
+							/>
+						</label>
+					</div>
+				</div>
+			{/if}
 
 			<button type="submit" class=" btn btn-primary">Submit</button>
 		</form>

@@ -8,7 +8,7 @@
 	<div class="col-span-2 flex">
 		{#if image !== undefined}
 			<img
-				class="object-cover h-24 w-24 mask mask-squircle self-center mx-auto"
+				class="object-cover h-24 w-24 md:h-36 md:w-36 sm: m-2 mask mask-squircle self-center mx-auto"
 				src={image.image}
 				alt="Profile Pic"
 			/>
@@ -32,11 +32,13 @@
 			</h2>
 
 			<div class="self-end ">
-				<p
-					class="text-base-100 bg-primary pl-2 py-1 pr-2.5 rounded-tl-md rounded-br-md font-epilogue self-center"
-				>
-					More...
-				</p>
+				<a href={`/board/${image.id}`}>
+					<p
+						class="text-base-100 bg-primary pl-2 py-1 pr-2.5 rounded-tl-md rounded-br-md font-epilogue self-center"
+					>
+						More...
+					</p>
+				</a>
 			</div>
 		</div>
 	</div>

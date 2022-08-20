@@ -4,52 +4,101 @@ import parsePhoneNumber from 'libphonenumber-js';
 
 export async function post({ request }) {
 	const ans: any = await request.formData();
-	const phone: string = ans.get('phone')?.toString();
-	console.log(phone);
-	if (!phone) {
-		return {
-			status: 400
-		};
-	}
-	const phoneNumber = parsePhoneNumber(ans?.get('phone')?.toString());
-	console.log(phoneNumber);
 
-	for (const pair of ans.entries()) {
-		console.log(`${pair[0]}: ${pair[1]}`);
+	for (var pair of ans.entries()) {
+		console.log(pair[0] + ', ' + pair[1]);
 	}
 
-	const { data, error } = await supabase.from('people').insert([
-		{
-			email: ans.get('email'),
-			first_name: ans.get('first_name'),
-			last_name: ans.get('last_name'),
-			class: ans.get('class'),
-			phone_number: ans.get('phone'),
-			netID: ans.get('netID'),
-			major: ans.get('major'),
-			is_member: false
+	try {
+		const { data, error } = await supabase.from('people').insert([
+			{
+				email: ans.get('email'),
+				first_name: ans.get('first_name'),
+				last_name: ans.get('last_name'),
+				class: ans.get('class'),
+				phone_number: ans.get('phone'),
+				netID: ans.get('netID'),
+				major: ans.get('major'),
+				is_member: false
+			}
+		]);
+
+		if (!error) {
+			//Make more efficient
+			console.log(ans?.get('dance'));
+			const array = [
+				...(ans?.get('dance') === 'true'
+					? [
+							supabase.from('Dance Interest').insert([
+								{
+									name: ans.get('first_name') + ' ' + ans.get('last_name'),
+									phone_number: ans.get('phone'),
+									netID: ans.get('netID')
+								}
+							])
+					  ]
+					: []),
+				...(ans?.get('basketball') === 'true'
+					? [
+							supabase.from('Basketball List').insert([
+								{
+									name: ans.get('first_name') + ' ' + ans.get('last_name'),
+									phone_number: ans.get('phone'),
+									netID: ans.get('netID'),
+									email: ans.get('email')
+								}
+							])
+					  ]
+					: []),
+				...(ans?.get('volleyball') === 'true'
+					? [
+							supabase.from('Volleyball List').insert([
+								{
+									name: ans.get('first_name') + ' ' + ans.get('last_name'),
+									phone_number: ans.get('phone'),
+									netID: ans.get('netID'),
+									email: ans.get('email')
+								}
+							])
+					  ]
+					: []),
+				...(ans?.get('soccer') === 'true'
+					? [
+							supabase.from('Soccer List').insert([
+								{
+									name: ans.get('first_name') + ' ' + ans.get('last_name'),
+									phone_number: ans.get('phone'),
+									netID: ans.get('netID'),
+									email: ans.get('email')
+								}
+							])
+					  ]
+					: [])
+			];
+			console.log(array, array.length);
+			try {
+				await Promise.all(array);
+
+				return {
+					status: 201
+				};
+			} catch (err) {
+				console.log('SvelteKIt needs to step up');
+				return {
+					status: 500,
+					body: err
+				};
+			}
+		} else {
+			return {
+				status: 400,
+				body: error
+			};
 		}
-	]);
-
-	const { data: data2, error: error2 } = await supabase.from('Dance Interest').insert([
-		{
-			name: ans.get('first_name') + ' ' + ans.get('last_name'),
-			phone_number: ans.get('phone'),
-			netID: ans.get('netID')
-		}
-	]);
-
-	if (!error) {
+	} catch (err) {
 		return {
-			status: 201
-		};
-	} else {
-		return {
-			status: 400,
-			body: error
+			status: 500,
+			body: err
 		};
 	}
-	return {
-		status: 201
-	};
 }

@@ -11,8 +11,20 @@
 	];
 
 	import Transition from '../components/Transition.svelte';
+	import { onMount } from 'svelte';
+	import { claim_svg_element } from 'svelte/internal';
+	import { goto } from '$app/navigation';
 
-	console.log($page.url.pathname);
+	const moveSidebar = (href: string) => {
+		console.log('HELLO');
+		const drawercheck = document.getElementById('my-drawer-3') as HTMLInputElement | null;
+		goto(href);
+		setTimeout(() => {
+			if (drawercheck?.checked && drawercheck?.checked === true) {
+				drawercheck.checked = false;
+			}
+		});
+	};
 </script>
 
 <!-- ... -->
@@ -41,13 +53,15 @@
 				<div class="grid grid-rows-4 p-4">
 					{#each links as link}
 						<div class="mx-2">
-							<a
+							<div
 								role="button"
+								on:click={() => moveSidebar(link.href)}
 								on:mouseenter={() => console.log(link.href + ' ' + $page.url.pathname)}
 								class={`p-4 btn btn-primary mx-2 my-4 btn-lg w-full text-3xl
 									${$page.url.pathname !== link.href && 'btn-outline'}`}
-								href={link.href}>{link.name}</a
 							>
+								{link.name}
+							</div>
 						</div>
 					{/each}
 				</div>
@@ -181,4 +195,8 @@
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
+
+	:global(:root) {
+		font-family: epilogue;
+	}
 </style>
