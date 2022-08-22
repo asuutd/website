@@ -1,5 +1,5 @@
 import DOMPurify from 'isomorphic-dompurify';
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../../../supabaseClient';
 import parsePhoneNumber from 'libphonenumber-js';
 
 export async function post({ request }) {

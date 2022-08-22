@@ -1,4 +1,4 @@
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../../../supabaseClient';
 import DOMPurify from 'isomorphic-dompurify';
 
 //Endpoint to add someone to mailing list

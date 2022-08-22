@@ -1,12 +1,8 @@
-<script context="module">
-	export async function load({ params }) {
-		const id = params.id;
-		console.log(id);
-		return { props: { id } };
-	}
-</script>
+
 
 <script>
+	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+
 	const board = [
 		{
 			image: 'https://ucarecdn.com/efc2c8e1-6131-42d0-9b42-c798cfb80341/',
