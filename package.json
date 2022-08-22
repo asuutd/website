@@ -11,6 +11,11 @@
 		"format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
 	},
 	"devDependencies": {
+		"@fullcalendar/common": "^5.11.2",
+		"@fullcalendar/core": "^5.11.2",
+		"@fullcalendar/daygrid": "^5.11.2",
+		"@fullcalendar/interaction": "^5.11.2",
+		"@fullcalendar/timegrid": "^5.11.2",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/adapter-cloudflare": "1.0.0-next.17",
 		"@sveltejs/kit": "^1.0.0-next.314",
@@ -27,6 +32,7 @@
 		"prettier-plugin-svelte": "^2.4.0",
 		"svelte": "^3.47.0",
 		"svelte-check": "^2.8.0",
+		"svelte-fullcalendar": "^2.0.0-beta.0",
 		"svelte-hamburgers": "^4.0.1",
 		"svelte-preprocess": "^4.10.7",
 		"tailwindcss": "^3.0.15",

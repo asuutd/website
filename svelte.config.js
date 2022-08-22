@@ -10,10 +10,17 @@ const config = {
 				fs: {
 					allow: ['static']
 				}
+			},
+			resolve: {
+				dedupe: ['@fullcalendar/common']
+			},
+			optimizeDeps: {
+				include: ['@fullcalendar/common']
 			}
 		})
 		// hydrate the <div id="svelte"> element in src/app.html
 	},
+
 	preprocess: preprocess()
 };
 
