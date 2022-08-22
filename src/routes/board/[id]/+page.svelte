@@ -1,8 +1,4 @@
-
-
 <script>
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	const board = [
 		{
 			image: 'https://ucarecdn.com/efc2c8e1-6131-42d0-9b42-c798cfb80341/',
@@ -87,7 +83,8 @@
 		}
 	];
 
-	export let id;
+	export let data;
+	let { id } = data;
 	const image = board.find((mem) => mem.id === id);
 </script>
 

@@ -1,9 +1,6 @@
-
-
 <script>
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
-	export let id;
+	export let data;
+	let { id } = data;
 	//import { events, getData } from '../../stores/eventStore';
 	import Form from '../../../components/Form.svelte';
 
