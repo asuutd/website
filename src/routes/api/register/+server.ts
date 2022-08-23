@@ -2,7 +2,7 @@ import DOMPurify from 'isomorphic-dompurify';
 import { supabase } from '../../../supabaseClient';
 import parsePhoneNumber from 'libphonenumber-js';
 
-export async function post({ request }) {
+export async function POST({ request }) {
 	const ans: any = await request.formData();
 
 	for (var pair of ans.entries()) {
@@ -79,26 +79,35 @@ export async function post({ request }) {
 			try {
 				await Promise.all(array);
 
-				return {
-					status: 201
-				};
+				return new Response(null, {
+					status: 201,
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
 			} catch (err) {
 				console.log('SvelteKIt needs to step up');
-				return {
+				return new Response(err, {
 					status: 500,
-					body: err
-				};
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
 			}
 		} else {
-			return {
+			return new Response(error.message, {
 				status: 400,
-				body: error
-			};
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
 		}
 	} catch (err) {
-		return {
+		return new Response(err, {
 			status: 500,
-			body: err
-		};
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 	}
 }

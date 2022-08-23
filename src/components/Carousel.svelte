@@ -3,7 +3,7 @@
 	import { Carousel } from 'flowbite-svelte';
 </script>
 
-<div class="rounded-lg md:grid md:grid-cols-2">
+<div class="rounded-lg lg:grid lg:grid-cols-2">
 	<div class="hidden lg:flex lg:flex-col self-center">
 		<h2
 			class="font-bold font-epilogue text-6xl max-w-xs pt-3 px-6 mx-6 leading-snug  text-secondary justify-center"

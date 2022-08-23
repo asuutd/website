@@ -1,17 +1,34 @@
-<script>
+<script lang="ts">
 	import FullCalendar, { Draggable } from 'svelte-fullcalendar';
 	import daygridPlugin from '@fullcalendar/daygrid';
 	import timegridPlugin from '@fullcalendar/timegrid';
 	import interactionPlugin from '@fullcalendar/interaction';
+	import { events as eventsData, getData } from '../../stores/eventStore';
+
+	let events = $eventsData.map((event) => ({
+		title: event.name,
+		start: event.date
+	}));
+	console.log(events);
+
+	if (events.length === 0) {
+		getData(4, 'all').then(() => {
+			events = $eventsData.map((event) => ({
+				title: event.name,
+				start: event.date,
+				backgroundColor: new Date(event.date) < new Date() ? '#d1d5db' : '#79535C',
+				borderColor: new Date(event.date) < new Date() ? '#d1d5db' : '#79535C'
+			}));
+			options.events = events;
+		});
+	}
 
 	let options = {
 		dateClick: handleDateClick,
-		droppable: true,
-		editable: true,
-		events: [
-			// initial event data
-			{ title: 'New Event', start: new Date() }
-		],
+		droppable: false,
+		editable: false,
+		events: events,
+		eventColor: '#79535C',
 		initialView: 'dayGridMonth',
 		plugins: [daygridPlugin, timegridPlugin, interactionPlugin],
 		headerToolbar: {
@@ -23,7 +40,6 @@
 		weekends: true
 	};
 	let calendarComponentRef;
-	let eventData = { title: 'my event', duration: '02:00' };
 
 	function toggleWeekends() {
 		options = { ...options, weekends: !options.weekends };
@@ -35,7 +51,7 @@
 	}
 
 	function handleDateClick(event) {
-		if (confirm('Would you like to add an event to ' + event.dateStr + ' ?')) {
+		/* if (confirm('Would you like to add an event to ' + event.dateStr + ' ?')) {
 			const { events } = options;
 			const calendarEvents = [
 				...events,
@@ -49,28 +65,20 @@
 				...options,
 				events: calendarEvents
 			};
-		}
+		} */
 	}
 </script>
 
 <svelte:head>
-	<title>SvelteKit project template</title>
+	<title>ASU Calendar</title>
 </svelte:head>
 
-<div class="demo-app">
-	<div class="demo-app-top">
-		<button on:click={toggleWeekends}>toggle weekends</button> &nbsp;
-		<button on:click={gotoPast}>go to a date in the past</button> &nbsp; (also, click a date/time to
-		add an event)
-	</div>
-
-	<div>
-		<Draggable {eventData} class="draggable">Drag me in Week or Day view!</Draggable>
-	</div>
-
-	<div class="demo-app-calendar">
-		<FullCalendar bind:this={calendarComponentRef} {options} />
-	</div>
+<div class="demo-app  ">
+	{#if events.length !== 0}
+		<div class="demo-app-calendar">
+			<FullCalendar bind:this={calendarComponentRef} {options} />
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -87,7 +95,6 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
 		font-size: 14px;
 	}
 
@@ -99,7 +106,7 @@
 	}
 	:global(.draggable) {
 		color: white;
-		background: #3788d8;
+		background: #79535c;
 		width: fit-content;
 		padding: 1rem;
 		margin: 1rem;

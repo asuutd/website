@@ -25,7 +25,7 @@
 		}
 	];
 
-	const b = getData(4);
+	const b = getData(4, 'all');
 	let a = new Array(4).fill(null);
 
 	let loading = true;
@@ -52,7 +52,7 @@
 <div class="flex">
 	<h2 class="font-epilogue text-4xl text-secondary p-5 mx-auto font-black">EVENTS</h2>
 
-	<!-- <a href="/events" class="p-5 font-epilogue font-medium">See All</a> -->
+	<a href="/events" class="p-5 font-epilogue font-medium">See All</a>
 </div>
 
 <div class="flex overflow-x-auto xl:grid xl:grid-cols-4 snap-x snap-mandatory">
