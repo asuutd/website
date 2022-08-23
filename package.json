@@ -17,7 +17,7 @@
 		"@fullcalendar/interaction": "^5.11.2",
 		"@fullcalendar/timegrid": "^5.11.2",
 		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/adapter-cloudflare": "1.0.0-next.17",
+		"@sveltejs/adapter-cloudflare": "^1.0.0-next.17",
 		"@sveltejs/kit": "next",
 		"@tsconfig/svelte": "^3.0.0",
 		"@types/invariant": "^2.2.35",
