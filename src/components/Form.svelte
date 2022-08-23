@@ -1,5 +1,5 @@
 <script>
-	import { supabase } from '../supabaseClient';
+	import { supabase } from '$lib/supabaseClient';
 	import { personId, getPersonByNetId } from '../stores/personStore';
 	let netID = '';
 	export let id;

@@ -1,5 +1,5 @@
 import DOMPurify from 'isomorphic-dompurify';
-import { supabase } from '../../../supabaseClient';
+import { supabase } from '$lib/supabaseClient';
 import parsePhoneNumber from 'libphonenumber-js';
 
 export async function POST({ request }) {
@@ -103,7 +103,7 @@ export async function POST({ request }) {
 			});
 		}
 	} catch (err) {
-		return new Response(err, {
+		return new Response(JSON.stringify(err, supabase), {
 			status: 500,
 			headers: {
 				'Content-Type': 'application/json'
