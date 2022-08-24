@@ -3,7 +3,7 @@
 		const formData = new FormData(event.target);
 		console.log(formData);
 
-		const result = await fetch('/register/list', {
+		const result = await fetch('/api/register/list', {
 			method: 'POST',
 			body: formData
 		});
