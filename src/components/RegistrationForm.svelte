@@ -107,14 +107,14 @@
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<div class="justify-self-center">
+<div class="justify-center flex w-full">
 	<div class="hidden ">
 		<p>hELLO HUMAN BEINGS</p>
 	</div>
-	<div>
+	<div class="min-w-[45%]">
 		<form
-			id="registration"
-			class="my-5 mx-6 px-3 py-5 rounded-lg max-w-2xl"
+			id="registration "
+			class="my-5 mx-6 px-3 py-5 rounded-lg max-w-2xl "
 			on:submit|preventDefault={submitHandler}
 		>
 			<div class="relative z-0 w-full mb-6 ">

@@ -1,16 +1,14 @@
 <script>
+	import { goto } from '$app/navigation';
+
 	import { supabase } from '$lib/supabaseClient';
+	import { string } from 'yup';
 	import { personId, getPersonByNetId } from '../stores/personStore';
-	let netID = '';
 	export let id;
 
 	const submitAttendance = async () => {
-		console.log(supabase);
 		try {
-			await getPersonByNetId(netID);
-			console.log('After getPerson');
-			console.log($personId);
-			console.log(id);
+			await getPersonByNetId(values.netID);
 
 			const { data, error } = await supabase.from('events_people').insert([
 				{
@@ -19,39 +17,82 @@
 				}
 			]);
 			if (error) {
-				return alert(error.message);
+				console.log(error);
+				showError('netID_error', error.message);
 			}
 			//console.log(data);
 		} catch (error) {
-			alert(error.message);
+			showError('netID_error', error.message);
+			if (error.message === 'You are not registered') {
+				setTimeout(() => {
+					goto('/register');
+				}, 500);
+			}
 		}
+	};
+
+	const schema = string()
+		.required('netID is required')
+		.test(
+			'len',
+			'netIDs follow the format abc123456',
+			(val) =>
+				val &&
+				val.length === 9 &&
+				/[a-zA-z]{3}/.test(val.slice(0, 3)) &&
+				/[0-9]{6}/.test(val.slice(3))
+		);
+
+	let values = {};
+	let errors = {};
+	let error_msgs = {};
+
+	const resetErrorField = (name) => {
+		error_msgs[name] = null;
+		const error_element = document.getElementById(name);
+		error_element.style.visibility = 'hidden';
+	};
+
+	const showError = (id, message) => {
+		console.log(id);
+		const error_element = document.getElementById(id);
+		console.log(error_element);
+		error_msgs[id] = message;
+		error_element.style.visibility = 'visible';
 	};
 </script>
 
-<div class="grid grid-cols-2">
-	<div>
-		<p>HELLO NIGGAS</p>
-	</div>
+<div class="flex justify-center items-center">
 	<div>
 		<form class="my-6 max-w-sm" on:submit|preventDefault={submitAttendance}>
-			<div class="relative z-0 w-full mb-6 m-4">
+			<div class="relative z-0 w-full mb-6 ">
 				<input
 					type="text"
 					color="green"
 					name="floating_first_name"
-					id="floating_first_name"
-					class=" text-xl block py-2.5 px-0 w-full  text-slate-100 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-slate-100 dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-white peer "
+					on:focus={() => resetErrorField('netID_error')}
+					id="first_name"
+					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+						error_msgs.netID_error == null
+							? 'border-gray-300 text-neutral'
+							: 'border-error text-error'
+					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
 					placeholder=" "
-					bind:value={netID}
+					bind:value={values.netID}
 				/>
 				<label
-					for="floating_first_name"
-					class="peer-focus:font-medium absolute text-md text-slate-100 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-slate-100 peer-focus:dark:text-slate-100 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-					>NetID</label
+					for="first_name"
+					class={`peer-focus:font-medium absolute text-lg ${
+						error_msgs.netID_error == null ? 'text-neutral' : 'text-error'
+					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
+					>netID</label
 				>
+				<p class={`invisible ${error_msgs.netID_error != null && 'text-error'}`} id="netID_error">
+					{error_msgs.netID_error}
+				</p>
 			</div>
-			<div class="p-4">
-				<button type="submit" class="btn">Submit</button>
+			<div class="">
+				<button type="submit" class="btn btn-primary">SUBMIT</button>
 			</div>
 		</form>
 	</div>

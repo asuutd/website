@@ -6,7 +6,7 @@
 	console.log(loading);
 
 	console.log(disabled);
-	console.log(event?.link);
+	console.log(event);
 	console.log(Math.floor(new Date(event?.date).getTime()));
 	console.log(Date.now());
 	let useGIF = false;
@@ -52,13 +52,22 @@
 				<!-- svelte-ignore a11y-missing-content -->
 				<h5 class="bg-gray-400 animate-pulse h-7 w-2/3 mb-2" />
 			{/if}
-
-			<button
-				type="button"
-				class={`btn-primary ${
-					event?.link === undefined || event?.link === null || event?.link === '' ? 'invisible' : ''
-				} btn  mx-auto justify-self-center`}><a href={event?.link}>REGISTER</a></button
-			>
+			{#if event?.type === 'meeting'}
+				<button type="button" class={`btn-primary  btn  mx-auto justify-self-center`}>
+					<a href={`/forms/${event?.id}`}>MARK ATTENDANCE</a>
+				</button>
+			{:else}
+				<button
+					type="button"
+					class={`btn-primary ${
+						event?.link === undefined || event?.link === null || event?.link === ''
+							? 'invisible'
+							: ''
+					} btn  mx-auto justify-self-center`}
+				>
+					<a href={event?.link}>REGISTER</a>
+				</button>
+			{/if}
 		</div>
 	</div>
 </div>

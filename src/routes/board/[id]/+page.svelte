@@ -74,7 +74,7 @@
 		},
 		{
 			image: 'https://ucarecdn.com/76ad1993-83d6-4d67-b683-eca8f0478215/',
-			role: 'CONTENT CREATOR',
+			role: 'TECHNICAL DIRECTOR',
 			id: 'pelumi',
 			name: 'Pelumi Adegoke',
 			major: 'COMP ENG.',

@@ -20,8 +20,10 @@ export const getPerson = async (firstName, lastName) => {
 };
 
 export const getPersonByNetId = async (netID) => {
-	const { data, error } = await supabase.from('people').select('*').eq('netID', netID);
+	const { data, error } = await supabase.from('people').select('id').eq('netID', netID);
 	if (data.length === 0) {
+		console.log('Error here');
+		throw new Error('You are not registered');
 	}
 	personId.set(data);
 };
