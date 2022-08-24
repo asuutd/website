@@ -1,6 +1,3 @@
-import DOMPurify from 'isomorphic-dompurify';
-import { supabase } from '$lib/supabaseClient';
-import parsePhoneNumber from 'libphonenumber-js';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -150,7 +147,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 	} catch (err) {
-		return new Response(JSON.stringify({ err, supabase: supabase !== undefined }), {
+		return new Response(JSON.stringify({ err }), {
 			status: 500,
 			headers: {
 				'Content-Type': 'application/json'

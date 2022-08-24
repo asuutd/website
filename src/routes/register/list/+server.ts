@@ -1,4 +1,3 @@
-import { supabase } from '$lib/supabaseClient';
 import type { RequestHandler } from '@sveltejs/kit';
 import DOMPurify from 'isomorphic-dompurify';
 
