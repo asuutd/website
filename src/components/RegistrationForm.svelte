@@ -10,6 +10,9 @@
 
 	import { phoneNumberAutoFormat } from '$lib/format';
 	let eventAttended = $page.url.searchParams.get('attendance');
+
+	let netID = $page.url.searchParams.get('netID');
+
 	const onChange = (e) => {
 		const targetValue = phoneNumberAutoFormat(e.target.value);
 		values.phone = targetValue;
@@ -108,6 +111,10 @@
 		const error_element = document.getElementById(name);
 		error_element.style.visibility = 'hidden';
 	};
+
+	if (netID !== null) {
+		values.netID = netID;
+	}
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
