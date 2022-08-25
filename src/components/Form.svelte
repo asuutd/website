@@ -6,6 +6,8 @@
 	import { personId, getPersonByNetId } from '../stores/personStore';
 	export let id;
 
+	let success = false;
+
 	const submitAttendance = async () => {
 		try {
 			await getPersonByNetId(values.netID);
@@ -18,11 +20,17 @@
 			]);
 			if (error) {
 				console.log(error);
-				showError('netID_error', error.message);
+				showMessage('netID_message', error.message);
+			} else {
+				showMessage('netID_message', 'Attendance Marked');
+				console.log(msgs.netID_message);
+				setTimeout(() => {
+					goto('/');
+				}, 450);
 			}
 			//console.log(data);
 		} catch (error) {
-			showError('netID_error', error.message);
+			showMessage('netID_message', error.message);
 			if (error.message === 'You are not registered') {
 				setTimeout(() => {
 					goto(`/register?attendance=${id}&netID=${values.netID}`);
@@ -45,19 +53,29 @@
 
 	let values = {};
 	let errors = {};
-	let error_msgs = {};
+	let msgs = {};
 
-	const resetErrorField = (name) => {
-		error_msgs[name] = null;
+	const resetField = (name) => {
+		msgs[name] = null;
 		const error_element = document.getElementById(name);
 		error_element.style.visibility = 'hidden';
 	};
 
-	const showError = (id, message) => {
+	const showMessage = (id, message) => {
 		console.log(id);
 		const error_element = document.getElementById(id);
 		console.log(error_element);
-		error_msgs[id] = message;
+		msgs[id] = message;
+		setTimeout(() => {
+			error_element.style.visibility = 'visible';
+		}, 60);
+	};
+
+	const showSuccess = (id, message) => {
+		console.log(id);
+		const error_element = document.getElementById(id);
+		console.log(error_element);
+		msgs[id] = message;
 		error_element.style.visibility = 'visible';
 	};
 </script>
@@ -70,11 +88,13 @@
 					type="text"
 					color="green"
 					name="floating_first_name"
-					on:focus={() => resetErrorField('netID_error')}
+					on:focus={() => resetField('netID_message')}
 					id="first_name"
 					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
-						error_msgs.netID_error == null
+						msgs.netID_message == null
 							? 'border-gray-300 text-neutral'
+							: msgs.netID_message === 'Attendance Marked'
+							? 'border-success text-success'
 							: 'border-error text-error'
 					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
 					placeholder=" "
@@ -83,12 +103,21 @@
 				<label
 					for="first_name"
 					class={`peer-focus:font-medium absolute text-lg ${
-						error_msgs.netID_error == null ? 'text-neutral' : 'text-error'
+						msgs.netID_message == null
+							? 'text-neutral'
+							: msgs.netID_message === 'Attendance Marked'
+							? 'text-success'
+							: 'text-error'
 					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
 					>netID</label
 				>
-				<p class={`invisible ${error_msgs.netID_error != null && 'text-error'}`} id="netID_error">
-					{error_msgs.netID_error}
+				<p
+					class={`invisible ${
+						msgs.netID_message === 'Attendance Marked' ? 'text-success' : 'text-error'
+					}`}
+					id="netID_message"
+				>
+					{`${msgs.netID_message}`}
 				</p>
 			</div>
 			<div class="">
