@@ -6,9 +6,10 @@
 
 <script>
 	import { Input, LogoFooter } from 'flowbite-svelte';
+	import { page } from '$app/stores';
 
 	import { phoneNumberAutoFormat } from '$lib/format';
-
+	let eventAttended = $page.url.searchParams.get('attendance');
 	const onChange = (e) => {
 		const targetValue = phoneNumberAutoFormat(e.target.value);
 		values.phone = targetValue;
@@ -61,6 +62,9 @@
 			Object.entries(values).forEach((value) => {
 				formData.append(value[0], value[1]);
 			});
+			if (eventAttended !== null) {
+				formData.append('attendance', eventAttended);
+			}
 			const res = await fetch('../api/register', {
 				method: 'POST',
 				body: formData

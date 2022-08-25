@@ -15,6 +15,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			method: 'POST',
 			headers: {
 				Accept: 'application/json',
+				Prefer: 'return=headers-only',
 				apikey: supabaseAnonKey,
 				'Content-Type': 'application/json'
 			},
@@ -28,7 +29,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				major: ans.get('major'),
 				is_member: false
 			})
-		}); /* ([
+		});
+
+		/* ([
 			{
 				email: ans.get('email'),
 				first_name: ans.get('first_name'),
@@ -43,6 +46,8 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (res.ok) {
 			//Make more efficient
+			console.log(res.headers.get('Location'));
+			const id = res.headers.get('Location').split('.')[1];
 			console.log(ans?.get('dance'));
 			const array = [
 				...(ans?.get('dance') === 'true'
@@ -116,6 +121,22 @@ export const POST: RequestHandler = async ({ request }) => {
 								})
 							})
 					  ]
+					: []),
+				...(ans?.get('attendance') !== null
+					? [
+							fetch(`${supabaseUrl}/rest/v1/events_people`, {
+								method: 'POST',
+								headers: {
+									Accept: 'application/json',
+									apikey: supabaseAnonKey,
+									'Content-Type': 'application/json'
+								},
+								body: JSON.stringify({
+									people_id: id,
+									event_id: ans?.get('attendance')
+								})
+							})
+					  ]
 					: [])
 			];
 			console.log(array, array.length);
@@ -147,7 +168,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 	} catch (err) {
-		return new Response(JSON.stringify({ err }), {
+		return new Response(JSON.stringify({ err: err.msg }), {
 			status: 500,
 			headers: {
 				'Content-Type': 'application/json'

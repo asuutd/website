@@ -25,7 +25,7 @@
 			showError('netID_error', error.message);
 			if (error.message === 'You are not registered') {
 				setTimeout(() => {
-					goto('/register');
+					goto(`/register?attendance=${id}`);
 				}, 500);
 			}
 		}
