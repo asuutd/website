@@ -49,10 +49,14 @@
 	Nisi.
 </p> -->
 
-<div class="flex">
-	<h2 class="font-epilogue text-4xl text-secondary p-5 mx-auto font-black">EVENTS</h2>
+<div class="grid grid-cols-3 justify-center">
+	<div class="col-start-2 self-center justify-self-center">
+		<h2 class="font-epilogue text-4xl text-secondary p-5 mx-auto font-black">EVENTS</h2>
+	</div>
 
-	<a href="/events" class="p-5 font-epilogue font-medium">See All</a>
+	<div class="col-start-3 justify-self-end self-center">
+		<a href="/events" class="p-5 font-epilogue font-medium">See All</a>
+	</div>
 </div>
 
 <div class="flex overflow-x-auto xl:grid xl:grid-cols-4 snap-x snap-mandatory">
