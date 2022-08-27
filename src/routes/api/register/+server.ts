@@ -6,13 +6,6 @@ const prisma = new PrismaClient();
 export const POST: RequestHandler = async ({ request }) => {
 	const ans: any = await request.formData();
 
-	const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-	const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
-
-	for (var pair of ans.entries()) {
-		console.log(pair[0] + ', ' + pair[1]);
-	}
-
 	try {
 		const member = await prisma.people.create({
 			data: {
