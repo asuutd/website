@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Basketball_List {
+  id           BigInt    @id @default(autoincrement())
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  name         String?
+  netID        String?
+  email        String?
+  phone_number String?
+
+  @@map("Basketball List")
+}
+
+model Dance_Interest {
+  id           BigInt    @id @default(autoincrement())
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  name         String?
+  netID        String?
+  email        String?
+  phone_number String?
+
+  @@map("Dance Interest")
+}
+
+model Mailing_List {
+  id        BigInt    @id @default(autoincrement())
+  joined_at DateTime? @default(now()) @db.Timestamptz(6)
+  email     String?
+
+  @@map("Mailing List")
+}
+
+model Soccer_List {
+  id           BigInt    @id @default(autoincrement())
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  name         String?
+  netID        String?
+  email        String?
+  phone_number String?
+
+  @@map("Soccer List")
+}
+
+model Volleyball_List {
+  id           BigInt    @id @default(autoincrement())
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  name         String?
+  netID        String?
+  email        String?
+  phone_number String?
+
+  @@map("Volleyball List")
+}
+
+model events {
+  id             String          @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  created_at     DateTime?       @default(now()) @db.Timestamptz(6)
+  date           DateTime?       @db.Timestamptz(6)
+  num_attendants BigInt?
+  description    String?
+  image          String?
+  type           String?
+  GIF            String?
+  link           String?
+  name           String?
+  gray_by        DateTime?       @db.Timestamptz(6)
+  importance     Int?            @db.SmallInt
+  events_people  events_people[]
+}
+
+model events_people {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  people_id  String?   @db.Uuid
+  event_id   String?   @db.Uuid
+  events     events?   @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people     people?   @relation(fields: [people_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model people {
+  created_at    DateTime?       @default(now()) @db.Timestamptz(6)
+  first_name    String?
+  last_name     String?
+  is_paid       Boolean?
+  paid_at       DateTime?       @db.Timestamptz(6)
+  major         String?
+  netID         String          @unique
+  phone_number  String?
+  email         String?
+  class         String?
+  id            String          @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  events_people events_people[]
+}

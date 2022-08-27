@@ -30,6 +30,7 @@
 		"postcss": "^8.4.5",
 		"prettier": "^2.4.1",
 		"prettier-plugin-svelte": "^2.4.0",
+		"prisma": "^4.2.1",
 		"svelte": "^3.47.0",
 		"svelte-check": "^2.8.0",
 		"svelte-fullcalendar": "^2.0.0-beta.0",
@@ -42,6 +43,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@prisma/client": "^4.2.1",
 		"@rollup/plugin-typescript": "^8.3.3",
 		"@supabase/supabase-js": "^1.29.2",
 		"daisyui": "^2.15.1",
