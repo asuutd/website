@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				phone_number: ans.get('phone'),
 				netID: ans.get('netID'),
 				major: ans.get('major'),
-				is_member: false
+				is_paid: false
 			})
 		});
 
