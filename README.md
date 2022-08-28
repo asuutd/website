@@ -1,38 +1,19 @@
-# create-svelte
+# ASU UTDallas Website
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);
+This is the website for the African Student Union(ASU) at the University of Texas at Dallas. Feel free to tinker with it and submit pull requests.
 
-## Creating a project
+## Setup Guide
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm init svelte@next
-
-# create a new project in my-app
-npm init svelte@next my-app
-```
-
-> Note: the `@next` is temporary
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-Before creating a production version of your app, install an [adapter](https://kit.svelte.dev/docs#adapters) for your target environment. Then:
-
-```bash
-npm run build
-```
-
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
+1. Run `npm install`
+2. Change all instances of `@prisma/client/edge` to `@prisma/client` (Required for local development)
+3. Make a PostgreSQL database using [supabase](https://supabase.com)
+4. Populate a new .env file with the following
+   ```
+   VITE_PUBLIC_SUPABASE_URL=
+   VITE_PUBLIC_SUPABASE_ANON_KEY=
+   DATABASE_URL=
+   ```
+   > These can be found in the API and Database settings in the supabase project page.
+   > NOTE: Database URL (postgres://) and Supabase URL (https://) are different
+5. Run `npx prisma generate `
+6. Run `npm run dev`

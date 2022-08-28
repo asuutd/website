@@ -4,7 +4,7 @@
 	"scripts": {
 		"dev": "vite dev --port 3001",
 		"host": "vite dev --host --port 3001",
-		"build": "vite build",
+		"build": "prisma generate --data-proxy && vite build",
 		"package": "vite package",
 		"preview": "vite preview",
 		"lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
