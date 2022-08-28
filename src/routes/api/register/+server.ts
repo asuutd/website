@@ -1,12 +1,17 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { PrismaClient } from '@prisma/client/edge';
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+	datasources: {
+		db: {
+			url: import.meta.env.VITE_DATABASE_URL
+		}
+	}
+});
 
 export const POST: RequestHandler = async ({ request }) => {
-	const ans: any = await request.formData();
-
 	try {
+		const ans: any = await request.formData();
 		const member = await prisma.people.create({
 			data: {
 				email: ans.get('email'),
@@ -96,7 +101,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					  ]
 					: [])
 			];
-			console.log(array, array.length);
+
 			try {
 				await Promise.all(array);
 
