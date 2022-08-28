@@ -5,7 +5,7 @@ This is the website for the African Student Union(ASU) at the University of Texa
 ## Setup Guide
 
 1. Run `npm install`
-2. Change all instances of `@prisma/client/edge` to `@prisma/client`
+2. Change all instances of `@prisma/client/edge` to `@prisma/client` (Required for local development)
 3. Make a PostgreSQL database using [supabase](https://supabase.com)
 4. Populate a new .env file with the following
    ```
