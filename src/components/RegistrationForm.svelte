@@ -77,7 +77,7 @@
 
 			if (!res.ok) {
 				const result = await res.text();
-				if (result.includes('duplicate key')) {
+				if (result.includes('Unique constraint failed')) {
 					if (result.includes('netID')) {
 						showError('netID_error', 'netID already exists');
 					}
