@@ -11,7 +11,7 @@ This is the website for the African Student Union(ASU) at the University of Texa
    ```
    VITE_PUBLIC_SUPABASE_URL=
    VITE_PUBLIC_SUPABASE_ANON_KEY=
-   DATABASE_URL=
+   VITE_DATABASE_URL=
    ```
    > These can be found in the API and Database settings in the supabase project page.
    > NOTE: Database URL (postgres://) and Supabase URL (https://) are different
