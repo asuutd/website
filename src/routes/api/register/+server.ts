@@ -129,11 +129,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 	} catch (err) {
-		return new Response(JSON.stringify({ err: err.msg }), {
+		console.log(err.message);
+		return new Response(err.message, {
 			status: 500,
-			headers: {
-				'Content-Type': 'application/json'
-			}
+			headers: {}
 		});
 	}
 };
