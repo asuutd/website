@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				last_name: ans.get('last_name'),
 				class: ans.get('class'),
 				phone_number: ans.get('phone'),
-				netID: ans.get('netID'),
+				netID: ans.get('netID').toUpperCase(),
 				major: ans.get('major'),
 				is_paid: false
 			}
