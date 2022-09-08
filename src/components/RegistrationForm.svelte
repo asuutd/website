@@ -44,6 +44,7 @@
 			.matches(phoneRegex, 'phone number is not valid')
 	});
 	let values = {};
+	values.mails = true;
 	let errors = {};
 	let error_msgs = {};
 	let im_visible = false;
@@ -118,245 +119,276 @@
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<div class="justify-center flex w-full">
-	<div class="hidden ">
-		<p>hELLO HUMAN BEINGS</p>
-	</div>
-	<div class="min-w-[45%]">
-		<form
-			id="registration "
-			class="my-5 mx-6 px-3 py-5 rounded-lg max-w-2xl "
-			on:submit|preventDefault={submitHandler}
-		>
-			<div class="relative z-0 w-full mb-6 ">
-				<input
-					type="text"
-					color="green"
-					name="floating_first_name"
-					on:focus={() => resetErrorField('first_name_error')}
-					id="first_name"
-					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
-						error_msgs.first_name_error == null
-							? 'border-gray-300 text-neutral'
-							: 'border-error text-error'
-					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-					placeholder=" "
-					bind:value={values.first_name}
-				/>
-				<label
-					for="first_name"
-					class={`peer-focus:font-medium absolute text-lg ${
-						error_msgs.first_name_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-					>First Name</label
-				>
-				<p
-					class={`invisible ${error_msgs.first_name_error != null && 'text-error'}`}
-					id="first_name_error"
-				>
-					{error_msgs.first_name_error}
-				</p>
-			</div>
-			<div class="relative z-0 w-full mb-6" in:fly={{ delay: 100, duration: 200 }}>
-				<input
-					type="text"
-					name="floating_last_name"
-					id="last_name"
-					on:focus={() => resetErrorField('last_name_error')}
-					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
-						error_msgs.last_name_error == null
-							? 'border-gray-300 text-neutral'
-							: 'border-error text-error'
-					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-					placeholder=" "
-					bind:value={values.last_name}
-				/>
-				<label
-					for="last_name"
-					class={`peer-focus:font-medium absolute text-lg ${
-						error_msgs.last_name_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-					>Last Name</label
-				>
-				<p
-					class={`invisible ${error_msgs.last_name_error != null && 'text-error'}`}
-					id="last_name_error"
-				>
-					{error_msgs.last_name_error}
-				</p>
-			</div>
 
-			<div class="relative z-0 w-full mb-4 group">
-				<input
-					type="email"
-					name="floating_email"
-					on:focus={() => resetErrorField('email_error')}
-					class={` text-xl block py-2.5 px-0 w-full  bg-transparent border-0 border-b-2 ${
-						error_msgs.email_error == null
-							? 'border-gray-300  text-neutral'
-							: 'border-error text-error'
-					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-					placeholder=" "
-					bind:value={values.email}
-				/>
-				<label
-					for="floating_email"
-					class={`peer-focus:font-medium absolute text-lg ${
-						error_msgs.email_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-					>Email Address</label
+<div class="md:hero min-h-screen bg-base-100">
+	<div class="md:hero-content flex-col lg:flex-row-reverse">
+		<div class="text-center lg:text-left">
+			<h1 class="text-5xl font-bold hidden md:block text-primary">Register now!</h1>
+			<p class="py-6 text-2xl hidden md:block">
+				Become part of the ASU family and connect with the African community at UTDallas
+			</p>
+		</div>
+		<div class="card flex-shrink-0 w-full max-w-lg shadow-2xl bg-base-100">
+			<div class="card-body">
+				<form
+					id="registration "
+					class=" rounded-lg max-w-2xl min-w-full"
+					on:submit|preventDefault={submitHandler}
 				>
-				<p class={`invisible ${error_msgs.email_error != null && 'text-error'}`} id="email_error">
-					{error_msgs.email_error}
-				</p>
-			</div>
-
-			<div class="relative z-0  mb-6 group">
-				<input
-					type="text"
-					name="netID"
-					on:focus={() => resetErrorField('netID_error')}
-					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
-						error_msgs.netID_error == null
-							? 'border-gray-300 text-neutral'
-							: 'border-error text-error'
-					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-					placeholder=" "
-					bind:value={values.netID}
-				/>
-				<label
-					for="netID"
-					class={`peer-focus:font-medium absolute text-lg ${
-						error_msgs.netID_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-					>netID</label
-				>
-				<p class={`invisible ${error_msgs.netID_error != null && 'text-error'}`} id="netID_error">
-					{error_msgs.netID_error}
-				</p>
-			</div>
-
-			<div class="relative z-0 w-full mb-6 group col-span-2 ">
-				<input
-					type="tel"
-					name="floating_phone"
-					id="floating_phone"
-					on:input={onChange}
-					on:focus={() => resetErrorField('phone_error')}
-					class={` text-xl block py-2.5 px-0 w-full  text-neutral bg-transparent border-0 border-b-2 ${
-						error_msgs.phone_error == null ? 'border-gray-300' : 'border-error'
-					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-					placeholder=" "
-					maxlength="12"
-					bind:value={values.phone}
-				/>
-				<label
-					for="floating_phone"
-					class={`peer-focus:font-medium absolute text-lg ${
-						error_msgs.phone_error == null ? 'text-neutral' : 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-					>Phone number</label
-				>
-				<p class={`invisible ${error_msgs.phone_error != null && 'text-error'}`} id="phone_error">
-					{error_msgs.phone_error}
-				</p>
-			</div>
-
-			<div class="relative z-0 w-full mb-6 group ">
-				<input
-					type="text"
-					name="major"
-					class="block py-2.5 px-0 w-full text-xl text-neutral bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer"
-					placeholder=" "
-					bind:value={values.major}
-				/>
-				<label
-					for="major"
-					class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8"
-					>Major</label
-				>
-				<p class="invisible" id="major_error">{error_msgs.major_error}</p>
-			</div>
-
-			<div class="relative z-0 w-full mb-6 group">
-				<select
-					class="select select-secondary "
-					form="registration"
-					bind:value={values.class}
-					id="grid-state"
-				>
-					<option>Freshman</option>
-					<option>Sophomore</option>
-					<option>Junior</option>
-					<option>Senior</option>
-					<option>Graduate</option>
-				</select>
-			</div>
-
-			<div class="relative z-0 w-full mb-6 group">
-				<input
-					bind:checked={values.dance}
-					id="checked-checkbox"
-					type="checkbox"
-					class="checkbox checkbox-secondary"
-				/>
-				<label
-					for="checked-checkbox"
-					class="ml-2 text-sm font-normal text-neutral dark:text-gray-300"
-					>Are you interested in joining the Dance Team?</label
-				>
-			</div>
-
-			<div class="relative z-0 w-full mb-6 group">
-				<input
-					bind:checked={im_visible}
-					id="checked-checkbox"
-					type="checkbox"
-					class="checkbox checkbox-secondary"
-				/>
-				<label
-					for="checked-checkbox"
-					class="ml-2 text-sm font-normal text-neutral dark:text-gray-300"
-					>Are you interested in Intermurals?</label
-				>
-			</div>
-
-			{#if im_visible}
-				<div transition:fly={{ y: 20, duration: 400 }} class="flex justify-between">
-					<div class="form-control">
-						<label class="cursor-pointer label">
-							<span class="label-text mr-3 text-neutral">Basketball</span>
-							<input
-								type="checkbox"
-								class="checkbox checkbox-secondary"
-								bind:checked={values.basketball}
-							/>
-						</label>
+					<div class="relative z-0 w-full mb-6 ">
+						<input
+							type="text"
+							color="green"
+							name="floating_first_name"
+							on:focus={() => resetErrorField('first_name_error')}
+							id="first_name"
+							class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+								error_msgs.first_name_error == null
+									? 'border-gray-300 text-neutral'
+									: 'border-error text-error'
+							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+							placeholder=" "
+							bind:value={values.first_name}
+						/>
+						<label
+							for="first_name"
+							class={`peer-focus:font-medium absolute text-lg ${
+								error_msgs.first_name_error == null ? 'text-neutral' : 'text-error'
+							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
+							>First Name</label
+						>
+						<p
+							class={`invisible ${error_msgs.first_name_error != null && 'text-error'}`}
+							id="first_name_error"
+						>
+							{error_msgs.first_name_error}
+						</p>
 					</div>
-					<div class="form-control">
-						<label class="cursor-pointer label">
-							<span class="label-text mr-3 text-neutral">Vollyeball</span>
-							<input
-								type="checkbox"
-								class="checkbox checkbox-secondary"
-								bind:checked={values.volleyball}
-							/>
-						</label>
+					<div class="relative z-0 w-full mb-6" in:fly={{ delay: 100, duration: 200 }}>
+						<input
+							type="text"
+							name="floating_last_name"
+							id="last_name"
+							on:focus={() => resetErrorField('last_name_error')}
+							class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+								error_msgs.last_name_error == null
+									? 'border-gray-300 text-neutral'
+									: 'border-error text-error'
+							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+							placeholder=" "
+							bind:value={values.last_name}
+						/>
+						<label
+							for="last_name"
+							class={`peer-focus:font-medium absolute text-lg ${
+								error_msgs.last_name_error == null ? 'text-neutral' : 'text-error'
+							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
+							>Last Name</label
+						>
+						<p
+							class={`invisible ${error_msgs.last_name_error != null && 'text-error'}`}
+							id="last_name_error"
+						>
+							{error_msgs.last_name_error}
+						</p>
 					</div>
-					<div class="form-control">
-						<label class="cursor-pointer label">
-							<span class="label-text mr-3 text-neutral">Soccer</span>
-							<input
-								type="checkbox"
-								class="checkbox checkbox-secondary"
-								bind:checked={values.soccer}
-							/>
-						</label>
-					</div>
-				</div>
-			{/if}
 
-			<button type="submit" class=" btn btn-primary">Submit</button>
-		</form>
+					<div class="relative z-0 w-full mb-4 group">
+						<input
+							type="email"
+							name="floating_email"
+							on:focus={() => resetErrorField('email_error')}
+							class={` text-xl block py-2.5 px-0 w-full  bg-transparent border-0 border-b-2 ${
+								error_msgs.email_error == null
+									? 'border-gray-300  text-neutral'
+									: 'border-error text-error'
+							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+							placeholder=" "
+							bind:value={values.email}
+						/>
+						<label
+							for="floating_email"
+							class={`peer-focus:font-medium absolute text-lg ${
+								error_msgs.email_error == null ? 'text-neutral' : 'text-error'
+							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
+							>Email Address</label
+						>
+						<p
+							class={`invisible ${error_msgs.email_error != null && 'text-error'}`}
+							id="email_error"
+						>
+							{error_msgs.email_error}
+						</p>
+					</div>
+
+					<div class="relative z-0  mb-6 group">
+						<input
+							type="text"
+							name="netID"
+							on:focus={() => resetErrorField('netID_error')}
+							class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+								error_msgs.netID_error == null
+									? 'border-gray-300 text-neutral'
+									: 'border-error text-error'
+							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+							placeholder=" "
+							bind:value={values.netID}
+						/>
+						<label
+							for="netID"
+							class={`peer-focus:font-medium absolute text-lg ${
+								error_msgs.netID_error == null ? 'text-neutral' : 'text-error'
+							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
+							>netID</label
+						>
+						<p
+							class={`invisible ${error_msgs.netID_error != null && 'text-error'}`}
+							id="netID_error"
+						>
+							{error_msgs.netID_error}
+						</p>
+					</div>
+
+					<div class="relative z-0 w-full mb-6 group col-span-2 ">
+						<input
+							type="tel"
+							name="floating_phone"
+							id="floating_phone"
+							on:input={onChange}
+							on:focus={() => resetErrorField('phone_error')}
+							class={` text-xl block py-2.5 px-0 w-full  text-neutral bg-transparent border-0 border-b-2 ${
+								error_msgs.phone_error == null ? 'border-gray-300' : 'border-error'
+							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+							placeholder=" "
+							maxlength="12"
+							bind:value={values.phone}
+						/>
+						<label
+							for="floating_phone"
+							class={`peer-focus:font-medium absolute text-lg ${
+								error_msgs.phone_error == null ? 'text-neutral' : 'text-error'
+							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
+							>Phone number</label
+						>
+						<p
+							class={`invisible ${error_msgs.phone_error != null && 'text-error'}`}
+							id="phone_error"
+						>
+							{error_msgs.phone_error}
+						</p>
+					</div>
+
+					<div class="relative z-0 w-full mb-6 group ">
+						<input
+							type="text"
+							name="major"
+							class="block py-2.5 px-0 w-full text-xl text-neutral bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer"
+							placeholder=" "
+							bind:value={values.major}
+						/>
+						<label
+							for="major"
+							class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8"
+							>Major</label
+						>
+						<p class="invisible" id="major_error">{error_msgs.major_error}</p>
+					</div>
+
+					<div class="relative z-0 w-full mb-6 group">
+						<select
+							class="select select-secondary "
+							form="registration"
+							bind:value={values.class}
+							id="grid-state"
+						>
+							<option>Freshman</option>
+							<option>Sophomore</option>
+							<option>Junior</option>
+							<option>Senior</option>
+							<option>Graduate</option>
+						</select>
+					</div>
+
+					<div class="relative z-0 w-full mb-6 group">
+						<input
+							bind:checked={values.mails}
+							id="checked-checkbox"
+							type="checkbox"
+							class="checkbox checkbox-secondary"
+						/>
+						<label
+							for="checked-checkbox"
+							class=" text-sm font-normal text-neutral dark:text-gray-300"
+							>Do you want to receive Newsletters?</label
+						>
+					</div>
+
+					<div class="relative z-0 w-full mb-6 group">
+						<input
+							bind:checked={values.dance}
+							id="checked-checkbox"
+							type="checkbox"
+							class="checkbox checkbox-secondary"
+						/>
+						<label
+							for="checked-checkbox"
+							class=" text-sm font-normal text-neutral dark:text-gray-300"
+							>Are you interested in joining the Dance Team?</label
+						>
+					</div>
+
+					<div class="relative z-0 w-full mb-6 group">
+						<input
+							bind:checked={im_visible}
+							id="checked-checkbox"
+							type="checkbox"
+							class="checkbox checkbox-secondary"
+						/>
+						<label
+							for="checked-checkbox"
+							class=" text-sm font-normal text-neutral dark:text-gray-300"
+							>Are you interested in Intermurals?</label
+						>
+					</div>
+
+					{#if im_visible}
+						<div transition:fly={{ y: 20, duration: 400 }} class="flex justify-between">
+							<div class="form-control">
+								<label class="cursor-pointer label">
+									<span class="label-text mr-3 text-neutral">Basketball</span>
+									<input
+										type="checkbox"
+										class="checkbox checkbox-secondary"
+										bind:checked={values.basketball}
+									/>
+								</label>
+							</div>
+							<div class="form-control">
+								<label class="cursor-pointer label">
+									<span class="label-text mr-3 text-neutral">Vollyeball</span>
+									<input
+										type="checkbox"
+										class="checkbox checkbox-secondary"
+										bind:checked={values.volleyball}
+									/>
+								</label>
+							</div>
+							<div class="form-control">
+								<label class="cursor-pointer label">
+									<span class="label-text mr-3 text-neutral">Soccer</span>
+									<input
+										type="checkbox"
+										class="checkbox checkbox-secondary"
+										bind:checked={values.soccer}
+									/>
+								</label>
+							</div>
+						</div>
+					{/if}
+
+					<button type="submit" class=" btn btn-primary">Submit</button>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
