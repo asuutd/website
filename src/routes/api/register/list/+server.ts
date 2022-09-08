@@ -7,6 +7,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
 	const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
+	const mailChimpKey = import.meta.env.VITE_MAILCHAMP_API_KEY;
 	const email: string = DOMPurify.sanitize(ans.get('email'));
 	if (!validateEmail(email)) {
 		return new Response(JSON.stringify({ body: 'Not a valid email' }), {
@@ -18,7 +19,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 	console.log(ans);
 
-	const res = await fetch(`${supabaseUrl}/rest/v1/Mailing%20List`, {
+	let res = await fetch(`${supabaseUrl}/rest/v1/Mailing%20List`, {
 		method: 'POST',
 		headers: {
 			Accept: 'application/json',
@@ -45,22 +46,19 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 export const DELETE: RequestHandler = async ({ request }) => {
+	console.log('ans');
 	const ans: any = await request.formData();
-
-	const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-	const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
-	const email: string = DOMPurify.sanitize(ans.get('email'));
-	if (!validateEmail(email)) {
-		return new Response(JSON.stringify({ body: 'Not a valid email' }), {
-			status: 400,
-			headers: {
-				'Content-Type': 'application/json'
-			}
+	if (ans.get('email') === null) {
+		return new Response(null, {
+			status: 400
 		});
 	}
-	console.log(ans);
+	const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
+	const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
+	const mailChimpKey = import.meta.env.VITE_MAILCHAMP_API_KEY;
+	const email: string = DOMPurify.sanitize(ans.get('email'));
 
-	const res = await fetch(`${supabaseUrl}/rest/v1/Mailing%20List?email=eq.${email}`, {
+	let res = await fetch(`${supabaseUrl}/rest/v1/Mailing%20List?email=eq.${email}`, {
 		method: 'DELETE',
 		headers: {
 			Accept: 'application/json',
@@ -69,9 +67,33 @@ export const DELETE: RequestHandler = async ({ request }) => {
 		}
 	});
 	if (res.ok) {
-		return new Response(null, {
-			status: 204
+		const body = {
+			email_address: email,
+			email_type: 'html',
+			status: 'subscribed'
+		};
+		console.log(mailChimpKey);
+		res = await fetch('https://us13.api.mailchimp.com/3.0/lists/8f84fc042d/members', {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${mailChimpKey}`,
+				Accept: 'application/json'
+			},
+			body: JSON.stringify(body)
 		});
+
+		if (res.ok) {
+			return new Response(null, {
+				status: 204
+			});
+		} else {
+			return new Response(JSON.stringify(await res.json()), {
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				status: 400
+			});
+		}
 	} else {
 		const result = await res.json();
 		return new Response(JSON.stringify({ body: result.message }), {

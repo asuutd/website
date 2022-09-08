@@ -1,21 +1,27 @@
 <script>
 	import { goto } from '$app/navigation';
-
+	import TextArea from './TextAreaAutosize.svelte';
 	import { supabase } from '$lib/supabaseClient';
 	import { string } from 'yup';
 	import { personId, getPersonByNetId } from '../stores/personStore';
 	export let id;
+	let text_area_val = '';
 
 	let success = false;
 
 	const submitAttendance = async () => {
 		try {
-			await getPersonByNetId(values.netID);
+			await getPersonByNetId(values.netID.toUpperCase());
 
 			const { data, error } = await supabase.from('events_people').insert([
 				{
 					event_id: id,
-					people_id: $personId[0].id
+					people_id: $personId[0].id,
+					...(text_area_val !== ''
+						? {
+								comments: text_area_val
+						  }
+						: {})
 				}
 			]);
 			if (error) {
@@ -82,7 +88,7 @@
 
 <div class="flex justify-center items-center">
 	<div>
-		<form class="my-6 max-w-sm" on:submit|preventDefault={submitAttendance}>
+		<form class="my-6 w-72 md:w-96" on:submit|preventDefault={submitAttendance}>
 			<div class="relative z-0 w-full mb-6 ">
 				<input
 					type="text"
@@ -90,7 +96,7 @@
 					name="floating_first_name"
 					on:focus={() => resetField('netID_message')}
 					id="first_name"
-					class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+					class={` text-xl block py-2.5 px-0 max-w-sm  bg-transparent border-0 border-b-2 ${
 						msgs.netID_message == null
 							? 'border-gray-300 text-neutral'
 							: msgs.netID_message === 'Attendance Marked'
@@ -102,7 +108,7 @@
 				/>
 				<label
 					for="first_name"
-					class={`peer-focus:font-medium absolute text-lg ${
+					class={`peer-focus:font-medium absolute text-lg max-w-sm ${
 						msgs.netID_message == null
 							? 'text-neutral'
 							: msgs.netID_message === 'Attendance Marked'
@@ -120,8 +126,18 @@
 					{`${msgs.netID_message}`}
 				</p>
 			</div>
+			<TextArea
+				bind:value={text_area_val}
+				minRows={4}
+				maxRows={40}
+				placeholder="Comments (optional)"
+			/>
 			<div class="">
-				<button type="submit" class="btn btn-primary">SUBMIT</button>
+				<button
+					type="submit"
+					class="btn btn-primary mt-6 focus:ring-secondary focus:outline-none focus:ring-0"
+					>SUBMIT</button
+				>
 			</div>
 		</form>
 	</div>

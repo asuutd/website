@@ -4,7 +4,6 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { string } from 'yup';
 	import { personId } from '../../stores/personStore';
-	export let id;
 
 	let success = false;
 

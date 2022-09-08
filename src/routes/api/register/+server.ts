@@ -90,6 +90,15 @@ export const POST: RequestHandler = async ({ request }) => {
 							})
 					  ]
 					: []),
+				...(ans?.get('mails') === 'true'
+					? [
+							prisma.mailing_List.create({
+								data: {
+									email: ans.get('email')
+								}
+							})
+					  ]
+					: []),
 				...(ans?.get('attendance') !== null
 					? [
 							prisma.events_people.create({

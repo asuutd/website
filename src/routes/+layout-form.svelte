@@ -7,6 +7,7 @@
 		{ href: '/', name: 'Home' },
 		{ href: '/about', name: 'About' },
 		{ href: '/board', name: 'Board' },
+		{ href: '/pay', name: 'Pay Dues' },
 		{ href: '/register', name: 'JOIN ASU' }
 	];
 
