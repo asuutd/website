@@ -12,7 +12,11 @@
 	<pre aria-hidden="true" style="min-height: {minHeight}; max-height: {maxHeight}">{value +
 			'\n'}</pre>
 
-	<textarea class="textarea textarea-secondary w-full p-2 " bind:value {placeholder} />
+	<textarea
+		class="textarea textarea-secondary w-full p-2  focus:border-secondary focus:ring-secondary focus:outline-none"
+		bind:value
+		{placeholder}
+	/>
 </div>
 
 <style>
