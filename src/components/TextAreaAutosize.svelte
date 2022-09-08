@@ -13,7 +13,7 @@
 			'\n'}</pre>
 
 	<textarea
-		class="textarea textarea-secondary w-full p-2  focus:border-secondary focus:ring-secondary focus:outline-none"
+		class="textarea textarea-secondary border-neutral w-full p-2  focus:border-secondary focus:ring-secondary "
 		bind:value
 		{placeholder}
 	/>

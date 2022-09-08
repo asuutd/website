@@ -87,58 +87,64 @@
 </script>
 
 <div class="flex justify-center items-center">
-	<div>
-		<form class="my-6 w-72 md:w-96" on:submit|preventDefault={submitAttendance}>
-			<div class="relative z-0 w-full mb-6 ">
-				<input
-					type="text"
-					color="green"
-					name="floating_first_name"
-					on:focus={() => resetField('netID_message')}
-					id="first_name"
-					class={` text-xl block py-2.5 px-0 max-w-sm  bg-transparent border-0 border-b-2 ${
-						msgs.netID_message == null
-							? 'border-gray-300 text-neutral'
-							: msgs.netID_message === 'Attendance Marked'
-							? 'border-success text-success'
-							: 'border-error text-error'
-					}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-					placeholder=" "
-					bind:value={values.netID}
-				/>
-				<label
-					for="first_name"
-					class={`peer-focus:font-medium absolute text-lg max-w-sm ${
-						msgs.netID_message == null
-							? 'text-neutral'
-							: msgs.netID_message === 'Attendance Marked'
-							? 'text-success'
-							: 'text-error'
-					} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-					>netID</label
-				>
-				<p
-					class={`invisible ${
-						msgs.netID_message === 'Attendance Marked' ? 'text-success' : 'text-error'
-					}`}
-					id="netID_message"
-				>
-					{`${msgs.netID_message}`}
-				</p>
-			</div>
-			<TextArea
-				bind:value={text_area_val}
-				minRows={4}
-				maxRows={40}
-				placeholder="Comments (optional)"
+	<form
+		class="my-6 w-72 md:w-96 justify-center flex flex-col"
+		on:submit|preventDefault={submitAttendance}
+	>
+		<div class="relative z-0 w-full mb-6 ">
+			<input
+				type="text"
+				placeholder="netID"
+				on:focus={() => resetField('netID_message')}
+				class={`input input-bordered w-full max-w-xs focus:ring-secondary focus:border-secondary ${
+					msgs.netID_message == null
+						? 'input-secondary'
+						: msgs.netID_message === 'Attendance Marked'
+						? 'input-success'
+						: 'input-error'
+				}`}
+				bind:value={values.netID}
+				name="floating_first_name"
+				id="first_name"
 			/>
-			<div class="">
-				<button
-					type="submit"
-					class="btn btn-primary mt-6 focus:ring-secondary focus:outline-none focus:ring-0"
-					>SUBMIT</button
-				>
-			</div>
-		</form>
-	</div>
+			<!-- <input
+				type="text"
+				color="green"
+				name="floating_first_name"
+				on:focus={() => resetField('netID_message')}
+				id="first_name"
+				class={`text-xl block py-2.5 px-0 max-w-sm  bg-transparent border-0 border-b-2 ${
+					msgs.netID_message == null
+						? 'border-gray-300 text-neutral'
+						: msgs.netID_message === 'Attendance Marked'
+						? 'border-success text-success'
+						: 'border-error text-error'
+				}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+				placeholder=" "
+				bind:value={values.netID}
+			/> -->
+
+			<p
+				class={`invisible ${
+					msgs.netID_message === 'Attendance Marked' ? 'text-success' : 'text-error'
+				}`}
+				id="netID_message"
+			>
+				{`${msgs.netID_message}`}
+			</p>
+		</div>
+		<TextArea
+			bind:value={text_area_val}
+			minRows={4}
+			maxRows={40}
+			placeholder="Comments (optional)"
+		/>
+		<div class="">
+			<button
+				type="submit"
+				class="btn btn-primary mt-6 focus:ring-secondary focus:outline-none focus:ring-0"
+				>SUBMIT</button
+			>
+		</div>
+	</form>
 </div>
