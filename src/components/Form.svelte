@@ -8,22 +8,31 @@
 	let text_area_val = '';
 
 	let success = false;
+	let anonymous = false;
 
 	const submitAttendance = async () => {
 		try {
 			await getPersonByNetId(values.netID.toUpperCase());
-
-			const { data, error } = await supabase.from('events_people').insert([
-				{
-					event_id: id,
-					people_id: $personId[0].id,
-					...(text_area_val !== ''
-						? {
-								comments: text_area_val
-						  }
-						: {})
-				}
-			]);
+			const promises = [
+				supabase.from('events_people').insert([
+					{
+						event_id: id,
+						people_id: $personId[0].id
+					}
+				]),
+				...(text_area_val !== ''
+					? [
+							supabase.from('comments').insert([
+								{
+									event_id: id,
+									...(!anonymous ? { people_id: $personId[0].id } : {}),
+									comment: text_area_val
+								}
+							])
+					  ]
+					: [])
+			];
+			const [{ data, error }, _] = await Promise.all(promises);
 			if (error) {
 				console.log(error);
 				showMessage('netID_message', error.message);
@@ -139,6 +148,17 @@
 			maxRows={40}
 			placeholder="Comments (optional)"
 		/>
+		<div class="py-4">
+			<input
+				bind:checked={anonymous}
+				id="checked-checkbox"
+				type="checkbox"
+				class="checkbox checkbox-secondary"
+			/>
+			<label for="checked-checkbox" class=" text-sm font-normal text-neutral dark:text-gray-300"
+				>Send feedback anonymously</label
+			>
+		</div>
 		<div class="">
 			<button
 				type="submit"
