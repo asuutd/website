@@ -5,6 +5,7 @@
 </script>
 
 <script>
+	let disabled = false;
 	import { Input, LogoFooter } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 
@@ -69,13 +70,14 @@
 			if (eventAttended !== null) {
 				formData.append('attendance', eventAttended);
 			}
+			disabled = true;
 			const res = await fetch('../api/register', {
 				method: 'POST',
 				body: formData
 			});
 
 			//If the data could not be stored on the database
-
+			disabled = true;
 			if (!res.ok) {
 				const result = await res.text();
 				if (result.includes('Unique constraint failed')) {
@@ -86,7 +88,7 @@
 			} else {
 				goto('/pay');
 			}
-
+			disabled = false;
 			//alert(JSON.stringify(values, null, 2));
 			//console.log(formData.get('last_name'));
 		} catch (err) {
@@ -386,7 +388,9 @@
 						</div>
 					{/if}
 
-					<button type="submit" class=" btn btn-primary">Submit</button>
+					<button type="submit" class={` btn btn-primary ${disabled && 'btn-disabled'}`}
+						>Submit</button
+					>
 				</form>
 			</div>
 		</div>

@@ -54,7 +54,7 @@
 			{/if}
 			{#if event?.type === 'meeting'}
 				<button type="button" class={`btn-primary  btn  mx-auto justify-self-center`}>
-					<a href={`/forms/${event?.id}`}>MARK ATTENDANCE</a>
+					<a href={`/forms/${event?.id}`}>{event?.button_text || 'MARK ATTENDANCE'}</a>
 				</button>
 			{:else}
 				<button
@@ -65,7 +65,7 @@
 							: ''
 					} btn  mx-auto justify-self-center`}
 				>
-					<a href={event?.link}>REGISTER</a>
+					<a href={event?.link}>{event?.button_text || 'MARK ATTENDANCE'}</a>
 				</button>
 			{/if}
 		</div>
