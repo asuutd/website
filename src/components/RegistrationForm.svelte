@@ -296,6 +296,22 @@
 						<p class="invisible" id="major_error">{error_msgs.major_error}</p>
 					</div>
 
+					<div class="relative z-0 w-full mb-6 group ">
+						<input
+							type="text"
+							name="minor"
+							class="block py-2.5 px-0 w-full text-xl text-neutral bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer"
+							placeholder=" "
+							bind:value={values.minor}
+						/>
+						<label
+							for="minor"
+							class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8"
+							>Minor</label
+						>
+						<p class="invisible" id="major_error">{error_msgs.minor_error}</p>
+					</div>
+
 					<div class="relative z-0 w-full mb-6 group">
 						<select
 							class="select select-secondary "

@@ -30,9 +30,11 @@ model Dance_Interest {
 }
 
 model Mailing_List {
-  id        BigInt    @id @default(autoincrement())
-  joined_at DateTime? @default(now()) @db.Timestamptz(6)
-  email     String?
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  email      String?   @unique
+  first_name String?
+  last_name  String?
 
   @@map("Mailing List")
 }
@@ -60,7 +62,7 @@ model Volleyball_List {
 }
 
 model events {
-  id             String          @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  id             String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   created_at     DateTime?       @default(now()) @db.Timestamptz(6)
   date           DateTime?       @db.Timestamptz(6)
   num_attendants BigInt?
@@ -72,6 +74,8 @@ model events {
   name           String?
   gray_by        DateTime?       @db.Timestamptz(6)
   importance     Int?            @db.SmallInt
+  button_text    String?         @db.VarChar
+  comments       comments[]
   events_people  events_people[]
 }
 
@@ -80,6 +84,7 @@ model events_people {
   created_at DateTime? @default(now()) @db.Timestamptz(6)
   people_id  String?   @db.Uuid
   event_id   String?   @db.Uuid
+  comments   String?
   events     events?   @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   people     people?   @relation(fields: [people_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -95,6 +100,18 @@ model people {
   phone_number  String?
   email         String?
   class         String?
-  id            String          @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  id            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  minor         String?         @db.VarChar
+  comments      comments?
   events_people events_people[]
+}
+
+model comments {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  event_id   String?   @db.Uuid
+  comment    String?
+  people_id  String?   @unique @db.Uuid
+  events     events?   @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people     people?   @relation(fields: [people_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
