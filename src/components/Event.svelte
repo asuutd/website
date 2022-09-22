@@ -53,20 +53,22 @@
 				<h5 class="bg-gray-400 animate-pulse h-7 w-2/3 mb-2" />
 			{/if}
 			{#if event?.type === 'meeting'}
-				<button type="button" class={`btn-primary  btn  mx-auto justify-self-center`}>
-					<a href={`/forms/${event?.id}`}>{event?.button_text || 'MARK ATTENDANCE'}</a>
-				</button>
+				<a
+					href={`/forms/${event?.id}`}
+					type="button"
+					class={`btn-primary  btn  mx-auto justify-self-center`}
+					>{event?.button_text || 'MARK ATTENDANCE'}</a
+				>
 			{:else}
-				<button
+				<a
+					href={event?.link}
 					type="button"
 					class={`btn-primary ${
 						event?.link === undefined || event?.link === null || event?.link === ''
 							? 'invisible'
 							: ''
-					} btn  mx-auto justify-self-center`}
+					} btn  mx-auto justify-self-center`}>{event?.button_text || 'MARK ATTENDANCE'}</a
 				>
-					<a href={event?.link}>{event?.button_text || 'MARK ATTENDANCE'}</a>
-				</button>
 			{/if}
 		</div>
 	</div>
