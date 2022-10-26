@@ -263,7 +263,7 @@
 
 		<div class="flex gap-10 justify-center pb-4 ">
 			<div>
-				<a href="https://cash.app/$UTDALLASASU/35.00">
+				<a href="https://cash.app/$graceadon/35.00">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" viewBox="0 0 64 64"
 						><g fill-rule="nonzero" fill="#FFF"
 							><path
