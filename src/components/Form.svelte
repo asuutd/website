@@ -8,6 +8,7 @@
 	export let id;
 	let feedback_val = '';
 	let ideas_val = '';
+	let african_night_val = '';
 	let success = false;
 	let anonymous = false;
 
@@ -19,6 +20,7 @@
 		}
 
 		try {
+			console.log(african_night_val);
 			await schema.validate(values, { abortEarly: false });
 
 			await getPersonByNetId(values.netID.toUpperCase());
@@ -49,6 +51,16 @@
 									q1: values.q1,
 									q2: values.q2,
 									q3: values.q3
+								}
+							])
+					  ]
+					: []),
+				...(african_night_val !== ''
+					? [
+							supabase.from('african_night').insert([
+								{
+									...(!anonymous ? { people_id: $personId[0].id } : {}),
+									suggestions: ideas_val
 								}
 							])
 					  ]
@@ -191,7 +203,15 @@
 		<h2 class="text-lg text-secondary font-bold mt-4">Any meeting ideas?</h2>
 		<TextArea bind:value={ideas_val} minRows={4} maxRows={40} placeholder="Comments (optional)" />
 
-		<h2 class="text-lg font-bold text-secondary mt-4">DID YOU ATTEND FALL BALL THIS YEAR?</h2>
+		<h2 class="text-lg text-secondary font-bold mt-4">Suggestions for African Night?</h2>
+		<TextArea
+			bind:value={african_night_val}
+			minRows={4}
+			maxRows={40}
+			placeholder="Comments (optional)"
+		/>
+
+		<!-- <h2 class="text-lg font-bold text-secondary mt-4">DID YOU ATTEND FALL BALL THIS YEAR?</h2>
 
 		<div class="flex justify-between my-4">
 			<div>
@@ -287,7 +307,7 @@
 
 				<TextArea bind:value={values.q3} minRows={4} maxRows={40} placeholder="" />
 			</div>
-		{/if}
+		{/if} -->
 
 		<div class="py-4">
 			<input
