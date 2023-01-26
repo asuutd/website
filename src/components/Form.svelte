@@ -9,6 +9,7 @@
 	let feedback_val = '';
 	let ideas_val = '';
 	let african_night_val = '';
+	let special_sug_val = '';
 	let success = false;
 	let anonymous = false;
 
@@ -43,24 +44,13 @@
 							])
 					  ]
 					: []),
-				...(values.fall_ball_attendance === true
-					? [
-							supabase.from('fallball_questions').insert([
-								{
-									...(!anonymous ? { people_id: $personId[0].id } : {}),
-									q1: values.q1,
-									q2: values.q2,
-									q3: values.q3
-								}
-							])
-					  ]
-					: []),
-				...(african_night_val !== ''
+				...(african_night_val !== '' || special_sug_val !== ''
 					? [
 							supabase.from('african_night').insert([
 								{
 									...(!anonymous ? { people_id: $personId[0].id } : {}),
-									suggestions: ideas_val
+									suggestions: ideas_val,
+									artist_designer: special_sug_val
 								}
 							])
 					  ]
@@ -206,6 +196,14 @@
 		<h2 class="text-lg text-secondary font-bold mt-4">Suggestions for African Night?</h2>
 		<TextArea
 			bind:value={african_night_val}
+			minRows={4}
+			maxRows={40}
+			placeholder="Comments (optional)"
+		/>
+
+		<h2 class="text-lg text-secondary font-bold mt-4">Know any artists or fashion designers?</h2>
+		<TextArea
+			bind:value={special_sug_val}
 			minRows={4}
 			maxRows={40}
 			placeholder="Comments (optional)"
