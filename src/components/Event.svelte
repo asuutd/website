@@ -23,13 +23,7 @@
 <div class="w-80 max-w-xs md:max-w-md flex justify-center {disabled ? 'grayscale' : ''}">
 	<div class="rounded-lg shadow-lg bg-secondary min-w-full max-w-xs md:max-w-md max-h-full">
 		{#if event?.description !== undefined}
-			<div
-				class=""
-				on:touchstart={() => startGIF()}
-				on:mouseenter={() => startGIF()}
-				on:mouseleave={() => stopGIF()}
-				on:click={() => console.log('FUCK OFF')}
-			>
+			<div class="" on:click={() => console.log('FUCK OFF')}>
 				<img
 					class="rounded-t-lg object-fill h-80 w-full"
 					src={!useGIF

@@ -35,14 +35,6 @@
 			class: 'Sophomore'
 		},
 		{
-			image: 'https://ucarecdn.com/e006e704-3fff-44a4-b783-945d3ba039bc/',
-			role: 'EVENT COORDINATOR',
-			id: 'onyedi',
-			name: 'Onyedi Ololo',
-			major: 'BIOMEDICAL ENG.',
-			class: 'Junior'
-		},
-		{
 			image: 'https://ucarecdn.com/29e27694-0780-4bc6-96ed-979e64f8620e/',
 			role: 'TREASURER',
 			id: 'grace',
@@ -51,11 +43,44 @@
 			class: 'Senior'
 		},
 		{
+			image: 'https://ucarecdn.com/e006e704-3fff-44a4-b783-945d3ba039bc/',
+			role: 'EVENT COORDINATOR',
+			id: 'onyedi',
+			name: 'Onyedi Ololo',
+			major: 'BIOMEDICAL ENG.',
+			class: 'Junior'
+		},
+		{
+			image: 'https://ucarecdn.com/d3c4f438-1f34-4a6f-ab90-776981a9b5a7/',
+			role: 'CO-EVENT COORDINATOR',
+			id: 'ellen',
+			name: 'Ellen Elnour',
+			major: '',
+			class: 'Sophomore'
+		},
+		{
+			image: 'https://ucarecdn.com/bac785a7-3453-4449-b251-5f0564aa2d0b/',
+			role: 'CO-EVENT COORDINATOR',
+			id: 'mide',
+			name: 'Ayomide Dairo',
+			major: '',
+			class: 'Freshman'
+		},
+
+		{
 			image: 'https://ucarecdn.com/a9b9926b-c0f7-48db-a067-807eb3b35b00/',
 			role: 'COMMITTEE CHAIR',
 			id: 'chiedza',
 			name: 'Chiedza Dinga',
 			major: 'COMP ENG.',
+			class: 'Sophomore'
+		},
+		{
+			image: 'https://ucarecdn.com/1ec82d4b-ef17-4398-b622-923ade457995/',
+			role: 'HISTORIAN',
+			id: 'tise',
+			name: 'Tise Awobokun',
+			major: 'ITS',
 			class: 'Sophomore'
 		},
 		{
@@ -67,12 +92,28 @@
 			class: 'Sophomore'
 		},
 		{
+			image: 'https://ucarecdn.com/5c98c7cc-0473-4132-9e95-794bda2ce579/',
+			role: 'FRESHMAN AMBASSADOR',
+			id: 'sam',
+			name: 'Sam Gorfe',
+			major: 'COMP. SCI',
+			class: 'Freshman'
+		},
+		{
 			image: 'https://ucarecdn.com/76ad1993-83d6-4d67-b683-eca8f0478215/',
 			role: 'TECHNICAL DIRECTOR',
 			id: 'pelumi',
 			name: 'Pelumi Adegoke',
 			major: 'COMP ENG.',
-			class: 'Sophomore'
+			class: 'Junior'
+		},
+		{
+			image: 'https://ucarecdn.com/5b328543-5397-4842-b983-74cb1c44bd8d/',
+			role: 'SPORTS CHAIR',
+			id: 'aj',
+			name: 'AJ Olaoye',
+			major: 'Neuroscience',
+			class: 'Junior'
 		}
 	];
 </script>
