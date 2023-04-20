@@ -1,4 +1,4 @@
-<script lang="ts">
+<script type="ts">
 	import Menu from '../components/Menu.svelte';
 
 	import { fly } from 'svelte/transition';

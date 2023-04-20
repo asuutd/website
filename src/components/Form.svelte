@@ -12,6 +12,7 @@
 	let special_sug_val = '';
 	let success = false;
 	let anonymous = false;
+	let org = '';
 
 	const submitAttendance = async () => {
 		console.log(values);
@@ -193,7 +194,7 @@
 		<h2 class="text-lg text-secondary font-bold mt-4">Any meeting ideas?</h2>
 		<TextArea bind:value={ideas_val} minRows={4} maxRows={40} placeholder="Comments (optional)" />
 
-		<h2 class="text-lg text-secondary font-bold mt-4">Suggestions for African Night?</h2>
+		<!-- <h2 class="text-lg text-secondary font-bold mt-4">Suggestions for African Night?</h2>
 		<TextArea
 			bind:value={african_night_val}
 			minRows={4}
@@ -207,7 +208,7 @@
 			minRows={4}
 			maxRows={40}
 			placeholder="Comments (optional)"
-		/>
+		/> -->
 
 		<!-- <h2 class="text-lg font-bold text-secondary mt-4">DID YOU ATTEND FALL BALL THIS YEAR?</h2>
 
