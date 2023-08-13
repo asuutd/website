@@ -12,14 +12,14 @@
 <div class="flex flex-col p-2">
 	<h2
 		in:fade={{ delay: 700, duration: 750, easing: circIn }}
-		class="text-3xl font-epilogue font-semibold text-primary m-2 lg:text-center"
+		class="text-3xl  font-semibold text-primary m-2 lg:text-center"
 	>
 		BECOME A PAID MEMBER!
 	</h2>
 
 	<h3
 		in:fade={{ delay: 1300, duration: 750, easing: circIn }}
-		class="text-2xl font-epilogue font-semibold lg:text-center text-secondary mb-5 m-2"
+		class="text-2xl  font-semibold lg:text-center text-secondary mb-5 m-2"
 	>
 		For $35, Perks Include
 	</h3>
@@ -63,7 +63,7 @@
 				</svg>
 			</div>
 			<div
-				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium font-epilogue"
+				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium "
 			>
 				ASU T-Shirts
 			</div>
@@ -120,7 +120,7 @@
 				</svg>
 			</div>
 			<div
-				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium font-epilogue"
+				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium "
 			>
 				Event Discounts
 			</div>
@@ -185,7 +185,7 @@
 				</svg>
 			</div>
 			<div
-				class="w-full justify-self-end self-center col-span-3  text-xl md:text-2xl lg:text-3xl text-base-100 font-medium font-epilogue"
+				class="w-full justify-self-end self-center col-span-3  text-xl md:text-2xl lg:text-3xl text-base-100 font-medium "
 			>
 				<p>Exclusive Events</p>
 			</div>
@@ -249,7 +249,7 @@
 				</svg>
 			</div>
 			<div
-				class="w-full justify-self-center self-center col-span-3  mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium font-epilogue"
+				class="w-full justify-self-center self-center col-span-3  mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium "
 			>
 				ASOROCK Discounts
 			</div>
@@ -257,7 +257,7 @@
 	</div>
 
 	<div in:fly={{ y: 300, delay: 5300, duration: 300, easing: cubicOut }}>
-		<p class="basis-1/2 text-2xl font-epilogue text-center my-4 mr-2">
+		<p class="basis-1/2 text-2xl  text-center my-4 mr-2">
 			<span class="text-primary font-semibold">Pay</span> with
 		</p>
 
@@ -353,14 +353,12 @@
 			</div>
 		</div>
 
-		<div class="text-md font-epilogue text-primary text-center">
+		<div class="text-md  text-primary text-center">
 			*Please include Name and netID in the payment description
 		</div>
 
 		<div class="flex justify-end  ">
-			<div
-				class="font-epilogue border-solid border-2 border-secondary p-1 rounded-md text-secondary"
-			>
+			<div class=" border-solid border-2 border-secondary p-1 rounded-md text-secondary">
 				<a href="/"> Pay Later </a>
 			</div>
 		</div>

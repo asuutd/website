@@ -35,7 +35,7 @@
 	<div class="drawer-content flex flex-col">
 		<div class="">
 			<Navbar {links} />
-			<div class="max-w-screen-2xl mx-auto">
+			<div class="max-w-screen-3xl mx-auto">
 				<div class="min-h-full">
 					<Transition url={$page.url}>
 						<slot />
@@ -193,11 +193,13 @@
 </div>
 
 <style>
+	@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@10..48,200;10..48,300;10..48,400;10..48,500;10..48,600;10..48,700;10..48,800&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
 
 	:global(:root) {
-		font-family: epilogue;
+		font-family: 'Bricolage Grotesque';
 	}
 </style>

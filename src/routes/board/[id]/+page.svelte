@@ -204,7 +204,7 @@
 				</svg>
 			</div>
 			<div
-				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium font-epilogue"
+				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium "
 			>
 				{image.class}
 			</div>
@@ -232,7 +232,7 @@
 				</div>
 
 				<div
-					class="w-full justify-self-center self-center col-span-3 text-lg md:text-xl lg:text-2xl text-base-100 font-medium font-epilogue"
+					class="w-full justify-self-center self-center col-span-3 text-lg md:text-xl lg:text-2xl text-base-100 font-medium "
 				>
 					{image.major}
 				</div>
@@ -249,7 +249,7 @@
 				<p class="text-center font-semibold text-secondary">FUN FACT</p>
 			</div>
 			<div
-				class="w-full text-left justify-self-center self-center col-span-3 mx-4 text-md md:text-lg lg:text-xl text-base-100 font-medium font-epilogue"
+				class="w-full text-left justify-self-center self-center col-span-3 mx-4 text-md md:text-lg lg:text-xl text-base-100 font-medium "
 			>
 				{image.fact}
 			</div>
