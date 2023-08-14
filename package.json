@@ -17,6 +17,7 @@
 		"@fullcalendar/daygrid": "^5.11.2",
 		"@fullcalendar/interaction": "^5.11.2",
 		"@fullcalendar/timegrid": "^5.11.2",
+		"@rollup/plugin-inject": "^5.0.3",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/adapter-cloudflare": "^2.3.2",
 		"@sveltejs/kit": "^1.22.6",
