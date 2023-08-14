@@ -4,7 +4,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"host": "vite dev --host",
-		"build": "prisma generate --data-proxy && vite build",
+		"build": "vite build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"package": "vite package",
 		"preview": "vite preview",
