@@ -1,14 +1,21 @@
 <script context="module">
-	import { object, string, bool, addMethod } from 'yup';
 	import { fly, scale } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 </script>
 
-<script>
+<script lang="ts">
 	let disabled = false;
 	import { page } from '$app/stores';
+	import type { ActionData } from '../$types';
+	import { object, string, bool, addMethod, type InferType } from 'yup';
+
+	export let form: ActionData;
+	console.log(form);
 
 	import { phoneNumberAutoFormat } from '$lib/format';
+
+	import { z } from 'zod';
+	import { enhance } from '$app/forms';
 	let eventAttended = $page.url.searchParams.get('attendance');
 
 	let netID = $page.url.searchParams.get('netID');
@@ -20,6 +27,7 @@
 
 	const netIDRegex = /[a-zA-z]{3}[0-9]{6}/;
 	const phoneRegex = /[0-9]{3}-[0-9]{3}-[0-9]{4}/;
+
 	const schema = object({
 		first_name: string().required('Please enter first name'),
 		last_name: string().required('Please enter last name'),
@@ -41,12 +49,22 @@
 			),
 		phone: string()
 			.required('Phone number is required')
-			.matches(phoneRegex, 'phone number is not valid')
+			.matches(phoneRegex, 'phone number is not valid'),
+		major: string().required('Major is required')
 	});
-	let values = {};
+
+	type FormSchema = InferType<typeof schema>;
+	let values: FormSchema & { mails?: boolean } = {
+		first_name: '',
+		last_name: '',
+		email: '',
+		netID: '',
+		phone: '',
+		major: ''
+	};
 	values.mails = true;
 	let errors = {};
-	let error_msgs = {};
+	let error_msgs: any = {};
 	let im_visible = false;
 
 	const showError = (id, message) => {
@@ -64,7 +82,7 @@
 			console.log(event.target);
 			const formData = new FormData();
 			Object.entries(values).forEach((value) => {
-				formData.append(value[0], value[1]);
+				formData.append(value[0], String(value[1]));
 			});
 			if (eventAttended !== null) {
 				formData.append('attendance', eventAttended);
@@ -119,6 +137,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Register - ASU UTDallas</title>
+	<meta name="description" content="Register and become a member of ASU UTDallas" />
+</svelte:head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
 <div class="md:hero">
@@ -131,17 +154,23 @@
 				<form
 					id="registration "
 					class=" rounded-lg max-w-2xl min-w-full"
-					on:submit|preventDefault={submitHandler}
+					use:enhance={() => {
+						return async ({ result, data }) => {
+							const formData = Object.fromEntries(data);
+							values = formData;
+						};
+					}}
+					method="post"
 				>
 					<div class="relative z-0 w-full mb-6">
 						<input
 							type="text"
 							color="green"
-							name="floating_first_name"
+							name="first_name"
 							on:focus={() => resetErrorField('first_name_error')}
 							id="first_name"
 							class={`input input-lg w-full bg-white ${
-								error_msgs.first_name_error == null
+								form?.first_name_error == null
 									? 'border-gray-300 text-neutral'
 									: 'border-error text-error'
 							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
@@ -149,16 +178,16 @@
 							bind:value={values.first_name}
 						/>
 						<p
-							class={`invisible ${error_msgs.first_name_error != null && 'text-error'}`}
+							class={` ${form?.first_name_error != null ? 'text-error visible' : 'invisible'}`}
 							id="first_name_error"
 						>
-							{error_msgs.first_name_error}
+							{form?.first_name_error}
 						</p>
 					</div>
 					<div class="relative z-0 w-full mb-6" in:fly|global={{ delay: 100, duration: 200 }}>
 						<input
 							type="text"
-							name="floating_last_name"
+							name="last_name"
 							id="last_name"
 							on:focus={() => resetErrorField('last_name_error')}
 							class={`input input-lg bg-white w-full ${
@@ -170,17 +199,17 @@
 							bind:value={values.last_name}
 						/>
 						<p
-							class={`invisible ${error_msgs.last_name_error != null && 'text-error'}`}
+							class={` ${form?.last_name_error != null ? 'text-error visible' : 'invisible'}`}
 							id="last_name_error"
 						>
-							{error_msgs.last_name_error}
+							{form?.last_name_error}
 						</p>
 					</div>
 
 					<div class="relative z-0 w-full mb-4 group">
 						<input
 							type="email"
-							name="floating_email"
+							name="email"
 							on:focus={() => resetErrorField('email_error')}
 							class={`input input-lg bg-white w-full ${
 								error_msgs.email_error == null
@@ -191,10 +220,10 @@
 							bind:value={values.email}
 						/>
 						<p
-							class={`invisible ${error_msgs.email_error != null && 'text-error'}`}
+							class={` ${form?.email_error != null ? 'text-error visible' : 'invisible'}`}
 							id="email_error"
 						>
-							{error_msgs.email_error}
+							{form?.email_error}
 						</p>
 					</div>
 
@@ -212,17 +241,17 @@
 							bind:value={values.netID}
 						/>
 						<p
-							class={`invisible ${error_msgs.netID_error != null && 'text-error'}`}
+							class={` ${form?.netID_error != null ? 'text-error visible' : 'invisible'}`}
 							id="netID_error"
 						>
-							{error_msgs.netID_error}
+							{form?.netID_error}
 						</p>
 					</div>
 
 					<div class="relative z-0 w-full mb-6 group col-span-2">
 						<input
 							type="tel"
-							name="floating_phone"
+							name="phone"
 							id="floating_phone"
 							on:input={onChange}
 							on:focus={() => resetErrorField('phone_error')}
@@ -234,7 +263,7 @@
 							bind:value={values.phone}
 						/>
 						<p
-							class={`invisible ${error_msgs.phone_error != null && 'text-error'}`}
+							class={`invisible ${error_msgs.phone_error != null && 'visible text-error'}`}
 							id="phone_error"
 						>
 							{error_msgs.phone_error}

@@ -2,11 +2,14 @@
 	import Carousel from '../components/Carousel.svelte';
 	import Sponsors from '../components/Sponsors.svelte';
 	import Event from '../components/Event.svelte';
+	import type { PageData } from './$types';
 
-	/** @type {import('./$types').PageData} */
-	export let data;
+	export let data: PageData;
+
+	console.log(data.events);
 
 	import { events as eventsData, getData } from '../stores/eventStore';
+
 	let images = [
 		{ id: 0, name: '1', imgurl: 'https://ucarecdn.com/5c93f76f-7f48-4bb1-a2fd-04ffb40e389b/' },
 		{ id: 1, name: '2', imgurl: 'https://ucarecdn.com/5615b449-ec4f-4bdd-b64d-438bb127d8f7/' },
@@ -56,24 +59,24 @@
 		</div>
 
 		<div class="col-start-3 justify-self-end self-center">
-			<a href="/events" class="p-5  font-medium">See All</a>
+			<a href="/events" class="p-5 font-medium">See All</a>
 		</div>
 	</div>
 
 	<div class="flex overflow-x-auto xl:grid xl:grid-cols-4 snap-x snap-mandatory">
 		{#if !loading}
-			{#each $eventsData as event}
+			{#each data.events as event}
 				<div class="m-2 flex-shrink-0 snap-center" on:blur={() => console.log("Hello I'm pelps")}>
 					<Event
 						{event}
-						disabled={Date.now() > Math.floor(new Date(event?.gray_by).getTime())}
+						disabled={Date.now() > Math.floor(new Date(event?.grayBy).getTime())}
 						{loading}
 					/>
 				</div>
 			{/each}
 		{:else}
 			{#each a as event}
-				<div class="m-2 ">
+				<div class="m-2">
 					<Event
 						{event}
 						disabled={event?.date !== undefined &&
@@ -84,8 +87,4 @@
 			{/each}
 		{/if}
 	</div>
-	<div class="flex ">
-		<h2 class=" text-3xl text-secondary font-black p-5 mx-auto">SPONSOR</h2>
-	</div>
-	<Sponsors {sponsors} />
 </div>

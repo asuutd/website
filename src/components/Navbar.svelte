@@ -17,7 +17,7 @@
 	class="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700"
 >
 	<nav
-		class="relative max-w-7xl w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8"
+		class="relative w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8"
 		aria-label="Global"
 	>
 		<div class="flex items-center justify-between">
@@ -63,7 +63,7 @@
 			class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block"
 		>
 			<div
-				class="p-2 bg-white rounded-md shadow-md flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7"
+				class="p-2 flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7"
 			>
 				{#each links as link}
 					<a

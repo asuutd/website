@@ -1,15 +1,18 @@
 import adapter from '@sveltejs/adapter-cloudflare';
-import preprocess from 'svelte-preprocess';
+import { vitePreprocess } from '@sveltejs/kit/vite';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		alias: {
+			drizzle: './drizzle'
+		}
 
 		// hydrate the <div id="svelte"> element in src/app.html
 	},
 
-	preprocess: preprocess()
+	preprocess: vitePreprocess()
 };
 
 export default config;

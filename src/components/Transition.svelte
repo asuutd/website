@@ -9,13 +9,13 @@
 {#key url}
 	{#if url.pathname === '/pay'}
 		<div
-			in:fly={{ y: 200, duration: 250, delay: 300, easing: expoInOut }}
-			out:fly={{ y: 200, duration: 250, easing: expoOut }}
+			in:fly|global={{ y: 200, duration: 250, delay: 300, easing: expoInOut }}
+			out:fly|global={{ y: 200, duration: 250, easing: expoOut }}
 		>
 			<slot />
 		</div>
 	{:else}
-		<div in:fade={{ duration: 250, delay: 300 }}>
+		<div in:fade|global={{ duration: 250, delay: 300 }}>
 			<slot />
 		</div>
 	{/if}
