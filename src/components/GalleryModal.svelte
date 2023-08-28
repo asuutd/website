@@ -11,7 +11,7 @@
 <button on:click={() => (showModal = true)} class="group relative block rounded-xl overflow-hidden">
 	<div class="aspect-w-12 aspect-h-7 sm:aspect-none rounded-xl overflow-hidden">
 		<img
-			class="h-80 aspect-square group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-xl w-full object-cover"
+			class="aspect-square group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-xl w-full object-cover"
 			src={event.image}
 			alt=":)"
 		/>

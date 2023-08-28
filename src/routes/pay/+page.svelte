@@ -1,7 +1,69 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
+	import { loadStripe } from '@stripe/stripe-js/pure';
 	import { fade, scale, fly } from 'svelte/transition';
 	import { cubicIn, circIn, expoInOut, cubicOut } from 'svelte/easing';
+	import type { PageData } from './$types';
+	import { Elements, PaymentElement } from 'svelte-stripe';
+	import type {
+		Stripe,
+		StripeElement,
+		StripeElements,
+		StripePaymentElementOptions
+	} from '@stripe/stripe-js';
+	import { goto } from '$app/navigation';
+	export let data: PageData;
+	let stripe: Stripe;
+	let elements: StripeElements;
+	let processing = false;
+	let error = null;
+
+	onMount(async () => {
+		stripe = await loadStripe(
+			'pk_test_51LddvJJtrYCcdARGoyP1jXvexlrNvi8L2HnfxtHSPXfqUWn4udQ4sROMrkd4knj0LkiV7XSpPX0NmkB6I0gaZasI00OCkDWj43'
+		);
+		console.log(stripe);
+	});
+
+	async function handleSubmit(e) {
+		console.log('HMMM');
+		const { error } = await stripe.confirmPayment({
+			elements,
+			confirmParams: {
+				// Make sure to change this to your payment completion page
+				return_url: ''
+			}
+		});
+	}
+
+	async function submit() {
+		// avoid processing duplicates
+		if (processing) return;
+
+		processing = true;
+
+		// confirm payment with stripe
+		const result = await stripe.confirmPayment({
+			elements,
+			redirect: 'if_required',
+			confirmParams: {
+				// Make sure to change this to your payment completion page
+				return_url: `${import.meta.env.VITE_PUBLIC_URL}`
+			}
+		});
+
+		// log results, for debugging
+		console.log({ result });
+
+		if (result.error) {
+			// payment failed, notify user
+			error = result.error;
+			processing = false;
+		} else {
+			// payment succeeded, redirect to "thank you" page
+			goto('/');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -133,6 +195,31 @@
 					</a>
 				</div>
 			</div>
+			{#if stripe}
+				<Elements
+					{stripe}
+					clientSecret={data.clientSecret}
+					theme="flat"
+					labels="floating"
+					variables={{ colorPrimary: '#7c4dff' }}
+					rules={{ '.Input': { border: 'solid 1px #0002' } }}
+					bind:elements
+				>
+					<form on:submit|preventDefault={submit}>
+						<PaymentElement />
+
+						<button disabled={processing} class="btn btn-primary">
+							{#if processing}
+								Processing...
+							{:else}
+								Pay
+							{/if}
+						</button>
+					</form>
+				</Elements>
+			{:else}
+				Loading...
+			{/if}
 		</div>
 	</div>
 	<div

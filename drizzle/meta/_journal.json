@@ -1,1 +1,62 @@
-{"version":"5","dialect":"pg","entries":[]}
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1692064043195,
+      "tag": "0000_low_sebastian_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1692064410845,
+      "tag": "0001_dapper_sage",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1692064608775,
+      "tag": "0002_unique_epoch",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1692064633551,
+      "tag": "0003_early_the_initiative",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1692064685645,
+      "tag": "0004_bright_shocker",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1692064702403,
+      "tag": "0005_faithful_terror",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1692067317555,
+      "tag": "0006_new_ben_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1692067690039,
+      "tag": "0007_nosy_omega_flight",
+      "breakpoints": true
+    }
+  ]
+}

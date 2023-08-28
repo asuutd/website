@@ -21,26 +21,26 @@
 </script>
 
 <div class="">
-	<div class="w-72 max-w-xs md:max-w-md flex justify-center {disabled ? 'grayscale' : ''}">
-		<div class="rounded-lg shadow-lg bg-secondary min-w-full max-w-xs md:max-w-md max-h-full">
+	<div class="w-80 max-w-xs md:max-w-md flex justify-center {disabled ? 'grayscale' : ''}">
+		<div
+			class="rounded-lg shadow-lg bg-gradient-to-r from-base-100 to-base-200 min-w-full max-w-xs md:max-w-md max-h-full"
+		>
 			{#if event?.description !== undefined}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div class="" on:click={() => console.log('FUCK OFF')}>
 					<img
-						class="rounded-t-lg object-fill h-80 w-full"
-						src={!useGIF
-							? `${event?.image}`
-							: event?.GIF !== null
-							? `${event?.GIF}`
-							: `${event?.image}`}
+						class="object-cover h-80 w-full mx-auto p-4 rounded-lg"
+						src={event.image}
 						alt="It is what is it is"
 					/>
 				</div>
 			{:else}
 				<div class=" bg-gray-400 h-80 w-80 object-cover object-center rounded-t-lg animate-pulse" />
 			{/if}
-			<div class="p-6 mx-auto">
+			<div class="pt-0 p-6 mx-auto">
 				{#if event?.description !== undefined}
-					<h5 class="text-base-100 text-lg  font-bold mb-2 ">
+					<h5 class="text-base-100 text-lg font-bold mb-2">
 						{event?.description}
 					</h5>
 				{:else}

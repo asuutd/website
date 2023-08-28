@@ -12,9 +12,12 @@
 		{ href: '/register', name: 'JOIN ASU' }
 	];
 
+	export let data: LayoutData;
+
 	import Transition from '../components/Transition.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import type { LayoutData } from './$types';
 
 	const moveSidebar = (href: string) => {
 		console.log('HELLO');

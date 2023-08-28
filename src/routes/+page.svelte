@@ -18,15 +18,6 @@
 		{ id: 4, name: '5', imgurl: 'https://ucarecdn.com/f1bdaffa-341b-423f-9d1f-3b5d7d22f5b2/' }
 	];
 
-	let sponsors = [
-		{
-			id: 0,
-			name: 'Aso Rock',
-			imgurl: 'https://ucarecdn.com/3620a88e-dda2-4f64-b047-f8e4f9f2fcd3/',
-			link: 'https://www.asorockmarket.com/'
-		}
-	];
-
 	const b = getData(4, 'all');
 	let a = new Array(4).fill(null);
 

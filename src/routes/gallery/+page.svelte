@@ -13,7 +13,7 @@
 			{#each new Array(6) as _}
 				<a class="group relative block rounded-xl overflow-hidden" href="#">
 					<div
-						class=" h-80 bg-gray-100 animate-pulse aspect-w-12 aspect-square aspect-h-7 sm:aspect-none rounded-xl overflow-hidden bg-pulse"
+						class=" bg-gray-100 animate-pulse aspect-w-12 aspect-square aspect-h-7 sm:aspect-none rounded-xl overflow-hidden bg-pulse"
 					/>
 				</a>
 			{/each}

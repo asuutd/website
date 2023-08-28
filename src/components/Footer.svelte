@@ -11,9 +11,14 @@
 		const response = await result.json();
 		console.log(response);
 	};
+	import { page } from '$app/stores';
 </script>
 
-<div class="p-4 bg-gradient-to-b from-white to-base-200">
+<div
+	class={`p-4 bg-gradient-to-b ${
+		$page.url.pathname === '/' ? 'from-white to-base-200' : 'base-100'
+	}`}
+>
 	<footer class="mt-auto w-full max-w-[85rem] py-10 px-4 sm:px-6 lg:px-8 mx-auto">
 		<!-- Grid -->
 		<div class="text-center">

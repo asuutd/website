@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "96049fa0-482b-4a35-bdb1-3d2900f00453",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "1277db00-0b96-4bf2-905f-d02a63fbdaa4",
+  "prevId": "c735d869-2cd8-4a56-839b-b655ecb9b263",
   "tables": {
     "account": {
       "name": "account",
@@ -77,10 +77,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "account_userId_users_id_fk": {
-          "name": "account_userId_users_id_fk",
+        "account_userId_user_id_fk": {
+          "name": "account_userId_user_id_fk",
           "tableFrom": "account",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "userId"
           ],
@@ -140,10 +140,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "african_night_people_id_users_id_fk": {
-          "name": "african_night_people_id_users_id_fk",
+        "african_night_people_id_people_id_fk": {
+          "name": "african_night_people_id_people_id_fk",
           "tableFrom": "african_night",
-          "tableTo": "users",
+          "tableTo": "people",
           "columnsFrom": [
             "people_id"
           ],
@@ -261,10 +261,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "comments_people_id_users_id_fk": {
-          "name": "comments_people_id_users_id_fk",
+        "comments_people_id_people_id_fk": {
+          "name": "comments_people_id_people_id_fk",
           "tableFrom": "comments",
-          "tableTo": "users",
+          "tableTo": "people",
           "columnsFrom": [
             "people_id"
           ],
@@ -453,10 +453,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "events_people_people_id_users_id_fk": {
-          "name": "events_people_people_id_users_id_fk",
+        "events_people_people_id_people_id_fk": {
+          "name": "events_people_people_id_people_id_fk",
           "tableFrom": "events_people",
-          "tableTo": "users",
+          "tableTo": "people",
           "columnsFrom": [
             "people_id"
           ],
@@ -520,10 +520,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "fallball_questions_people_id_users_id_fk": {
-          "name": "fallball_questions_people_id_users_id_fk",
+        "fallball_questions_people_id_people_id_fk": {
+          "name": "fallball_questions_people_id_people_id_fk",
           "tableFrom": "fallball_questions",
-          "tableTo": "users",
+          "tableTo": "people",
           "columnsFrom": [
             "people_id"
           ],
@@ -586,97 +586,8 @@
         }
       }
     },
-    "session": {
-      "name": "session",
-      "schema": "",
-      "columns": {
-        "sessionToken": {
-          "name": "sessionToken",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "userId": {
-          "name": "userId",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "expires": {
-          "name": "expires",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "session_userId_users_id_fk": {
-          "name": "session_userId_users_id_fk",
-          "tableFrom": "session",
-          "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "Soccer List": {
-      "name": "Soccer List",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "netID": {
-          "name": "netID",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "phone_number": {
-          "name": "phone_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "users": {
-      "name": "users",
+    "people": {
+      "name": "people",
       "schema": "",
       "columns": {
         "created_at": {
@@ -776,6 +687,201 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "people_netID_key": {
+          "name": "people_netID_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "netID"
+          ]
+        }
+      }
+    },
+    "session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "sessionToken": {
+          "name": "sessionToken",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_userId_user_id_fk": {
+          "name": "session_userId_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Soccer List": {
+      "name": "Soccer List",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "netID": {
+          "name": "netID",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_type": {
+          "name": "user_type",
+          "type": "user_type",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'member'"
+        },
+        "paid_at": {
+          "name": "paid_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "major": {
+          "name": "major",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "netID": {
+          "name": "netID",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "class": {
+          "name": "class",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "minor": {
+          "name": "minor",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emailVerified": {
+          "name": "emailVerified",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_netID_unique": {
+          "name": "user_netID_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "netID"
+          ]
+        },
         "people_netID_key": {
           "name": "people_netID_key",
           "nullsNotDistinct": false,
@@ -918,6 +1024,14 @@
       "values": {
         "totp": "totp",
         "webauthn": "webauthn"
+      }
+    },
+    "user_type": {
+      "name": "user_type",
+      "values": {
+        "member": "member",
+        "paid": "paid",
+        "admin": "admin"
       }
     }
   },

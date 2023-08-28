@@ -11,7 +11,9 @@ import {
 	foreignKey,
 	integer,
 	unique,
-	boolean
+	boolean,
+	pgView,
+	primaryKey
 } from 'drizzle-orm/pg-core';
 
 export const factorType = pgEnum('factor_type', ['totp', 'webauthn']);
@@ -21,7 +23,10 @@ export const codeChallengeMethod = pgEnum('code_challenge_method', ['s256', 'pla
 export const action = pgEnum('action', ['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'ERROR']);
 export const equalityOp = pgEnum('equality_op', ['eq', 'neq', 'lt', 'lte', 'gt', 'gte']);
 
+export const userType = pgEnum('user_type', ['member', 'paid', 'admin']);
+
 import { sql } from 'drizzle-orm';
+import type { AdapterAccount } from '@auth/core/adapters';
 
 export const events = pgTable('events', {
 	id: uuid('id')
@@ -111,14 +116,14 @@ export const eventsPeople = pgTable('events_people', {
 	comments: text('comments')
 });
 
-export const attendanceCount = pgTable('attendance_count', {
+export const attendanceCount = pgView('attendance_count', {
 	eventId: uuid('event_id'),
 	name: text('name'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }),
 	type: text('type'),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	participants: bigint('participants', { mode: 'number' })
-});
+}).existing();
 
 export const mailingList = pgTable(
 	'Mailing List',
@@ -137,20 +142,20 @@ export const mailingList = pgTable(
 	}
 );
 
-export const detailedAttendance = pgTable('detailed_attendance', {
+export const detailedAttendance = pgView('detailed_attendance', {
 	peopleId: uuid('people_id'),
 	firstName: text('first_name'),
 	lastName: text('last_name'),
 	netId: text('netID'),
 	name: text('name')
-});
+}).existing();
 
-export const peopleAttendanceCount = pgTable('people_attendance_count', {
+export const peopleAttendanceCount = pgView('people_attendance_count', {
 	peopleId: uuid('people_id'),
 	name: text('name'),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	eventsAttended: bigint('events_attended', { mode: 'number' })
-});
+}).existing();
 
 export const people = pgTable(
 	'people',
@@ -170,7 +175,36 @@ export const people = pgTable(
 			.primaryKey()
 			.notNull(),
 		minor: varchar('minor'),
-		name: text('name')
+		name: text('name'),
+		emailVerified: timestamp('emailVerified', { mode: 'date' }),
+		image: text('image')
+	},
+	(table) => {
+		return {
+			peopleNetIdKey: unique('people_netID_key').on(table.netId)
+		};
+	}
+);
+
+export const users = pgTable(
+	'user',
+	{
+		createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+		type: userType('user_type').default('member'),
+		paidAt: timestamp('paid_at', { withTimezone: true, mode: 'string' }),
+		major: text('major'),
+		netId: text('netID').unique(),
+		phoneNumber: text('phone_number'),
+		email: text('email').notNull(),
+		class: text('class'),
+		id: uuid('id')
+			.default(sql`uuid_generate_v4()`)
+			.primaryKey()
+			.notNull(),
+		minor: varchar('minor'),
+		name: text('name'),
+		emailVerified: timestamp('emailVerified', { mode: 'date' }),
+		image: text('image')
 	},
 	(table) => {
 		return {
@@ -187,3 +221,45 @@ export const africanNight = pgTable('african_night', {
 	peopleId: uuid('people_id').references(() => people.id),
 	artistDesigner: text('artist_designer')
 });
+
+export const accounts = pgTable(
+	'account',
+	{
+		userId: uuid('userId')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		type: text('type').$type<AdapterAccount['type']>().notNull(),
+		provider: text('provider').notNull(),
+		providerAccountId: text('providerAccountId').notNull(),
+		refresh_token: text('refresh_token'),
+		access_token: text('access_token'),
+		expires_at: integer('expires_at'),
+		token_type: text('token_type'),
+		scope: text('scope'),
+		id_token: text('id_token'),
+		session_state: text('session_state')
+	},
+	(account) => ({
+		compoundKey: primaryKey(account.provider, account.providerAccountId)
+	})
+);
+
+export const sessions = pgTable('session', {
+	sessionToken: text('sessionToken').notNull().primaryKey(),
+	userId: uuid('userId')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	expires: timestamp('expires', { mode: 'date' }).notNull()
+});
+
+export const verificationTokens = pgTable(
+	'verificationToken',
+	{
+		identifier: text('identifier').notNull(),
+		token: text('token').notNull(),
+		expires: timestamp('expires', { mode: 'date' }).notNull()
+	},
+	(vt) => ({
+		compoundKey: primaryKey(vt.identifier, vt.token)
+	})
+);

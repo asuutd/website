@@ -228,8 +228,7 @@
 									<span class="text-primary font-semibold">S</span>tudent
 									<span class="text-primary font-semibold">U</span>nion unites students, staff, and
 									supporters of African heritage to celebrate our diverse backgrounds and discuss
-									our experiences as members of the African diaspora on campus. We create a
-									welcoming community for those away from home.
+									our experiences as members of the African diaspora on campus.
 								</h1>
 							</div>
 						</div>

@@ -4,6 +4,7 @@
 	import { fly } from 'svelte/transition';
 	import { page } from '$app/stores';
 	import Hamburger from '../components/Hamburger.svelte';
+
 	export let open: boolean = false;
 	export const onClick = () => {
 		open = !open;
@@ -65,13 +66,27 @@
 			<div
 				class="p-2 flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7"
 			>
-				{#each links as link}
+				{#each links.filter((link) => link.name !== 'JOIN ASU') as link}
 					<a
 						class={`font-medium  sm:py-6 ${$page.url.pathname === link.href && 'text-primary'}`}
 						href={link.href}
 						aria-current="page">{link.name}</a
 					>
 				{/each}
+
+				{#if $page.data.session?.user}
+					<img
+						class="h-10 w-10 mask mask-squircle"
+						src={$page.data.session.user.image ?? '/images/officers/avatar.png'}
+						alt=""
+					/>
+				{:else}
+					<a
+						class={`font-medium  sm:py-6 ${$page.url.pathname === '/register' && 'text-primary'}`}
+						href={'/register'}
+						aria-current="page">JOIN ASU</a
+					>
+				{/if}
 			</div>
 		</div>
 	</nav>

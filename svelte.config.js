@@ -1,10 +1,12 @@
-import adapter from '@sveltejs/adapter-vercel';
+import adapter from '@chientrm/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/kit/vite';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			nodeCompat: true
+		}),
 		alias: {
 			drizzle: './drizzle'
 		}

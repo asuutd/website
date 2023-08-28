@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "96049fa0-482b-4a35-bdb1-3d2900f00453",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "c930702a-6a69-4ae3-92ad-0a17936d43c0",
+  "prevId": "9e914d68-81ff-4d07-8aac-42b9e09a0a55",
   "tables": {
     "account": {
       "name": "account",
@@ -77,10 +77,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "account_userId_users_id_fk": {
-          "name": "account_userId_users_id_fk",
+        "account_userId_user_id_fk": {
+          "name": "account_userId_user_id_fk",
           "tableFrom": "account",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "userId"
           ],
@@ -140,10 +140,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "african_night_people_id_users_id_fk": {
-          "name": "african_night_people_id_users_id_fk",
+        "african_night_people_id_user_id_fk": {
+          "name": "african_night_people_id_user_id_fk",
           "tableFrom": "african_night",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "people_id"
           ],
@@ -261,10 +261,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "comments_people_id_users_id_fk": {
-          "name": "comments_people_id_users_id_fk",
+        "comments_people_id_user_id_fk": {
+          "name": "comments_people_id_user_id_fk",
           "tableFrom": "comments",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "people_id"
           ],
@@ -453,10 +453,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "events_people_people_id_users_id_fk": {
-          "name": "events_people_people_id_users_id_fk",
+        "events_people_people_id_user_id_fk": {
+          "name": "events_people_people_id_user_id_fk",
           "tableFrom": "events_people",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "people_id"
           ],
@@ -520,10 +520,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "fallball_questions_people_id_users_id_fk": {
-          "name": "fallball_questions_people_id_users_id_fk",
+        "fallball_questions_people_id_user_id_fk": {
+          "name": "fallball_questions_people_id_user_id_fk",
           "tableFrom": "fallball_questions",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "people_id"
           ],
@@ -611,10 +611,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "session_userId_users_id_fk": {
-          "name": "session_userId_users_id_fk",
+        "session_userId_user_id_fk": {
+          "name": "session_userId_user_id_fk",
           "tableFrom": "session",
-          "tableTo": "users",
+          "tableTo": "user",
           "columnsFrom": [
             "userId"
           ],
@@ -675,8 +675,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "users": {
-      "name": "users",
+    "user": {
+      "name": "user",
       "schema": "",
       "columns": {
         "created_at": {
