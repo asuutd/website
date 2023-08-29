@@ -18,7 +18,7 @@
 		"@event-calendar/list": "^2.3.0",
 		"@event-calendar/time-grid": "^2.3.0",
 		"@rollup/plugin-inject": "^5.0.3",
-		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/adapter-auto": "^2.1.0",
 		"@sveltejs/adapter-vercel": "^3.0.3",
 		"@sveltejs/kit": "^1.22.6",
 		"@tsconfig/svelte": "^3.0.0",
