@@ -19,9 +19,7 @@
 	let error = null;
 
 	onMount(async () => {
-		stripe = await loadStripe(
-			'pk_test_51LddvJJtrYCcdARGoyP1jXvexlrNvi8L2HnfxtHSPXfqUWn4udQ4sROMrkd4knj0LkiV7XSpPX0NmkB6I0gaZasI00OCkDWj43'
-		);
+		stripe = await loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 		console.log(stripe);
 	});
 
