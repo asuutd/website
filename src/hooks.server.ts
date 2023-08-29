@@ -1,6 +1,5 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
-import GoogleProvider from '@auth/core/providers/google';
-import { GOOGLE_ClIENT_ID, GOOGLE_ClIENT_SECRET, AUTH_SECRET } from '$env/static/private';
+import { AUTH_SECRET } from '$env/static/private';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { resend } from '$lib/resend';
 import { db } from '$lib/db';
