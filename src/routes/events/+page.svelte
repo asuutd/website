@@ -1,115 +1,53 @@
 <script lang="ts">
-	import FullCalendar, { Draggable } from 'svelte-fullcalendar';
-	import daygridPlugin from '@fullcalendar/daygrid';
-	import timegridPlugin from '@fullcalendar/timegrid';
-	import interactionPlugin from '@fullcalendar/interaction';
-	import { events as eventsData, getData } from '../../stores/eventStore';
+	import { onDestroy, onMount } from 'svelte';
+	import type { PageData } from './$types';
+	import { writable } from 'svelte/store';
+	import { browser } from '$app/environment';
+	let innerWidth = writable(0);
+	let Calendar = null;
+	let TimeGrid = null;
+	let ListView = null;
+	let ec = null;
+	export let data: PageData;
+	onMount(async () => {
+		Calendar = (await import('@event-calendar/core')).default;
+		TimeGrid = (await import('@event-calendar/time-grid')).default;
+		ListView = (await import('@event-calendar/list')).default;
+		console.log(innerWidth);
 
-	let events = $eventsData.map((event) => ({
-		title: event.name,
-		start: event.date
-	}));
-	console.log(events);
-
-	if (events.length === 0) {
-		getData(4, 'all').then(() => {
-			events = $eventsData.map((event) => ({
-				title: event.name,
-				start: event.date,
-				backgroundColor: new Date(event.date) < new Date() ? '#d1d5db' : '#79535C',
-				borderColor: new Date(event.date) < new Date() ? '#d1d5db' : '#79535C'
-			}));
-			options.events = events;
-		});
-	}
-
-	let options = {
-		dateClick: handleDateClick,
-		droppable: false,
-		editable: false,
-		events: events,
-		eventColor: '#79535C',
-		initialView: 'dayGridMonth',
-		plugins: [daygridPlugin, timegridPlugin, interactionPlugin],
-		headerToolbar: {
-			left: 'prev,next today',
-			center: 'title',
-			right: 'dayGridMonth,timeGridWeek,timeGridDay'
-		},
-		height: '100%',
-		weekends: true
-	};
-	let calendarComponentRef;
-
-	function toggleWeekends() {
-		options = { ...options, weekends: !options.weekends };
-	}
-
-	function gotoPast() {
-		let calendarApi = calendarComponentRef.getAPI();
-		calendarApi.gotoDate('2000-01-01'); // call a method on the Calendar object
-	}
-
-	function handleDateClick(event) {
-		/* if (confirm('Would you like to add an event to ' + event.dateStr + ' ?')) {
-			const { events } = options;
-			const calendarEvents = [
-				...events,
-				{
-					title: 'New Event',
-					start: event.date,
-					allDay: event.allDay
+		ec = new Calendar({
+			target: document.getElementById('calendar'),
+			props: {
+				plugins: [TimeGrid, ListView],
+				options: {
+					view: $innerWidth > 1024 ? 'timeGridWeek' : 'listMonth',
+					events: data.data
 				}
-			];
-			options = {
-				...options,
-				events: calendarEvents
-			};
-		} */
-	}
+			}
+		});
+	});
+
+	let plugins = [TimeGrid];
+	let options = {
+		view: 'timeGridWeek',
+		events: [
+			// your list of events
+		]
+	};
+
+	const handleResize = () => {
+		if ($innerWidth >= 1024) {
+			ec?.setOption('view', 'timeGridWeek');
+		} else {
+			ec?.setOption('view', 'listMonth');
+		}
+	};
+
+	innerWidth.subscribe(() => {
+		handleResize();
+	});
 </script>
 
-<svelte:head>
-	<title>ASU Calendar</title>
-</svelte:head>
+<svelte:window bind:innerWidth={$innerWidth} />
 
-<div class="demo-app  ">
-	{#if events.length !== 0}
-		<div class="demo-app-calendar">
-			<FullCalendar bind:this={calendarComponentRef} {options} />
-		</div>
-	{/if}
-</div>
-
-<style>
-	:global(* > *) {
-		padding: 0;
-		margin: 0;
-		box-sizing: border-box;
-	}
-
-	.demo-app {
-		width: 100vw;
-		height: 100vh;
-		padding: 0.5rem;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		font-size: 14px;
-	}
-
-	.demo-app-calendar {
-		width: 100%;
-		flex-grow: 1;
-		margin: 0 auto;
-		max-width: 900px;
-	}
-	:global(.draggable) {
-		color: white;
-		background: #79535c;
-		width: fit-content;
-		padding: 1rem;
-		margin: 1rem;
-		cursor: pointer;
-	}
-</style>
+<div id="calendar" />

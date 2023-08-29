@@ -40,12 +40,10 @@
 			<Navbar {links} />
 			<div class="max-w-screen-3xl mx-auto">
 				<div class="min-h-full">
-					<Transition url={$page.url}>
-						<slot />
-						{#if $page.url.pathname !== '/pay'}
-							<Footer />
-						{/if}
-					</Transition>
+					<slot />
+					{#if $page.url.pathname !== '/pay'}
+						<Footer />
+					{/if}
 				</div>
 			</div>
 		</div>

@@ -1,5 +1,19 @@
-<script>
+<script lang="ts">
 	import { signIn } from '@auth/sveltekit/client';
+
+	let errors: string | null = null;
+	const handleSignIn = async () => {
+		console.log(email);
+		if (!email.match(/@utdallas.edu/)) {
+			errors = 'Must be a UTD email';
+		} else {
+			signIn('resend', {
+				email,
+				callbackUrl: `${import.meta.env.VITE_PUBLIC_URL}/register`
+			});
+		}
+	};
+	let email = '';
 </script>
 
 <!-- Hero -->
@@ -15,20 +29,31 @@
 			<!-- End Title -->
 
 			<!-- Form -->
-			<form>
-				<div
-					class="items-center mx-auto max-w-2xl sm:flex sm:space-x-3 p-3 bg-white border rounded-lg shadow-lg shadow-gray-100 dark:bg-slate-900 dark:border-gray-700 dark:shadow-gray-900/[.2]"
-				>
+
+			<div
+				class="mx-auto max-w-2xl bg-white border rounded-lg shadow-lg shadow-gray-100 dark:bg-slate-900 dark:border-gray-700 dark:shadow-gray-900/[.2] p-3"
+			>
+				<div class="items-center sm:flex sm:space-x-3">
 					<input
 						type="email"
+						bind:value={email}
+						on:focus={() => {
+							errors = null;
+						}}
 						class="input input-lg w-full bg-white input-bordered"
 						placeholder="abc123456@utdallas.edu"
 					/>
 					<div class="pt-2 sm:pt-0 grid sm:block sm:flex-[0_0_auto]">
-						<a class="btn btn-lg btn-primary" href="#"> Register</a>
+						<button class="btn btn-lg btn-primary" on:click={handleSignIn}> Register</button>
 					</div>
 				</div>
-			</form>
+				{#if errors}
+					<div class="text-error font-semibold">
+						{errors}
+					</div>
+				{/if}
+			</div>
+
 			<!-- End Form -->
 
 			<!-- SVG Element -->

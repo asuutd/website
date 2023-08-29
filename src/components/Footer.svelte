@@ -25,7 +25,7 @@
 			<div>
 				<a
 					class="flex-none text-xl font-semibold text-black dark:text-white"
-					href="#"
+					href="/"
 					aria-label="Brand">ASU UTDallas</a
 				>
 			</div>
@@ -33,7 +33,7 @@
 
 			<div class="mt-3">
 				<p class="text-gray-500">
-					We're an organization associated witht he Univeristy of Texas at Dallas
+					We're an organization associated with the Univeristy of Texas at Dallas
 				</p>
 				<p class="text-gray-500">© ASU UTDallas. 2022 . All rights reserved.</p>
 			</div>
