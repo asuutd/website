@@ -20,7 +20,8 @@ export const handle = SvelteKitAuth({
 					html: html({ url, host, email }),
 					text: text({ url, host })
 				});
-			}
+			},
+			maxAge: 24 * 60 * 60
 		}
 	],
 	adapter: DrizzleAdapter(db),
