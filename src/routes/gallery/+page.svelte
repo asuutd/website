@@ -3,6 +3,7 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
+	/*nsos*/
 </script>
 
 <div class="mx-auto flex flex-col items-center">
