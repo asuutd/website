@@ -3,7 +3,11 @@
 // and what to do when importing types
 declare namespace App {
 	// interface Locals {}
-	// interface Platform {}
+	interface Platform {
+		context: {
+			waitUntil(promise: Promise<any>): void;
+		};
+	}
 	// interface PrivateEnv {}
 	// interface PublicEnv {}
 }

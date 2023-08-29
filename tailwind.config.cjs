@@ -1,7 +1,8 @@
 module.exports = {
 	content: [
 		'./src/**/*.{html,js,svelte,ts}',
-		'./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}'
+		'./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}',
+		'./node_modules/preline/dist/*.js'
 	],
 	theme: {
 		extend: {
@@ -36,5 +37,5 @@ module.exports = {
 		]
 	},
 
-	plugins: [require('flowbite/plugin'), require('daisyui')]
+	plugins: [require('flowbite/plugin'), require('daisyui'), require('preline/plugin')]
 };

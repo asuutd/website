@@ -8,13 +8,13 @@
 {#if open}
 	<div class="menu">
 		{#each ['Home', 'Example', 'About', 'Contact'] as link, i}
-			<p transition:fly={{ y: -15, delay: 50 * i }}>
+			<p transition:fly|global={{ y: -15, delay: 50 * i }}>
 				{link}
 			</p>
 		{/each}
 	</div>
 
-	<div class="bar" transition:scale={{ duration: 750, easing: quadOut, opacity: 1 }} />
+	<div class="bar" transition:scale|global={{ duration: 750, easing: quadOut, opacity: 1 }} />
 {/if}
 
 <style>

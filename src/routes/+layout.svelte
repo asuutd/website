@@ -6,15 +6,18 @@
 	let links: { href: string; name: string }[] = [
 		{ href: '/', name: 'Home' },
 		{ href: '/about', name: 'About' },
-		{ href: '/board', name: 'Board' },
+		{ href: '/gallery', name: 'Gallery' },
 		{ href: '/pay', name: 'Pay Dues' },
+
 		{ href: '/register', name: 'JOIN ASU' }
 	];
 
+	export let data: LayoutData;
+
 	import Transition from '../components/Transition.svelte';
 	import { onMount } from 'svelte';
-	import { claim_svg_element } from 'svelte/internal';
 	import { goto } from '$app/navigation';
+	import type { LayoutData } from './$types';
 
 	const moveSidebar = (href: string) => {
 		console.log('HELLO');
@@ -30,26 +33,24 @@
 
 <!-- ... -->
 
-<div class="drawer p-0  mx-auto m-0 drawer-end ">
+<div class="drawer p-0 mx-auto m-0 drawer-end">
 	<input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
 	<div class="drawer-content flex flex-col">
 		<div class="">
 			<Navbar {links} />
-			<div class="max-w-screen-2xl mx-auto">
+			<div class="max-w-screen-3xl mx-auto">
 				<div class="min-h-full">
-					<Transition url={$page.url}>
-						<slot />
-						{#if $page.url.pathname !== '/pay'}
-							<Footer />
-						{/if}
-					</Transition>
+					<slot />
+					{#if $page.url.pathname !== '/pay'}
+						<Footer />
+					{/if}
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="drawer-side">
 		<label for="my-drawer-3" class="drawer-overlay" />
-		<div class="overflow-y-auto h-screen ">
+		<div class="overflow-y-auto h-screen">
 			<div class="w-64 bg-base-100 h-screen justify-center flex-col">
 				<div class="grid grid-rows-4 p-4">
 					{#each links as link}
@@ -69,7 +70,7 @@
 
 				<div />
 				<div class="justify-center flex gap-2">
-					<div class="grid grid-cols-3 ">
+					<div class="grid grid-cols-3">
 						<div>
 							<a href="https://twitter.com/utdallasasu" class="fill-[#00acee]">
 								<xml version="1.0" encoding="UTF-8">
@@ -193,11 +194,13 @@
 </div>
 
 <style>
+	@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@10..48,200;10..48,300;10..48,400;10..48,500;10..48,600;10..48,700;10..48,800&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
 
 	:global(:root) {
-		font-family: epilogue;
+		font-family: 'Bricolage Grotesque';
 	}
 </style>

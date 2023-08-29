@@ -6,7 +6,6 @@
 
 <script>
 	let disabled = false;
-	import { Input, LogoFooter } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 
 	import { phoneNumberAutoFormat } from '$lib/format';
@@ -122,43 +121,33 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<div class="md:hero min-h-screen bg-base-100">
-	<div class="md:hero-content flex-col lg:flex-row-reverse">
-		<div class="text-center lg:text-left">
-			<h1 class="text-5xl font-bold hidden md:block text-primary">Register now!</h1>
-			<p class="py-6 text-2xl hidden md:block">
-				Become part of the ASU family and connect with the African community at UTDallas
-			</p>
-		</div>
-		<div class="card flex-shrink-0 w-full max-w-lg shadow-2xl bg-base-100">
-			<div class="card-body">
+<div class="md:hero">
+	<div class="">
+		<div class="card flex-shrink-0 w-5/6 md:w-full max-w-xl shadow-2xl bg-white mx-auto">
+			<div class="card-body md:p-16">
+				<div class="mx-auto text-5xl pb-3">
+					Join <span class="text-primary font-bold">ASU</span>
+				</div>
 				<form
 					id="registration "
 					class=" rounded-lg max-w-2xl min-w-full"
 					on:submit|preventDefault={submitHandler}
 				>
-					<div class="relative z-0 w-full mb-6 ">
+					<div class="relative z-0 w-full mb-6">
 						<input
 							type="text"
 							color="green"
 							name="floating_first_name"
 							on:focus={() => resetErrorField('first_name_error')}
 							id="first_name"
-							class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+							class={`input input-lg w-full bg-white ${
 								error_msgs.first_name_error == null
 									? 'border-gray-300 text-neutral'
 									: 'border-error text-error'
 							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-							placeholder=" "
+							placeholder="First Name"
 							bind:value={values.first_name}
 						/>
-						<label
-							for="first_name"
-							class={`peer-focus:font-medium absolute text-lg ${
-								error_msgs.first_name_error == null ? 'text-neutral' : 'text-error'
-							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-							>First Name</label
-						>
 						<p
 							class={`invisible ${error_msgs.first_name_error != null && 'text-error'}`}
 							id="first_name_error"
@@ -166,27 +155,20 @@
 							{error_msgs.first_name_error}
 						</p>
 					</div>
-					<div class="relative z-0 w-full mb-6" in:fly={{ delay: 100, duration: 200 }}>
+					<div class="relative z-0 w-full mb-6" in:fly|global={{ delay: 100, duration: 200 }}>
 						<input
 							type="text"
 							name="floating_last_name"
 							id="last_name"
 							on:focus={() => resetErrorField('last_name_error')}
-							class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+							class={`input input-lg bg-white w-full ${
 								error_msgs.last_name_error == null
 									? 'border-gray-300 text-neutral'
 									: 'border-error text-error'
 							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-							placeholder=" "
+							placeholder="Last Name"
 							bind:value={values.last_name}
 						/>
-						<label
-							for="last_name"
-							class={`peer-focus:font-medium absolute text-lg ${
-								error_msgs.last_name_error == null ? 'text-neutral' : 'text-error'
-							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-							>Last Name</label
-						>
 						<p
 							class={`invisible ${error_msgs.last_name_error != null && 'text-error'}`}
 							id="last_name_error"
@@ -200,21 +182,14 @@
 							type="email"
 							name="floating_email"
 							on:focus={() => resetErrorField('email_error')}
-							class={` text-xl block py-2.5 px-0 w-full  bg-transparent border-0 border-b-2 ${
+							class={`input input-lg bg-white w-full ${
 								error_msgs.email_error == null
 									? 'border-gray-300  text-neutral'
 									: 'border-error text-error'
 							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-							placeholder=" "
+							placeholder="Email Address"
 							bind:value={values.email}
 						/>
-						<label
-							for="floating_email"
-							class={`peer-focus:font-medium absolute text-lg ${
-								error_msgs.email_error == null ? 'text-neutral' : 'text-error'
-							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-							>Email Address</label
-						>
 						<p
 							class={`invisible ${error_msgs.email_error != null && 'text-error'}`}
 							id="email_error"
@@ -223,26 +198,19 @@
 						</p>
 					</div>
 
-					<div class="relative z-0  mb-6 group">
+					<div class="relative z-0 mb-6 group">
 						<input
 							type="text"
 							name="netID"
 							on:focus={() => resetErrorField('netID_error')}
-							class={` text-xl block py-2.5 px-0 w-full   bg-transparent border-0 border-b-2 ${
+							class={`input input-lg bg-white w-full ${
 								error_msgs.netID_error == null
 									? 'border-gray-300 text-neutral'
 									: 'border-error text-error'
 							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-							placeholder=" "
+							placeholder="NetID"
 							bind:value={values.netID}
 						/>
-						<label
-							for="netID"
-							class={`peer-focus:font-medium absolute text-lg ${
-								error_msgs.netID_error == null ? 'text-neutral' : 'text-error'
-							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-							>netID</label
-						>
 						<p
 							class={`invisible ${error_msgs.netID_error != null && 'text-error'}`}
 							id="netID_error"
@@ -251,27 +219,20 @@
 						</p>
 					</div>
 
-					<div class="relative z-0 w-full mb-6 group col-span-2 ">
+					<div class="relative z-0 w-full mb-6 group col-span-2">
 						<input
 							type="tel"
 							name="floating_phone"
 							id="floating_phone"
 							on:input={onChange}
 							on:focus={() => resetErrorField('phone_error')}
-							class={` text-xl block py-2.5 px-0 w-full  text-neutral bg-transparent border-0 border-b-2 ${
+							class={` input input-lg bg-white w-full ${
 								error_msgs.phone_error == null ? 'border-gray-300' : 'border-error'
 							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
-							placeholder=" "
+							placeholder="Phone Number"
 							maxlength="12"
 							bind:value={values.phone}
 						/>
-						<label
-							for="floating_phone"
-							class={`peer-focus:font-medium absolute text-lg ${
-								error_msgs.phone_error == null ? 'text-neutral' : 'text-error'
-							} dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8`}
-							>Phone number</label
-						>
 						<p
 							class={`invisible ${error_msgs.phone_error != null && 'text-error'}`}
 							id="phone_error"
@@ -280,41 +241,36 @@
 						</p>
 					</div>
 
-					<div class="relative z-0 w-full mb-6 group ">
+					<div class="relative z-0 w-full mb-6 group">
 						<input
 							type="text"
 							name="major"
-							class="block py-2.5 px-0 w-full text-xl text-neutral bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer"
-							placeholder=" "
+							class={` input input-lg bg-white w-full ${
+								error_msgs.major_error == null ? 'border-gray-300' : 'border-error'
+							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+							placeholder="Major"
 							bind:value={values.major}
 						/>
-						<label
-							for="major"
-							class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8"
-							>Major</label
-						>
+
 						<p class="invisible" id="major_error">{error_msgs.major_error}</p>
 					</div>
 
-					<div class="relative z-0 w-full mb-6 group ">
+					<div class="relative z-0 w-full mb-6 group">
 						<input
 							type="text"
 							name="minor"
-							class="block py-2.5 px-0 w-full text-xl text-neutral bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer"
-							placeholder=" "
+							class={` input input-lg bg-white w-full ${
+								error_msgs.major_error == null ? 'border-gray-300' : 'border-error'
+							}  appearance-none dark:text-neutral dark:border-gray-600 dark:focus:border-neutral focus:outline-none focus:ring-0 focus:border-secondary peer `}
+							placeholder="Minor"
 							bind:value={values.minor}
 						/>
-						<label
-							for="minor"
-							class="peer-focus:font-medium absolute text-lg text-neutral dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-secondary peer-focus:dark:text-neutral peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8"
-							>Minor</label
-						>
 						<p class="invisible" id="major_error">{error_msgs.minor_error}</p>
 					</div>
 
 					<div class="relative z-0 w-full mb-6 group">
 						<select
-							class="select select-secondary "
+							class="select select-secondary"
 							form="registration"
 							bind:value={values.class}
 							id="grid-state"
@@ -370,7 +326,7 @@
 					</div>
 
 					{#if im_visible}
-						<div transition:fly={{ y: 20, duration: 400 }} class="flex justify-between">
+						<div transition:fly|global={{ y: 20, duration: 400 }} class="flex justify-between">
 							<div class="form-control">
 								<label class="cursor-pointer label">
 									<span class="label-text mr-3 text-neutral">Basketball</span>

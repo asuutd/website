@@ -1,13 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { PrismaClient } from '@prisma/client/edge';
-
-const prisma = new PrismaClient({
-	datasources: {
-		db: {
-			url: import.meta.env.VITE_DATABASE_URL
-		}
-	}
-});
 
 export const POST: RequestHandler = async ({ request }) => {
 	const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;

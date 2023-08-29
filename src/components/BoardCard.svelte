@@ -20,7 +20,7 @@
 	<div class="col-span-4  ">
 		<div class="flex flex-col ">
 			<h2
-				class=" my-2 mx-0.5 text-center text-2xl font-semibold md:text-3xl px-2 md:py-4 text-base-100 font-epilogue justify-self-end"
+				class=" my-2 mx-0.5 text-center text-2xl font-semibold md:text-3xl px-2 md:py-4 text-base-100  justify-self-end"
 			>
 				{image.role}
 			</h2>
@@ -34,7 +34,7 @@
 			<div class="self-end ">
 				<a href={`/board/${image.id}`}>
 					<p
-						class="text-base-100 bg-primary pl-2 py-1 pr-2.5 rounded-tl-md rounded-br-md font-epilogue self-center"
+						class="text-base-100 bg-primary pl-2 py-1 pr-2.5 rounded-tl-md rounded-br-md  self-center"
 					>
 						More...
 					</p>
