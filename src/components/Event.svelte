@@ -40,7 +40,7 @@
 			{/if}
 			<div class="pt-0 p-6 mx-auto">
 				{#if event?.description !== undefined}
-					<h5 class="text-base-100 text-lg font-bold mb-2">
+					<h5 class="text-neutral text-lg font-bold mb-2">
 						{event?.description}
 					</h5>
 				{:else}

@@ -11,11 +11,10 @@
 	import { events as eventsData, getData } from '../stores/eventStore';
 
 	let images = [
-		{ id: 0, name: '1', imgurl: 'https://ucarecdn.com/5c93f76f-7f48-4bb1-a2fd-04ffb40e389b/' },
+		{ id: 0, name: '1', imgurl: 'https://ucarecdn.com/f1bdaffa-341b-423f-9d1f-3b5d7d22f5b2/' },
 		{ id: 1, name: '2', imgurl: 'https://ucarecdn.com/5615b449-ec4f-4bdd-b64d-438bb127d8f7/' },
 		{ id: 2, name: '3', imgurl: 'https://ucarecdn.com/e9c22a8e-785f-4640-a7b0-176ca929bcb8/' },
-		{ id: 3, name: '4', imgurl: 'https://ucarecdn.com/5def4651-388e-497c-b0dc-b09ab5573363/' },
-		{ id: 4, name: '5', imgurl: 'https://ucarecdn.com/f1bdaffa-341b-423f-9d1f-3b5d7d22f5b2/' }
+		{ id: 3, name: '4', imgurl: 'https://ucarecdn.com/5def4651-388e-497c-b0dc-b09ab5573363/' }
 	];
 
 	const b = getData(4, 'all');

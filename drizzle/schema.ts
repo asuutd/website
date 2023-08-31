@@ -13,7 +13,8 @@ import {
 	unique,
 	boolean,
 	pgView,
-	primaryKey
+	primaryKey,
+	serial
 } from 'drizzle-orm/pg-core';
 
 export const factorType = pgEnum('factor_type', ['totp', 'webauthn']);
@@ -51,15 +52,17 @@ export const events = pgTable('events', {
 export const fallballQuestions = pgTable('fallball_questions', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	q1: integer('q1'),
 	q2: text('q2'),
 	q3: text('q3'),
-	peopleId: uuid('people_id').references(() => people.id)
+	peopleId: uuid('people_id').references(() => users.id)
 });
 
 export const soccerList = pgTable('Soccer List', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	name: text('name'),
 	netId: text('netID'),
@@ -70,6 +73,7 @@ export const soccerList = pgTable('Soccer List', {
 export const basketballList = pgTable('Basketball List', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	name: text('name'),
 	netId: text('netID'),
@@ -80,6 +84,7 @@ export const basketballList = pgTable('Basketball List', {
 export const volleyballList = pgTable('Volleyball List', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	name: text('name'),
 	netId: text('netID'),
@@ -90,16 +95,18 @@ export const volleyballList = pgTable('Volleyball List', {
 export const comments = pgTable('comments', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	eventId: uuid('event_id').references(() => events.id),
 	meetingFeedback: text('meeting_feedback'),
-	peopleId: uuid('people_id').references(() => people.id),
+	peopleId: uuid('people_id').references(() => users.id),
 	meetingIdeas: text('meeting_ideas')
 });
 
 export const danceInterest = pgTable('Dance Interest', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	name: text('name'),
 	netId: text('netID'),
@@ -110,8 +117,9 @@ export const danceInterest = pgTable('Dance Interest', {
 export const eventsPeople = pgTable('events_people', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-	peopleId: uuid('people_id').references(() => people.id),
+	peopleId: uuid('people_id').references(() => users.id),
 	eventId: uuid('event_id').references(() => events.id),
 	comments: text('comments')
 });
@@ -130,6 +138,7 @@ export const mailingList = pgTable(
 	{
 		// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 		id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+		serial: serial('serial'),
 		createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 		email: text('email'),
 		firstName: text('first_name'),
@@ -190,6 +199,7 @@ export const users = pgTable(
 	'user',
 	{
 		createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+		updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 		type: userType('user_type').default('member'),
 		paidAt: timestamp('paid_at', { withTimezone: true, mode: 'string' }),
 		major: text('major'),
@@ -216,9 +226,10 @@ export const users = pgTable(
 export const africanNight = pgTable('african_night', {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint('id', { mode: 'number' }).primaryKey().notNull(),
+	serial: serial('serial'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	suggestions: text('suggestions'),
-	peopleId: uuid('people_id').references(() => people.id),
+	peopleId: uuid('people_id').references(() => users.id),
 	artistDesigner: text('artist_designer')
 });
 

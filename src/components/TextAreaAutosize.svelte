@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
 	export let value = '';
 	export let minRows = 1;
-	export let maxRows;
-	export let placeholder;
+	export let maxRows: number;
+	export let placeholder: string;
+	export let name: string;
 
 	$: minHeight = `${1 + minRows * 1.2}em`;
 	$: maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
@@ -13,8 +14,9 @@
 			'\n'}</pre>
 
 	<textarea
-		class="textarea textarea-secondary border-neutral w-full p-2  focus:border-secondary focus:ring-secondary "
+		class="textarea textarea-secondary border-neutral w-full p-2 focus:border-secondary focus:ring-secondary"
 		bind:value
+		{name}
 		{placeholder}
 	/>
 </div>
