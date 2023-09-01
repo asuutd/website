@@ -56,7 +56,7 @@
 <div class="flex justify-center items-center">
 	<div>
 		<form class="my-6 w-96" on:submit|preventDefault={submitAttendance}>
-			<div class="relative z-0 w-full mb-6 ">
+			<div class="relative z-0 w-full mb-6">
 				<input
 					type="email"
 					color="green"

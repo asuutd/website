@@ -4,7 +4,6 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { string, object, boolean } from 'yup';
 	import { personId, getPersonByNetId } from '../stores/personStore';
-	import { claim_svg_element } from 'svelte/internal';
 	export let id;
 	let feedback_val = '';
 	let ideas_val = '';
@@ -137,11 +136,8 @@
 </script>
 
 <div class="flex justify-center items-center">
-	<form
-		class="my-6 w-72 md:w-96 justify-center flex flex-col"
-		on:submit|preventDefault={submitAttendance}
-	>
-		<div class="relative z-0 w-full mb-6 ">
+	<form class="my-6 w-72 md:w-96 justify-center flex flex-col" method="post">
+		<div class="relative z-0 w-full mb-6">
 			<input
 				type="text"
 				placeholder="netID"
@@ -183,7 +179,7 @@
 				{`${msgs.netID_message}`}
 			</p>
 		</div>
-		<h2 class="text-lg text-secondary font-bold ">How can we improve?</h2>
+		<h2 class="text-lg text-secondary font-bold">How can we improve?</h2>
 		<TextArea
 			bind:value={feedback_val}
 			minRows={4}
@@ -193,120 +189,6 @@
 
 		<h2 class="text-lg text-secondary font-bold mt-4">Any meeting ideas?</h2>
 		<TextArea bind:value={ideas_val} minRows={4} maxRows={40} placeholder="Comments (optional)" />
-
-		<!-- <h2 class="text-lg text-secondary font-bold mt-4">Suggestions for African Night?</h2>
-		<TextArea
-			bind:value={african_night_val}
-			minRows={4}
-			maxRows={40}
-			placeholder="Comments (optional)"
-		/>
-
-		<h2 class="text-lg text-secondary font-bold mt-4">Know any artists or fashion designers?</h2>
-		<TextArea
-			bind:value={special_sug_val}
-			minRows={4}
-			maxRows={40}
-			placeholder="Comments (optional)"
-		/> -->
-
-		<!-- <h2 class="text-lg font-bold text-secondary mt-4">DID YOU ATTEND FALL BALL THIS YEAR?</h2>
-
-		<div class="flex justify-between my-4">
-			<div>
-				<input
-					type="radio"
-					name="radio-1"
-					class="radio"
-					id="jjk"
-					checked
-					bind:group={values.fall_ball_attendance}
-					value={true}
-				/>
-				<label for="jjk">YES</label>
-			</div>
-
-			<div>
-				<input
-					type="radio"
-					name="radio-1"
-					class="radio"
-					id="jjk"
-					checked
-					bind:group={values.fall_ball_attendance}
-					value={false}
-				/>
-				<label for="jjk">NO</label>
-			</div>
-		</div>
-		{#if values.fall_ball_attendance}
-			<div>
-				<h2 class="text-lg font-bold text-secondary mt-4">HOW DID YOU FEEL ABOUT IT?</h2>
-				<div class="flex justify-between my-4">
-					<p>1 (Dislike)</p>
-					<p>5 (Love)</p>
-				</div>
-
-				<div class="flex justify-between mb-4">
-					<input
-						type="radio"
-						name="q1"
-						class="radio"
-						checked
-						bind:group={values.q1}
-						value={1}
-						on:focus={() => resetField('q1_message')}
-					/>
-					<input
-						type="radio"
-						name="q1"
-						class="radio"
-						bind:group={values.q1}
-						value={2}
-						on:focus={() => resetField('q1_message')}
-					/>
-					<input
-						type="radio"
-						name="q1"
-						class="radio"
-						bind:group={values.q1}
-						value={3}
-						on:focus={() => resetField('q1_message')}
-					/>
-					<input
-						type="radio"
-						name="q1"
-						class="radio"
-						bind:group={values.q1}
-						value={4}
-						on:focus={() => resetField('q1_message')}
-					/>
-					<input
-						type="radio"
-						name="q1"
-						class="radio"
-						bind:group={values.q1}
-						value={5}
-						on:focus={() => resetField('q1_message')}
-					/>
-				</div>
-				<p class={`invisible text-error`} id="q1_message">
-					{`${msgs.q1_message}`}
-				</p>
-			</div>
-
-			<div>
-				<h2 class="text-lg font-bold text-secondary my-4">WHAT WAS YOUR FAVORITE THING?</h2>
-
-				<TextArea bind:value={values.q2} minRows={4} maxRows={40} placeholder="" />
-			</div>
-
-			<div>
-				<h2 class="text-lg font-bold text-secondary my-4">WHAT WAS YOUR LEAST FAVORITE THING?</h2>
-
-				<TextArea bind:value={values.q3} minRows={4} maxRows={40} placeholder="" />
-			</div>
-		{/if} -->
 
 		<div class="py-4">
 			<input
@@ -319,12 +201,11 @@
 				>Send feedback anonymously</label
 			>
 		</div>
-		<div class="">
-			<button
-				type="submit"
-				class="btn btn-primary mt-6 focus:ring-secondary focus:outline-none focus:ring-0"
-				>SUBMIT</button
-			>
-		</div>
+
+		<button
+			type="submit"
+			class="btn btn-primary mt-6 focus:ring-secondary focus:outline-none focus:ring-0"
+			>SUBMIT</button
+		>
 	</form>
 </div>

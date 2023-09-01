@@ -9,7 +9,7 @@
 	$: currentImage = images[currentIndex];
 
 	setInterval(() => {
-		currentIndex = (currentIndex + 1) % 5;
+		currentIndex = (currentIndex + 1) % images.length;
 	}, 3000);
 </script>
 

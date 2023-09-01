@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { writable } from 'svelte/store';
+
+	let currentTab = writable(1);
 	function handleAnchorClick(
 		event: MouseEvent & {
 			currentTarget: EventTarget & HTMLAnchorElement;
@@ -77,6 +80,10 @@
 			image: '/images/officers/pelumi.jpeg'
 		}
 	];
+
+	currentTab.subscribe((val) => {
+		console.log(val);
+	});
 </script>
 
 <!-- Features -->
@@ -94,11 +101,16 @@
 				<nav class="grid gap-4 mt-5 md:mt-10" aria-label="Tabs" role="tablist">
 					<button
 						type="button"
-						class="max-w-xs hs-tab-active:bg-base-100 hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active"
+						class={`${
+							$currentTab == 1 ? 'bg-base-100 shadow-md hover:border-transparent' : ''
+						} max-w-xs  text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active`}
 						id="tabs-with-card-item-1"
 						data-hs-tab="#tabs-with-card-1"
 						aria-controls="tabs-with-card-1"
 						role="tab"
+						on:click={() => {
+							currentTab.set(1);
+						}}
 					>
 						<span class="flex">
 							<svg
@@ -124,11 +136,16 @@
 
 					<button
 						type="button"
-						class="max-w-xs hs-tab-active:bg-base-100 hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700"
+						class={`${
+							$currentTab == 2 ? 'bg-base-100 shadow-md hover:border-transparent' : ''
+						} max-w-xs  text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active`}
 						id="tabs-with-card-item-2"
 						data-hs-tab="#tabs-with-card-2"
 						aria-controls="tabs-with-card-2"
 						role="tab"
+						on:click={() => {
+							currentTab.set(2);
+						}}
 					>
 						<span class="flex">
 							<svg
@@ -153,11 +170,16 @@
 
 					<button
 						type="button"
-						class="max-w-xs hs-tab-active:bg-base-100 hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700"
+						class={`${
+							$currentTab == 3 ? 'bg-base-100 shadow-md hover:border-transparent' : ''
+						} max-w-xs  text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active`}
 						id="tabs-with-card-item-3"
 						data-hs-tab="#tabs-with-card-3"
 						aria-controls="tabs-with-card-3"
 						role="tab"
+						on:click={() => {
+							currentTab.set(3);
+						}}
 					>
 						<span class="flex">
 							<svg
@@ -221,165 +243,166 @@
 				<div class="relative">
 					<!-- Tab Content -->
 					<div>
-						<div id="tabs-with-card-1" role="tabpanel" aria-labelledby="tabs-with-card-item-1">
-							<div class="h-[45rem] bg-white rounded-xl my-auto flex">
-								<h1 class="m-auto text-3xl mx-10">
-									The UTD <span class="text-primary font-semibold">A</span>frican
-									<span class="text-primary font-semibold">S</span>tudent
-									<span class="text-primary font-semibold">U</span>nion unites students, staff, and
-									supporters of African heritage to celebrate our diverse backgrounds and discuss
-									our experiences as members of the African diaspora on campus.
-								</h1>
-							</div>
-						</div>
-
-						<div
-							id="tabs-with-card-2"
-							class="hidden"
-							role="tabpanel"
-							aria-labelledby="tabs-with-card-item-2"
-						>
-							<div class="h-[45rem] bg-white rounded-xl my-auto flex overflow-y-auto">
-								<h1 class="m-auto text-xl md:text-3xl mx-10">
-									As we wish to be more involved in the community and to have a greater connection
-									between our students and our surrounding areas, we would like to involve you
-									through our journey. Events, such as our annual Fall Ball and African Night, are
-									ways for a greater reach and as we expand, we ask you to provide services that
-									would benefit both of us and allow your name to reach your targeted audiences.
-								</h1>
-							</div>
-						</div>
-
-						<div
-							id="tabs-with-card-3"
-							class="hidden"
-							role="tabpanel"
-							aria-labelledby="tabs-with-card-item-3"
-						>
-							<div
-								class="max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto h-[45rem] overflow-y-auto"
-							>
-								<!-- Grid -->
-								<div class="grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-									<!-- Card -->
-									<div
-										class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
-									>
-										<div class="p-4 md:p-5">
-											<div class="flex">
-												<div class="grow ml-5">
-													<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
-														To encourage
-													</h3>
-													<p class="text-sm text-gray-500">
-														unity and collaboration between African and non-African students at the
-														University of Texas at Dallas
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<!-- End Card -->
-
-									<!-- Card -->
-									<div
-										class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
-									>
-										<div class="p-4 md:p-5">
-											<div class="flex">
-												<div class="grow ml-5">
-													<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
-														To welcome
-													</h3>
-													<p class="text-sm text-gray-500">
-														African and non-African students to The University of Texas at Dallas
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<!-- End Card -->
-
-									<!-- Card -->
-									<div
-										class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
-									>
-										<div class="p-4 md:p-5">
-											<div class="flex">
-												<div class="grow ml-5">
-													<h3 class=" font-semibold text-gray-800 dark:text-gray-200">To host</h3>
-													<p class="text-sm text-gray-500">
-														African awareness events and engage all students at the University of
-														Texas at Dallas so that they may learn African cultures and traditions
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									<!-- End Card -->
-
-									<!-- Card -->
-									<div
-										class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
-									>
-										<div class="p-4 md:p-5">
-											<div class="flex">
-												<div class="grow ml-5">
-													<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
-														To support
-													</h3>
-													<p class="text-sm text-gray-500">
-														the beliefs and standards for which The University of Texas at Dallas
-														stands for
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<!-- End Card -->
-									<!-- Card -->
-									<div
-										class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
-									>
-										<div class="p-4 md:p-5">
-											<div class="flex">
-												<div class="grow ml-5">
-													<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
-														To educate
-													</h3>
-													<p class="text-sm text-gray-500">
-														Africa to the interested person(s) including faculty and staff members
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<!-- End Card -->
-									<!-- Card -->
-									<div
-										class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
-									>
-										<div class="p-4 md:p-5">
-											<div class="flex">
-												<div class="grow ml-5">
-													<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
-														To recruit
-													</h3>
-													<p class="text-sm text-gray-500">
-														members in order to create a community of people interested in learning
-														about African countries& culture
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<!-- End Card -->
+						{#if $currentTab == 1}
+							<div id="tabs-with-card-1" role="tabpanel" aria-labelledby="tabs-with-card-item-1">
+								<div class="h-[45rem] bg-white rounded-xl my-auto flex">
+									<h1 class="m-auto text-3xl mx-10">
+										The UTD <span class="text-primary font-semibold">A</span>frican
+										<span class="text-primary font-semibold">S</span>tudent
+										<span class="text-primary font-semibold">U</span>nion unites students, staff,
+										and supporters of African heritage to celebrate our diverse backgrounds and
+										discuss our experiences as members of the African diaspora on campus.
+									</h1>
 								</div>
-								<!-- End Grid -->
 							</div>
-							<!-- End Card Section -->
-						</div>
+						{/if}
+
+						{#if $currentTab == 2}
+							<div
+								id="tabs-with-card-2"
+								class=""
+								role="tabpanel"
+								aria-labelledby="tabs-with-card-item-2"
+							>
+								<div class="h-[45rem] bg-white rounded-xl my-auto flex overflow-y-auto">
+									<h1 class="m-auto text-xl md:text-3xl mx-10">
+										As we wish to be more involved in the community and to have a greater connection
+										between our students and our surrounding areas, we would like to involve you
+										through our journey. Events, such as our annual Fall Ball and African Night, are
+										ways for a greater reach and as we expand, we ask you to provide services that
+										would benefit both of us and allow your name to reach your targeted audiences.
+									</h1>
+								</div>
+							</div>
+						{/if}
+
+						{#if $currentTab == 3}
+							<div id="tabs-with-card-3" role="tabpanel" aria-labelledby="tabs-with-card-item-3">
+								<div
+									class="max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto h-[45rem] overflow-y-auto"
+								>
+									<!-- Grid -->
+									<div class="grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+										<!-- Card -->
+										<div
+											class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
+										>
+											<div class="p-4 md:p-5">
+												<div class="flex">
+													<div class="grow ml-5">
+														<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
+															To encourage
+														</h3>
+														<p class="text-sm text-gray-500">
+															unity and collaboration between African and non-African students at
+															the University of Texas at Dallas
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- End Card -->
+
+										<!-- Card -->
+										<div
+											class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
+										>
+											<div class="p-4 md:p-5">
+												<div class="flex">
+													<div class="grow ml-5">
+														<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
+															To welcome
+														</h3>
+														<p class="text-sm text-gray-500">
+															African and non-African students to The University of Texas at Dallas
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- End Card -->
+
+										<!-- Card -->
+										<div
+											class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
+										>
+											<div class="p-4 md:p-5">
+												<div class="flex">
+													<div class="grow ml-5">
+														<h3 class=" font-semibold text-gray-800 dark:text-gray-200">To host</h3>
+														<p class="text-sm text-gray-500">
+															African awareness events and engage all students at the University of
+															Texas at Dallas so that they may learn African cultures and traditions
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<!-- End Card -->
+
+										<!-- Card -->
+										<div
+											class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
+										>
+											<div class="p-4 md:p-5">
+												<div class="flex">
+													<div class="grow ml-5">
+														<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
+															To support
+														</h3>
+														<p class="text-sm text-gray-500">
+															the beliefs and standards for which The University of Texas at Dallas
+															stands for
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- End Card -->
+										<!-- Card -->
+										<div
+											class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
+										>
+											<div class="p-4 md:p-5">
+												<div class="flex">
+													<div class="grow ml-5">
+														<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
+															To educate
+														</h3>
+														<p class="text-sm text-gray-500">
+															Africa to the interested person(s) including faculty and staff members
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- End Card -->
+										<!-- Card -->
+										<div
+											class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800"
+										>
+											<div class="p-4 md:p-5">
+												<div class="flex">
+													<div class="grow ml-5">
+														<h3 class=" font-semibold text-gray-800 dark:text-gray-200">
+															To recruit
+														</h3>
+														<p class="text-sm text-gray-500">
+															members in order to create a community of people interested in
+															learning about African countries& culture
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- End Card -->
+									</div>
+									<!-- End Grid -->
+								</div>
+								<!-- End Card Section -->
+							</div>
+						{/if}
 					</div>
 					<!-- End Tab Content -->
 
