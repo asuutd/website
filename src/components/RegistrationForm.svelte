@@ -85,7 +85,7 @@
 					}
 				}
 			} else {
-				goto('/pay');
+				goto(`/pay`);
 			}
 			disabled = false;
 			//alert(JSON.stringify(values, null, 2));

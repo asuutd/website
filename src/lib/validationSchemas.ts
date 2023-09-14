@@ -24,10 +24,7 @@ export const zodSchema = z.object({
 			},
 			{ message: 'netIDs follow the format abc123456' }
 		),
-	phone: z
-		.string()
-		.min(1, 'Phone number is required')
-		.regex(phoneRegex, 'phone number is not valid'),
+	phone: z.string().min(1, 'Phone number is required'),
 	major: z.string(),
 	minor: z.string().optional(),
 	newsletters: z.boolean(),

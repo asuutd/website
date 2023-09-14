@@ -16,7 +16,7 @@ export const actions: Actions = {
 		const eventId = params.id;
 
 		const person = await db.select().from(users).where(eq(users.netId, netID.toUpperCase()));
-		console.log(person);
+		console.log('PERSON', person);
 		/* const promises = [
 			db.insert(eventsPeople).values({
 				eventId,
@@ -35,7 +35,7 @@ export const actions: Actions = {
 		]; */
 
 		try {
-			if (person) {
+			if (person.length > 0) {
 				const promises = [
 					supabase.from('events_people').insert([
 						{
@@ -57,14 +57,18 @@ export const actions: Actions = {
 						: [])
 				];
 				await Promise.all(promises);
-				console.log((await promises[0]).data);
 			}
 
 			const url = new URL(`${VITE_PUBLIC_URL}/register`);
 			url.searchParams.set('attendance', eventId);
 			url.searchParams.set('netID', netID);
-			throw redirect(303, url.pathname);
+			console.log(new Date(person[0].updatedAt), new Date('2023-09-01T01:40:40.091+00'));
+			if (new Date(person[0].updatedAt) < new Date('2023-09-01T01:40:40.091+00')) {
+				throw redirect(303, url.pathname);
+			}
+			throw redirect(303, '/');
 		} catch (err) {
+			console.log('Error', err.message);
 			if (err.message === 'You are not registered') {
 				const url = new URL(`${VITE_PUBLIC_URL}/register`);
 				url.searchParams.set('attendance', eventId);
