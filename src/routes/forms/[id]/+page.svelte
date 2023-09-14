@@ -75,7 +75,12 @@
 					const url = new URL(`${import.meta.env.VITE_PUBLIC_URL}/register`);
 					url.searchParams.set('attendance', id);
 					url.searchParams.set('netID', values.netID);
-					goto(`/register?attendance=${id}&netID=${values.netID}`);
+					console.log();
+					if (new Date($personId[0].updated_at) < new Date('2023-09-01T01:40:40.091+00')) {
+						goto(`/register?attendance=${id}&netID=${values.netID}`);
+					} else {
+						goto('/');
+					}
 				}, 450);
 			}
 			//console.log(data);

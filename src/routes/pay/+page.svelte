@@ -101,7 +101,7 @@
 				in:fly|global={{ y: 300, delay: 5300, duration: 300, easing: cubicOut }}
 			>
 				<div>
-					<a href="https://cash.app/$EllenElnour/20.00">
+					<a href="https://cash.app/$EllenElnour/25.00">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							class="h-16 w-16 rounded-full"
@@ -120,7 +120,7 @@
 				</div>
 				<div>
 					<a
-						href="https://venmo.com/?txn=pay&audience=private&recipients=utdasu&amount=20.00&note=Paid%20membership%202022"
+						href="https://venmo.com/?txn=pay&audience=private&recipients=utdasu&amount=25.00&note=Paid%20membership%202023"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
