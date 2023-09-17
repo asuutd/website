@@ -3,7 +3,7 @@
 	"globalDependencies": ["**/.env"],
 	"pipeline": {
 		"build": {
-			"outputs": [".svelte-kit/**"],
+			"outputs": [".svelte-kit/**", ".vercel/**"],
 			"dependsOn": ["^build"]
 		},
 		"lint": {},
