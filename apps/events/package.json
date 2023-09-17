@@ -6,7 +6,7 @@
 		"build": "next build",
 		"dev": "next dev",
 		"db:generate": "prisma generate",
-		"postinstall": "npm_config_unsafe_perm=true prisma generate",
+		"postinstall": "npm_config_unsafe_perm=true echo '$PWD'",
 		"lint": "next lint",
 		"start": "next start"
 	},
