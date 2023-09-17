@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Menu from '../components/Menu.svelte';
+	import Menu from './Menu.svelte';
 
 	import { fly } from 'svelte/transition';
 	import { page } from '$app/stores';
-	import Hamburger from '../components/Hamburger.svelte';
+	import Hamburger from './Hamburger.svelte';
 	import { signOut } from '@auth/sveltekit/client';
 
 	export let open: boolean = false;
