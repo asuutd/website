@@ -107,7 +107,7 @@ const ValidatePage: NextPage = () => {
 						width="122.879px"
 						height="122.879px"
 						viewBox="0 0 122.879 122.879"
-						enable-background="new 0 0 122.879 122.879"
+						enableBackground="new 0 0 122.879 122.879"
 						xmlSpace="preserve"
 						className="w-5 h-5"
 					>
