@@ -1,24 +1,24 @@
 {
-	"name": "asu",
-	"version": "0.0.1",
-	"engines": {
-		"node": ">=v18.12.0"
-	},
-	"packageManager": "pnpm@8.1.1",
-	"scripts": {
-		"build": "turbo run build",
-		"clean": "git clean -xdf node_modules",
-		"clean:workspaces": "turbo clean",
-		"dev": "turbo run dev",
-		"format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore",
-		"lint": "turbo lint && manypkg check",
-		"lint:fix": "turbo lint:fix && manypkg fix",
-		"type-check": "turbo type-check"
-	},
-	"devDependencies": {
-		"eslint": "^8.0.0",
-		"prettier": "^2.7.1",
-		"prettier-plugin-svelte": "^2.7.0",
-		"turbo": "1.9.1"
-	}
+  "name": "asu",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=v18.12.0"
+  },
+  "packageManager": "pnpm@7.22.0",
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo clean",
+    "dev": "turbo run dev",
+    "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore",
+    "lint": "turbo lint && manypkg check",
+    "lint:fix": "turbo lint:fix && manypkg fix",
+    "type-check": "turbo type-check"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^2.7.1",
+    "prettier-plugin-svelte": "^2.7.0",
+    "turbo": "1.9.1"
+  }
 }
