@@ -1,0 +1,32 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["**/.env"],
+	"pipeline": {
+		"build": {
+			"outputs": [".svelte-kit/**", ".vercel/**"],
+			"dependsOn": ["^build"]
+		},
+		"lint": {},
+		"dev": {
+			"persistent": true,
+			"cache": false
+		},
+		"clean": {
+			"cache": false
+		}
+	},
+	"globalEnv": [
+		"VITE_PUBLIC_SUPABASE_URL",
+		"VITE_PUBLIC_SUPABASE_ANON_KEY",
+		"VITE_DATABASE_URL",
+		"VITE_MAILCHAMP_API_KEY",
+		"VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+		"VITE_PUBLIC_URL",
+		"DB_URL",
+		"AUTH_SECRET",
+		"RESEND_API_KEY",
+		"STRIPE_SECRET_KEY",
+		"CALENDAR_API_KEY",
+		"CALENDAR_ID"
+	]
+}

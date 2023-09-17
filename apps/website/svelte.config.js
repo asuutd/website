@@ -4,11 +4,12 @@ import { vitePreprocess } from '@sveltejs/kit/vite';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
-		adapter: adapter({
-			nodeCompat: true
-		}),
+		adapter: adapter(),
 		alias: {
 			drizzle: './drizzle'
+		},
+		env: {
+			dir: '../..'
 		}
 
 		// hydrate the <div id="svelte"> element in src/app.html
