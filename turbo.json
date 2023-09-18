@@ -3,7 +3,6 @@
 	"globalDependencies": ["**/.env"],
 	"pipeline": {
 		"db:generate": {
-			"inputs": ["prisma/schema.prisma"],
 			"cache": false
 		},
 		"db:push": {
@@ -12,10 +11,11 @@
 		},
 		"build": {
 			"outputs": [".svelte-kit/**", ".vercel/**", ".next/**"],
-			"dependsOn": ["^build", "^db:generate"]
+			"dependsOn": ["db:generate", "^build"]
 		},
 		"lint": {},
 		"dev": {
+			"dependsOn": ["^db:generate"],
 			"persistent": true,
 			"cache": false
 		},
@@ -35,6 +35,19 @@
 		"RESEND_API_KEY",
 		"STRIPE_SECRET_KEY",
 		"CALENDAR_API_KEY",
-		"CALENDAR_ID"
+		"CALENDAR_ID",
+		"DATABASE_URL",
+		"NEXTAUTH_SECRET",
+		"NEXTAUTH_URL",
+		"NEXT_PUBLIC_URL",
+		"GOOGLE_CLIENT_ID",
+		"GOOGLE_CLIENT_SECRET",
+		"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+		"NEXT_PUBLIC_UPLOADCARE_PUB_KEY",
+		"WEBHOOK_SECRET",
+		"NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+		"CLERK_SECRET_KEY",
+		"NEXT_PUBLIC_GOOGLE_MAPS_KEY",
+		"NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN"
 	]
 }
