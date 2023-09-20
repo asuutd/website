@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				//Fix up refunds. Should differentiate between
 				case 'charge.refunded':
 					const chargeData = event.data.object as Stripe.Charge;
-					console.log(chargeData.metadata.ticketId);
+					console.log(chargeData.metadata.ticketIds);
 
 					if (chargeData.refunds) {
 						const ticketIds = chargeData.refunds.data.map((data) => data.metadata?.ticketId);
