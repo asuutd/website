@@ -206,7 +206,7 @@ export const ticketRouter = t.router({
 						payment_intent: ticket.paymentIntent,
 						amount: ticket?.tier.price * 100,
 						metadata: {
-							ticketId: ticket.id
+							ticketIds: ticket.id
 						}
 					});
 				}
