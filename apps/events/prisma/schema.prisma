@@ -85,12 +85,13 @@ model Event {
   ticketImage  String?
   description  String? @db.Text
   ref_quantity Int?
+  organizerId  String?
+  fee_holder   Fee_Holder?
   tickets      Ticket[]
   RefCode      RefCode[]
   Tier         Tier[]
   EventAdmin   EventAdmin[]
   location     EventLocation?
-  organizerId  String?
   organizer    Organizer?        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 }
 
@@ -147,7 +148,7 @@ model Tier {
   end     DateTime
   eventId String
   name    String
-  limit         Int?
+  limit   Int?
   code    Code[]
   event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   Ticket  Ticket[]
@@ -163,4 +164,9 @@ model RefCode {
   event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventId])
+}
+
+enum Fee_Holder {
+  USER
+  ORGANIZER
 }
