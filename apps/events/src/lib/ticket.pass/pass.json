@@ -1,0 +1,16 @@
+{
+	"$schema": "https://github.com/walletpass/json-schemas/raw/master/pass.schema.json",
+	"$comment": "See `createApplePass` in `src/lib/wallets.ts` for remaining fields that are included during pass creation.",
+	"organizationName": "Kazala",
+	"backgroundColor": "rgb(73, 4, 25)",
+	"foregroundColor": "rgb(254, 232, 225)",
+	"labelColor": "rgb(254, 200, 200)",
+	"formatVersion": 1,
+	"eventTicket": {
+		"headerFields": [],
+		"primaryFields": [],
+		"secondaryFields": [],
+		"auxiliaryFields": [],
+		"backFields": []
+	}
+}

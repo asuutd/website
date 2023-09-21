@@ -13,7 +13,15 @@ export const serverSchema = z.object({
 	GOOGLE_CLIENT_ID: z.string(),
 	GOOGLE_CLIENT_SECRET: z.string(),
 	STRIPE_SECRET_KEY: z.string(),
-	WEBHOOK_SECRET: z.string()
+	WEBHOOK_SECRET: z.string(),
+	APPLE_TEAM_ID: z.string(),
+	APPLE_TICKET_PASS_TYPE_IDENTIFIER: z.string().default('pass.com.kazala.event'),
+	// https://github.com/alexandercerutti/passkit-generator/wiki/Generating-Certificates#generate-certificates-through-terminal
+	// https://developer.apple.com/documentation/walletpasses/building_a_pass
+	APPLE_PASS_CERTIFICATE: z.string(),
+	APPLE_PASS_PRIVATE_KEY: z.string(),
+	APPLE_PASS_KEY_PASSPHRASE: z.string(),
+	APPLE_PASS_CERTIFICATE_PASSWORD: z.string()
 });
 
 /**
