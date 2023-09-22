@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import { NumberBox } from './Numberbox';
 
 interface timeProps {
-	days: number | string;
-	hours: number | string;
-	minutes: number | string;
-	seconds: number | string;
+	days: any;
+	hours: any;
+	minutes: any;
+	seconds: any;
 	urgent: boolean;
 	className?: string;
 }

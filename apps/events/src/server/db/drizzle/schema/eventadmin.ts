@@ -20,7 +20,7 @@ export const eventAdmin = mysqlTable(
 	}
 );
 
-export const eventRelations = relations(eventAdmin, ({ one }) => ({
+export const eventAdminRelations = relations(eventAdmin, ({ one }) => ({
 	event: one(event, {
 		fields: [eventAdmin.eventId],
 		references: [event.id]

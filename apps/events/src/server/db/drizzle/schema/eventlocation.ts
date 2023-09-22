@@ -12,7 +12,7 @@ export const eventLocation = mysqlTable('EventLocation', {
 	name: varchar('name', { length: 191 })
 });
 
-export const eventRelations = relations(eventLocation, ({ one }) => ({
+export const eventLocationRelations = relations(eventLocation, ({ one }) => ({
 	event: one(event, {
 		fields: [eventLocation.id],
 		references: [event.id]

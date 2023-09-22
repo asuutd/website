@@ -4,7 +4,7 @@ import { env } from '@/env/server.mjs';
 import { schema } from './schema';
 
 // create the connection
-export const connection = connect({
+const connection = connect({
 	url: env.DATABASE_URL
 });
 

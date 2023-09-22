@@ -19,7 +19,7 @@ export const refCode = mysqlTable(
 	}
 );
 
-export const eventRelations = relations(refCode, ({ one, many }) => ({
+export const refCodeRelations = relations(refCode, ({ one, many }) => ({
 	user: one(user, {
 		fields: [refCode.userId],
 		references: [user.id]

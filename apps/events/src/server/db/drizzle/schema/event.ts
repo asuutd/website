@@ -28,12 +28,12 @@ export const eventRelations = relations(event, ({ one, many }) => ({
 		fields: [event.organizerId],
 		references: [organizer.id]
 	}),
-	tickets: many(ticket),
-	refcodes: many(refCode),
-	tiers: many(tier),
-	admins: many(eventAdmin),
 	location: one(eventLocation, {
 		fields: [event.id],
 		references: [eventLocation.id]
-	})
+	}),
+	tickets: many(ticket),
+	refcodes: many(refCode),
+	tiers: many(tier),
+	admins: many(eventAdmin)
 }));

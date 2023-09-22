@@ -1,15 +1,18 @@
 import { Transition, Dialog } from '@headlessui/react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
-import type { Event, Tier } from '@prisma/client';
 import { useRouter } from 'next/router';
+import { event as eventSchema } from '@/server/db/drizzle/schema/event';
+import { tier } from '@/server/db/drizzle/schema/tier';
+type Event = typeof eventSchema.$inferSelect;
+type Tier = typeof tier.$inferSelect;
 
 const RefCode = ({
 	event
 }: {
 	event:
 		| (Event & {
-				Tier: Tier[];
+				tiers: Tier[];
 		  })
 		| null
 		| undefined;

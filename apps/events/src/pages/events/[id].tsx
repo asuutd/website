@@ -19,6 +19,7 @@ import { env } from '../../env/client.mjs';
 import Image from 'next/image';
 import Display from '@/components/Map/Display';
 import parse from 'html-react-parser';
+import { drizzle } from '@/server/db/drizzle';
 
 type Ticket = {
 	tier: Tier;
@@ -258,7 +259,7 @@ const Event: NextPage<{
 						<h2 className="text-4xl text-primary font-bold  my-6">Tickets</h2>
 
 						{event.data ? (
-							event.data.Tier.map((tier) => (
+							event.data.tiers.map((tier) => (
 								<TierCard
 									key={tier.id}
 									tier={tier}
@@ -280,7 +281,7 @@ const Event: NextPage<{
 								>
 									CHECKOUT
 								</button>
-								{event.data?.ref_quantity && (
+								{event.data?.refQuantity && (
 									<button className="text-xs underline" onClick={openRefModal}>
 										Want a referral code?
 									</button>
@@ -390,7 +391,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 		const client = appRouter.createCaller({
 			session: await getServerAuthSession({ req, res }),
 			prisma: prisma,
-			headers: req.headers
+			headers: req.headers,
+			drizzle: drizzle
 		});
 		const data = await client.event.getEvent({
 			eventId: id
