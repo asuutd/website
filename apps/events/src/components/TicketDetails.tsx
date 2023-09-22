@@ -6,6 +6,7 @@ import Image from 'next/future/image';
 import { useSession } from 'next-auth/react';
 import VanillaTilt from 'vanilla-tilt';
 import { env } from '@/env/client.mjs';
+import AppleWallet from "@/../public/apple-wallet.svg"
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -109,7 +110,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 									<Tab.Panel
 										className={classNames(
 											'rounded-xl bg-white p-3',
-											'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
+											'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2 flex flex-col justify-items-center items-center gap-4'
 										)}
 									>
 										{QRCodeUrl && (
@@ -121,6 +122,18 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 												alt=""
 											></Image>
 										)}
+
+										<a target="_blank" href={`/api/ticket/${ticket.id}/apple_wallet`}>
+							<button type="button">
+							<Image
+							src={AppleWallet}
+							alt="Add to Apple Wallet"
+							width={192}
+
+							className=""
+						/>
+							</button>
+						</a>
 									</Tab.Panel>
 								</Tab.Panels>
 							</Tab.Group>
