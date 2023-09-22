@@ -72,6 +72,7 @@ export default function Test() {
 	const router = useRouter();
 	const [text, setText] = React.useState<string | null>(null);
 	const validateMut = trpc.ticket.validateTicket.useMutation();
+	const test = trpc.ticket.getTicket.useQuery();
 	const onNewScanResult = (decodedText: string, decodedResult: Html5QrcodeResult) => {
 		const url = new URL(decodedText);
 		const ticketId = url.searchParams.get('id');

@@ -4,6 +4,7 @@ import * as trpcNext from '@trpc/server/adapters/next';
 import { Session } from 'next-auth';
 import { getServerAuthSession } from '../common/get-server-auth-session';
 import { prisma } from '../db/client';
+import { drizzle } from '../db/drizzle/index';
 import { IncomingHttpHeaders } from 'http';
 
 type CreateContextOptions = {
@@ -19,6 +20,7 @@ export const createContextInner = async (opts: CreateContextOptions) => {
 	return {
 		session: opts.session,
 		prisma,
+		drizzle,
 		headers: opts.headers
 	};
 };

@@ -1,15 +1,17 @@
-import { t } from "../trpc";
-import { z } from "zod";
+import { authedProcedure, t } from '../trpc';
+import { z } from 'zod';
 
 export const exampleRouter = t.router({
-  hello: t.procedure
-    .input(z.object({ text: z.string().nullish() }).nullish())
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input?.text ?? "world"}`,
-      };
-    }),
-  getAll: t.procedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
-  }),
+	hello: authedProcedure
+		.input(z.object({ text: z.string().nullish() }).nullish())
+		.query(async ({ input, ctx }) => {
+			const result = await ctx.drizzle.query.ticket.findMany({
+				where: (ticket, { eq }) => eq(ticket.userId, ctx.session.user.id)
+			});
+			console.log(result);
+			return result;
+		}),
+	getAll: t.procedure.query(({ ctx }) => {
+		return ctx.prisma.example.findMany();
+	})
 });

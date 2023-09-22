@@ -5,6 +5,8 @@ import { Prisma } from '@prisma/client';
 import { env } from '../../../env/server.mjs';
 import { TRPCError } from '@trpc/server';
 import stripe from '../../../utils/stripe';
+import { eq } from 'drizzle-orm';
+import { user } from '@/server/db/drizzle/schema/user';
 
 export const ticketRouter = t.router({
 	createTicket: authedProcedure
@@ -252,7 +254,14 @@ export const ticketRouter = t.router({
 			}
 		}),
 
-	getTicket: authedProcedure.query(({ ctx }) => {
+	getTicket: authedProcedure.query(async ({ ctx }) => {
+		const tickets = await ctx.drizzle.query.user.findFirst({
+			where: eq(user.id, ctx.session.user.id),
+			with: {
+				tickets: true
+			}
+		});
+		console.log(tickets);
 		return ctx.prisma.ticket.findMany({
 			where: {
 				userId: ctx.session.user.id,

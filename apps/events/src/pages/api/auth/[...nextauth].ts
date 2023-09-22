@@ -1,11 +1,13 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
-import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
-
+import { DrizzleAdapter } from '@/server/db/drizzle/adapter';
 // Prisma adapter for NextAuth, optional and can be removed
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { prisma } from '../../../server/db/client';
+
+import { drizzle } from '../../../server/db/drizzle';
+
 import { env } from '../../../env/server.mjs';
+import { organizer as dbOrganizer } from '@/server/db/drizzle/schema/organizer';
+import { eq } from 'drizzle-orm';
 
 export const authOptions: NextAuthOptions = {
 	// Include user.id on session
@@ -14,10 +16,8 @@ export const authOptions: NextAuthOptions = {
 			console.log(user);
 			if (session.user) {
 				session.user.id = user.id;
-				const organizer = await prisma.organizer.findFirst({
-					where: {
-						id: user.id
-					}
+				const organizer = await drizzle.query.organizer.findFirst({
+					where: eq(dbOrganizer.id, user.id)
 				});
 
 				if (organizer) {
@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
 		}
 	},
 	// Configure one or more authentication providers
-	adapter: PrismaAdapter(prisma),
+	adapter: DrizzleAdapter(drizzle),
 	providers: [
 		GoogleProvider({
 			clientId: env.GOOGLE_CLIENT_ID,

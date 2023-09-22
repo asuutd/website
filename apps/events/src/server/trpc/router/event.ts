@@ -2,6 +2,8 @@ import { TRPCClientError } from '@trpc/client';
 import { authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
+import { eq } from 'drizzle-orm';
+import { event } from '../../db/drizzle/schema/event';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -11,6 +13,10 @@ export const eventRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
+			const dbTier = await ctx.drizzle.query.event.findFirst({
+				where: eq(event.id, input.eventId)
+			});
+			console.log(dbTier);
 			const tier = await ctx.prisma.event.findFirst({
 				where: {
 					id: input.eventId
