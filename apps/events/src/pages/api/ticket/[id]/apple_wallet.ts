@@ -6,7 +6,7 @@ import { constants } from '@walletpass/pass-js';
 
 const createApplePassRoute = async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getServerAuthSession({ req, res });
-	if (!session || !session.user) return res.status(403);
+	if (!session || !session.user) return res.status(403).send({"err": "Not authorized"});
 
 	const id = req.query.id as string;
 	const ticket = await prisma.ticket.findUnique({
@@ -28,7 +28,7 @@ const createApplePassRoute = async (req: NextApiRequest, res: NextApiResponse) =
 	});
 
 	if (!ticket || ticket.userId !== session.user.id) {
-		return res.status(404);
+		return res.status(404).send({"err": "Not found"});
 	}
 
 	const pass = await createApplePass(ticket, ticket.event, ticket.tier);
