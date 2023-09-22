@@ -1,8 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { trpc } from '../utils/trpc';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Tier } from '@prisma/client';
 import Image from 'next/image';
+import { calculateApplicationFee } from '@/utils/misc';
 
 type Ticket = {
 	tier: Tier;
@@ -24,6 +25,9 @@ const TicketSummary = ({
 	discountCode: string | undefined;
 }) => {
 	const checkoutQuery = trpc.payment.createCheckoutLink.useMutation();
+	const event = trpc.useContext().event.getEvent.getData({
+		eventId
+	});
 	const codeQuery = trpc.code.getCode.useMutation({
 		onSuccess: (data) => {
 			if (data) {
@@ -97,6 +101,9 @@ const TicketSummary = ({
 
 	const [code, setCode] = useState<string | undefined>();
 	const [refCode, setrefCode] = useState<string | undefined>(refCodeQuery);
+	const realTotal = useMemo(() => {
+		return (total + calculateApplicationFee(total * 100) / 100).toFixed(2);
+	}, [total]);
 	useEffect(() => {
 		let val = 0;
 		console.log(tickets);
@@ -142,10 +149,7 @@ const TicketSummary = ({
 
 				<div className="mt-2">
 					{tickets.map((ticket, idx) => (
-						<div
-							key={idx}
-							className="flex justify-between items-center p-4 shadow-md rounded-md bg-base-200 my-3"
-						>
+						<div key={idx} className="flex justify-between items-center p-4  my-3">
 							<div className="text-xl font-semibold text-primary">{ticket.tier.name}</div>
 
 							<div className="flex items-center gap-6 justify-between">
@@ -185,6 +189,22 @@ const TicketSummary = ({
 							</div>
 						</div>
 					))}
+
+					{event?.fee_holder === 'USER' && (
+						<div className="flex justify-between items-center p-4   my-3">
+							<div className="text-sm  text-secondary">
+								Processing Fee{' '}
+								<span className="text-[#000]">
+									(${(calculateApplicationFee(total * 100) / 100).toFixed(2)})
+								</span>
+							</div>
+
+							<div className="flex items-center gap-6 justify-between">
+								<div></div>
+								<div className="invisible">D</div>
+							</div>
+						</div>
+					)}
 				</div>
 				{/* <div>
 									<svg
@@ -195,7 +215,7 @@ const TicketSummary = ({
 										x="0px"
 										y="0px"
 										viewBox="0 0 100 100"
-										enable-background="new 0 0 0 0"
+										enableBackground="new 0 0 0 0"
 										xmlSpace="preserve"
 									>
 										<path
@@ -217,7 +237,7 @@ const TicketSummary = ({
  */}
 
 				<div className="flex justify-end items-center">
-					<span className="text-primary text-lg mr-3">Total:</span>${Number(total.toFixed(2))}
+					<span className="text-primary text-lg mr-3">Total:</span>${realTotal}
 				</div>
 				<div className="mt-4 ">
 					<button

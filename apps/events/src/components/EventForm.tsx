@@ -10,6 +10,7 @@ import { imageUpload } from '@/utils/imageUpload';
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/utils/trpc';
 import dynamic from 'next/dynamic';
+import { Fee_Holder } from '@prisma/client';
 
 type Props = {
 	closeModal: () => void;
@@ -32,8 +33,10 @@ const FormSchema = z.object({
 			coordinates: z.array(z.number()).optional()
 		})
 		.optional(),
+
 	bannerImage: zodFileType,
-	ticketImage: zodFileType
+	ticketImage: zodFileType,
+	feeBearer: z.boolean()
 });
 export type EventFormInput = z.infer<typeof FormSchema>;
 
@@ -49,7 +52,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 		register,
 		handleSubmit,
 		control,
-		formState: { errors }
+		formState: { errors, isSubmitting }
 	} = useForm<EventFormInput>({
 		resolver: zodResolver(FormSchema)
 	});
@@ -74,7 +77,8 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 						endTime: parseISO(fields.endTime),
 						bannerImage: `https://ucarecdn.com/${bannerResult[fields.bannerImage[0].name]}/`,
 						ticketImage: `https://ucarecdn.com/${ticketImageResult[fields.ticketImage[0].name]}/`,
-						location: fields.location
+						location: fields.location,
+						feeBearer: fields.feeBearer ? 'USER' : 'ORGANIZER'
 					},
 					{
 						onSuccess: () => {
@@ -187,8 +191,23 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 							)}
 						</div>
 
+						<div className="form-control">
+							<label className="label">
+								<span className="label-text">Who bears the service fees?</span>
+							</label>
+							<label className="label cursor-pointer justify-start gap-5">
+								<span className="label-text">You</span>
+								<input type="checkbox" className="toggle" {...register('feeBearer')} />
+								<span className="label-text">Attendee</span>
+							</label>
+						</div>
+
 						<div className="form-control mt-6">
-							<button className="btn btn-primary" type="submit">
+							<button
+								className={`btn btn-primary ${isSubmitting ? 'btn-disabled' : ''}`}
+								type="submit"
+								disabled={isSubmitting}
+							>
 								Create Event
 							</button>
 						</div>

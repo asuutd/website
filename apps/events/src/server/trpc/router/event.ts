@@ -2,6 +2,7 @@ import { TRPCClientError } from '@trpc/client';
 import { authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
+import { Fee_Holder } from '@prisma/client';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -80,7 +81,8 @@ export const eventRouter = t.router({
 							.optional()
 							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
 					})
-					.optional()
+					.optional(),
+				feeBearer: z.nativeEnum(Fee_Holder)
 			})
 		)
 		.mutation(({ input, ctx }) => {
@@ -111,7 +113,8 @@ export const eventRouter = t.router({
 							create: {
 								userId: ctx.session.user.id
 							}
-						}
+						},
+						fee_holder: input.feeBearer
 					}
 				});
 				return newEvent;
