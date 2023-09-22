@@ -4,7 +4,7 @@ import { account as accounts } from './schema/account';
 import { user as users } from './schema/user';
 import { verificationToken as verificationTokens } from './schema/vertificationtoken';
 import { session as sessions } from './schema/session';
-import schema from './schema';
+import { schema } from './schema';
 import type { Adapter } from 'next-auth/adapters';
 import type { PlanetScaleDatabase } from 'drizzle-orm/planetscale-serverless';
 
