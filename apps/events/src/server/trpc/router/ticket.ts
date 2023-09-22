@@ -5,8 +5,10 @@ import { Prisma } from '@prisma/client';
 import { env } from '../../../env/server.mjs';
 import { TRPCError } from '@trpc/server';
 import stripe from '../../../utils/stripe';
-import { eq } from 'drizzle-orm';
-import { user } from '@/server/db/drizzle/schema/user';
+import { and, eq, isNotNull, not } from 'drizzle-orm';
+import { event as eventSchema } from '@/server/db/drizzle/schema/event';
+import { ticket } from '@/server/db/drizzle/schema/ticket';
+import { organizer } from '@/server/db/drizzle/schema/organizer';
 
 export const ticketRouter = t.router({
 	createTicket: authedProcedure
@@ -255,21 +257,9 @@ export const ticketRouter = t.router({
 		}),
 
 	getTicket: authedProcedure.query(async ({ ctx }) => {
-		const tickets = await ctx.drizzle.query.user.findFirst({
-			where: eq(user.id, ctx.session.user.id),
+		return await ctx.drizzle.query.ticket.findMany({
+			where: and(eq(ticket.userId, ctx.session.user.id), isNotNull(ticket.paymentIntent)),
 			with: {
-				tickets: true
-			}
-		});
-		console.log(tickets);
-		return ctx.prisma.ticket.findMany({
-			where: {
-				userId: ctx.session.user.id,
-				paymentIntent: {
-					not: undefined
-				}
-			},
-			include: {
 				event: true,
 				tier: true
 			}
