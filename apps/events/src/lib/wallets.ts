@@ -26,7 +26,7 @@ export const createApplePass = async (
 	const cert = Buffer.from(env.APPLE_PASS_CERTIFICATE, 'base64').toString('ascii');
 	const key = Buffer.from(env.APPLE_PASS_PRIVATE_KEY, 'base64').toString('ascii');
 
-	template.setPrivateKey(key, env.APPLE_PASS_KEY_PASSPHRASE);
+	template.setPrivateKey(key, env.APPLE_PASS_PRIVATE_KEY_PASSPHRASE);
 	template.setCertificate(cert, env.APPLE_PASS_CERTIFICATE_PASSWORD);
 
 	const barcode: BarcodeDescriptor = {

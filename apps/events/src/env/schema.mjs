@@ -20,8 +20,8 @@ export const serverSchema = z.object({
 	// https://developer.apple.com/documentation/walletpasses/building_a_pass
 	APPLE_PASS_CERTIFICATE: z.string(),
 	APPLE_PASS_PRIVATE_KEY: z.string(),
-	APPLE_PASS_KEY_PASSPHRASE: z.string(),
-	APPLE_PASS_CERTIFICATE_PASSWORD: z.string()
+	APPLE_PASS_PRIVATE_KEY_PASSPHRASE: z.string().optional(),
+	APPLE_PASS_CERTIFICATE_PASSWORD: z.string().optional(),
 });
 
 /**
