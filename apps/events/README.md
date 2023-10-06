@@ -65,3 +65,4 @@ At this point, you should have these files created:
 - `signerCert.pem`
   - Run `base64 -i signerCert.pem -o -`.
   - Set the `APPLE_PASS_CERTIFICATE` environment variable in `.env` to this output.
+
