@@ -181,6 +181,19 @@ export const paymentRouter = t.router({
 					data: dataArray
 				});
 
+				if (event.fee_holder === 'USER') {
+					line_items.push({
+						price_data: {
+							currency: 'usd',
+							product_data: {
+								name: 'Application Fee'
+							},
+							unit_amount: Math.ceil(calculateApplicationFee(total))
+						},
+						quantity: 1
+					});
+				}
+
 				const session = await stripe.checkout.sessions.create({
 					line_items: line_items,
 					...(ctx.session.user?.email ? { customer_email: ctx.session.user.email } : {}),
