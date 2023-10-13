@@ -59,6 +59,27 @@ const Register = () => {
 	useEffect(() => {
 		console.log(fees);
 	}, [fees, value]);
+
+	const handleInputChange = (
+		e: React.ChangeEvent<HTMLInputElement>,
+		type: 'perTicket' | 'numTickets'
+	) => {
+		const conversion = parseFloat(e.target.value);
+		if (isNaN(conversion)) {
+			return;
+		}
+		if (type === 'perTicket') {
+			setValue({
+				perTicket: conversion,
+				numTickets: value?.numTickets ?? 0
+			});
+		} else {
+			setValue({
+				numTickets: conversion,
+				perTicket: value?.perTicket ?? 0
+			});
+		}
+	};
 	return (
 		<>
 			<NextSeo title="Organizer | Kazala" />
@@ -93,39 +114,39 @@ const Register = () => {
 							<h2 className="card-title text-3xl lg:text-4xl">Calculate your Fees</h2>
 							<div className="">
 								<label htmlFor="" className="mr-3">
-									Price per ticket ($):{' '}
+									Price per ticket: <span>${value.perTicket}</span>
 								</label>
 								<span className="">
 									<input
-										type="number"
-										placeholder="0"
-										className=" input input-ghost input-bordered w-20 h-8 border-0 bg-inherit"
-										value={value?.perTicket}
-										onChange={(e) =>
-											setValue({
-												perTicket: parseFloat(e.target.value),
-												numTickets: value?.numTickets ?? 0
-											})
-										}
+										type="range"
+										min={0}
+										max={100}
+										step={5}
+										value={value.perTicket}
+										className="range range-secondary"
+										onChange={(e) => handleInputChange(e, 'perTicket')}
 									/>
 								</span>
 							</div>
 							<div className="">
 								<label htmlFor="" className="mr-3">
 									Number of Tickets:{' '}
+									<span>
+										<input
+											className=" w-14 h-8 py-0 border-none bg-base-100 ring-0"
+											onChange={(e) => handleInputChange(e, 'numTickets')}
+											value={value.numTickets}
+										/>
+									</span>
 								</label>
 								<span className="">
 									<input
-										type="number"
-										placeholder="0"
-										className=" input input-ghost input-bordered w-20 h-8 border-0 bg-inherit"
-										value={value?.numTickets}
-										onChange={(e) =>
-											setValue({
-												numTickets: parseFloat(e.target.value),
-												perTicket: value?.perTicket ?? 0
-											})
-										}
+										type="range"
+										min={0}
+										max={200}
+										className="range range-accent"
+										value={value.numTickets}
+										onChange={(e) => handleInputChange(e, 'numTickets')}
 									/>
 								</span>
 							</div>
