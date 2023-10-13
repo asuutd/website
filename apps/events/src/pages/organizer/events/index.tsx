@@ -1,15 +1,15 @@
 import { Tab } from '@headlessui/react';
-import type { Ticket, Event, Tier } from '@prisma/client';
+import type { Event } from '@prisma/client';
 import Head from 'next/head';
 import Image from 'next/future/image';
 import { NextPage } from 'next/types';
 import React, { useState } from 'react';
 import Modal from '../../../components/Modal';
-import TicketDetails from '../../../components/TicketDetails';
 import { trpc } from '../../../utils/trpc';
-import Tilt from '../../../components/Tilt';
 import EventForm from '../../../components/EventForm';
 import Link from 'next/link';
+import { format } from 'date-fns';
+import ImageWithFallback from '@/components/Utils/ImageWithFallback';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -167,31 +167,27 @@ export default Events;
 
 const EventCard = ({ event }: { event: ReturnedEvent }) => {
 	return (
-		<div className="card card-side bg-base-100 shadow-xl max-w-md my-4 h-80">
-			<figure className="rounded-lg">
-				{event.ticketImage ? (
-					<Image
-						src={event.ticketImage}
-						alt="Movie"
-						height={400}
-						width={300}
-						className="object-contain h-72 w-72 rounded-lg"
-					/>
-				) : (
-					<p className="w-32 h-44 bg-base-200 animate-pulse" />
-				)}
+		<div className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto" key={event.id}>
+			<figure className="px-10 pt-10">
+				<ImageWithFallback
+					src={event.ticketImage ?? ''}
+					alt="Image"
+					className="rounded-xl object-cover aspect-square"
+					width={400}
+					height={400}
+				/>
 			</figure>
-			<div className="card-body">
+			<div className="card-body items-center text-center">
 				<h2 className="card-title">{event.name}</h2>
-				<h2>
-					{' '}
-					<span className="font-semibold">{event._count.tickets}</span> tickets sold.
-				</h2>
-				<div className="card-actions justify-end">
-					<Link href={`/organizer/events/${event.id}`}>
-						<a className="btn btn-primary btn-sm"> Details</a>
-					</Link>
+				<div className="flex items-center gap-2">
+					<img src="/clock.svg" alt="" className="w-5 h-5" />
+					<h2>{format(event.start, 'PPP')}</h2>
 				</div>
+			</div>
+			<div className="card-actions justify-end">
+				<Link href={`/organizer/events/${event.id}`} shallow={true}>
+					<a className="btn btn-primary rounded-tr-none rounded-bl-none">Details</a>
+				</Link>
 			</div>
 		</div>
 	);
