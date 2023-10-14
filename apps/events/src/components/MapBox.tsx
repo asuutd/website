@@ -5,8 +5,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Controller, ControllerRenderProps } from 'react-hook-form';
 import { v4 } from 'uuid';
 import type { EventFormInput } from './EventForm';
-type Props = ControllerRenderProps<EventFormInput, 'location'>;
-const MapBox: React.FC<Props> = ({ onChange, value }) => {
+type Props = ControllerRenderProps<EventFormInput, 'location'> & {
+	className: string;
+};
+const MapBox: React.FC<Props> = ({ onChange, value, className }) => {
 	return (
 		<form>
 			<AddressAutofill
@@ -25,8 +27,9 @@ const MapBox: React.FC<Props> = ({ onChange, value }) => {
 				<input
 					autoComplete="shipping address-line1"
 					value={value?.address}
-					className="input input-bordered"
-					type='text'
+					onChange={onChange}
+					className={className}
+					type="text"
 				/>
 			</AddressAutofill>
 		</form>

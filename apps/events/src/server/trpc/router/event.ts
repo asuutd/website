@@ -3,6 +3,7 @@ import { authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { Fee_Holder } from '@prisma/client';
+import { env } from '@/env/server.mjs';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -77,7 +78,7 @@ export const eventRouter = t.router({
 				event.organizerId === ctx.session.user.id ||
 				event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
 			) {
-				return ctx.prisma.event.findFirstOrThrow({
+				const result = await ctx.prisma.event.findFirstOrThrow({
 					where: {
 						id: input.eventId
 					},
@@ -85,6 +86,8 @@ export const eventRouter = t.router({
 						location: true
 					}
 				});
+
+				return result;
 			} else {
 				throw new TRPCError({
 					code: 'UNAUTHORIZED'
@@ -194,6 +197,25 @@ export const eventRouter = t.router({
 				event.organizerId === ctx.session.user.id ||
 				event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
 			) {
+				const response = await fetch('https://api.uploadcare.com/files/storage/', {
+					method: 'DELETE',
+					body: JSON.stringify(
+						[event.image, event.ticketImage]
+							.filter((input) => typeof input === 'string')
+							.map((input) => input?.split('/')[3])
+					),
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Uploadcare.Simple ${env.NEXT_PUBLIC_UPLOADCARE_PUB_KEY}:${env.UPLOADCARE_SECRET_KEY}`,
+						Accept: 'application/vnd.uploadcare-v0.7+json'
+					}
+				});
+				if (!response.ok) {
+					throw new TRPCError({
+						code: 'INTERNAL_SERVER_ERROR',
+						message: 'Previous Image Deletion Failed'
+					});
+				}
 				await ctx.prisma.event.update({
 					where: {
 						id: input.eventId
