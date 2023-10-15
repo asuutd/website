@@ -4,13 +4,16 @@ import Image from 'next/image';
 import z from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Event, EventLocation } from '@prisma/client';
+import { Event as PrismaEvent, EventLocation } from '@prisma/client';
 import dynamic from 'next/dynamic';
 import { format, parseISO } from 'date-fns';
 import ImageWithFallback from '../Utils/ImageWithFallback';
 import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '@/utils/constants';
 import { imageUpload } from '@/utils/imageUpload';
 import { useSession } from 'next-auth/react';
+import { RouterOutput } from '@/server/trpc/router';
+
+type Event = RouterOutput['event']['getEventAdmin'];
 
 const zodFileType = z
 	.any()
@@ -32,10 +35,10 @@ const Event = ({ eventId }: { eventId: string }) => {
 		}
 	);
 
-	return <>{data && <LoadedEvent event={data as any} />}</>;
+	return <>{data && <LoadedEvent event={data} />}</>;
 };
 
-const LoadedEvent = ({ event }: { event: Event & { location: EventLocation } }) => {
+const LoadedEvent = ({ event }: { event: Event }) => {
 	const getDataURI = (file: File | undefined) => {
 		return file ? URL.createObjectURL(file) : undefined;
 	};
