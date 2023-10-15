@@ -140,7 +140,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 
 	return (
 		<div className=" flex flex-col items-end">
-			<FilterCopmonent tiers={tiers.data} />
+			<FilterCopmonent tiers={tiers.data ?? []} />
 			<table className="table">
 				{/* head */}
 				<thead>
