@@ -109,7 +109,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 		},
 		onPaginationChange: (e) => {
 			setPagination((old) => {
-				let newState = functionalUpdate(e, old);
+				const newState = functionalUpdate(e, old);
 				console.log(newState, old);
 				if (newState.pageIndex < old.pageIndex) {
 					if (myQuery.hasPreviousPage) {
@@ -153,38 +153,6 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 				</thead>
 				<tbody className="">
 					{/* row 1 */}
-					{myQuery.data?.pages[page]?.items.map((ticket) => (
-						<>
-							{/* <tr className="" key={ticket.id}>
-							<td>
-								<div className="flex items-center space-x-3">
-									<div className="h-12 w-12 tooltip tooltip-right" data-tip={ticket.user.name}>
-										<Image
-											src={ticket.user.image ?? '/placeholder.svg'}
-											width={50}
-											height={50}
-											className="rounded-md "
-										/>
-									</div>
-								</div>
-							</td>
-							<td>{ticket.tier?.name ?? 'Free Ticket'}</td>
-							{ticket.event ? (
-								<td>
-									{ticket.checkedInAt
-										? format(ticket.checkedInAt, "yyyy-MM-dd'T'HH:mm")
-										: 'Not Checked In Yet'}
-								</td>
-							) : (
-								<td>
-									{ticket.checkedInAt
-										? format(ticket.createdAt, "yyyy-MM-dd'T'HH:mm")
-										: 'Not Checked In Yet'}
-								</td>
-							)}
-						</tr> */}
-						</>
-					))}
 
 					{table.getRowModel().rows.map((row) => (
 						<tr key={row.id}>
@@ -292,7 +260,7 @@ const FilterCopmonent = ({ tiers }: { tiers: any[] }) => {
 									<summary>Tier</summary>
 									<ul>
 										{tiers?.map((tier) => (
-											<li className="">
+											<li className="" key={tier.id}>
 												<label className="label cursor-pointer">
 													<input type="checkbox" checked={false} className="checkbox" />
 													<span className="label-text">{tier.name}</span>
