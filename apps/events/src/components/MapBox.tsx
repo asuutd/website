@@ -27,7 +27,12 @@ const MapBox: React.FC<Props> = ({ onChange, value, className }) => {
 				<input
 					autoComplete="shipping address-line1"
 					value={value?.address}
-					onChange={onChange}
+					onChange={(e) =>
+						onChange({
+							...value,
+							address: e.target.value
+						})
+					}
 					className={className}
 					type="text"
 				/>
