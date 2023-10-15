@@ -16,19 +16,31 @@ export default function Layout({ children }: { children?: React.ReactNode }) {
 		console.log(providers);
 	}, []);
 	return (
-		<div className="min-h-screen bg-gradient-radial from-[#EBDCD0] to-base-100 min-w-full">
-			<Head>
-				<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-			</Head>
-			<Navbar />
-			<div className="min-h-full max-w-7xl mx-auto p-4">{children}</div>
-			<input type="checkbox" id="my-modal-4" className="modal-toggle" />
-			<label htmlFor="my-modal-4" className="modal cursor-pointer">
-				<label className="modal-box relative w-72" htmlFor="">
-					<LoginForm providers={providers} />
-				</label>
-			</label>
-			<Footer />
+		<div className="drawer">
+			<input id="my-drawer" type="checkbox" className="drawer-toggle" />
+			<div className="drawer-content">
+				<div className="min-h-screen bg-gradient-radial from-[#EBDCD0] to-base-100 min-w-full">
+					<Head>
+						<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+					</Head>
+					<Navbar />
+					<div className="min-h-full max-w-7xl mx-auto p-4">{children}</div>
+					<input type="checkbox" id="my-modal-4" className="modal-toggle" />
+					<label htmlFor="my-modal-4" className="modal cursor-pointer">
+						<label className="modal-box relative w-72" htmlFor="">
+							<LoginForm providers={providers} />
+						</label>
+					</label>
+					<Footer />
+				</div>
+			</div>
+			<div className="drawer-side">
+				<label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+				<ul
+					className="menu p-4 w-80 min-h-full bg-base-200 text-base-content"
+					id="sidebar-content"
+				></ul>
+			</div>
 		</div>
 	);
 }
