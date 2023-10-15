@@ -237,15 +237,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 	);
 };
 
-const FilterCopmonent = ({
-	tiers,
-	filters,
-	setFilters
-}: {
-	tiers: any[];
-	filters: any;
-	setFilters: any;
-}) => {
+const FilterCopmonent = ({ tiers }: { tiers: any[] }) => {
 	const utils = trpc.useContext();
 	const [showModal, setShowModal] = useState(false);
 	const sidebarContentEl = document.getElementById('sidebar-content');
