@@ -30,8 +30,8 @@ const Parser = ({
 					<form className="card-body" onSubmit={handleSubmit(onSubmit)}>
 						<h2 className="card-title">{isPreview ? 'Form Preview' : 'User Survey'}</h2>
 
-						{data.map((field) => (
-							<div className="form-control">
+						{data.map((field, index) => (
+							<div className="form-control" key={index}>
 								<label className="label">
 									<span className="label-text font-semibold">{field.json.label}</span>
 								</label>
@@ -60,7 +60,10 @@ const Parser = ({
 												return (
 													<>
 														{field.json.options.map((option, index) => (
-															<div className="flex justify-start items-center gap-3 my-2">
+															<div
+																className="flex justify-start items-center gap-3 my-2"
+																key={index}
+															>
 																<input
 																	type="radio"
 																	value={option.label}
@@ -79,7 +82,9 @@ const Parser = ({
 														{...register(field.json.label)}
 													>
 														{field.json.options.map((option, index) => (
-															<option value={option.label}>{option.label}</option>
+															<option value={option.label} key={index}>
+																{option.label}
+															</option>
 														))}
 													</select>
 												);

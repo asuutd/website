@@ -70,7 +70,7 @@ const RadioGroupView = ({ id, data }: { id: number; data: CustomRadioGroupField 
 					}
 				/>
 				{temporaryEdit.options.map((option, index) => (
-					<label className="label cursor-pointer  items-center mb-2">
+					<label className="label cursor-pointer  items-center mb-2" key={index}>
 						<div className="flex justify-start items-center gap-3 ">
 							<input type="radio" name="radio" className="radio border-black" disabled />
 							<input

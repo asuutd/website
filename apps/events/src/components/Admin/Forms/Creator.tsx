@@ -11,10 +11,18 @@ import React, { createContext, useCallback, useState } from 'react';
 
 export const FormContext = createContext<CustomFormContext>({
 	data: [],
-	add: (_) => {},
-	setData: (_) => {},
-	edit: (_, __) => {},
-	deleteElement: (_) => {}
+	add: (_) => {
+		/**No Comment */
+	},
+	setData: (_) => {
+		/**No Comment */
+	},
+	edit: (_, __) => {
+		/**No Comment */
+	},
+	deleteElement: (_) => {
+		/**No Comment */
+	}
 });
 const CreatorProvider = ({ children }: { children: React.ReactNode }) => {
 	const [data, setData] = useState<CustomFormData[]>([]);
