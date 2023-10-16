@@ -1,26 +1,34 @@
 import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormContext } from './Creator';
+import { twJoin } from 'tailwind-merge';
+import { CustomFormData } from '@/utils/forms';
 
-const Preview = () => {
+const Parser = ({
+	isPreview = false,
+	onSubmit,
+	data
+}: {
+	isPreview?: boolean;
+	onSubmit: (fields: any) => void;
+	data: CustomFormData[];
+}) => {
 	const {
 		register,
 		handleSubmit,
 		control,
-		formState: { errors }
-	} = useForm<any>();
 
-	const { data } = useContext(FormContext);
+		formState: { errors, isDirty }
+	} = useForm<any>({
+		defaultValues: Object.assign({}, ...data.map((key) => ({ [key.json.label]: '' })))
+	});
 
-	const onSubmit = async (fields: any) => {
-		console.log(fields);
-	};
 	return (
 		<>
 			{data.length > 0 ? (
 				<div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100 mx-auto">
 					<form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-						<h2 className="card-title">Form Preview</h2>
+						<h2 className="card-title">{isPreview ? 'Form Preview' : 'User Survey'}</h2>
 
 						{data.map((field) => (
 							<div className="form-control">
@@ -86,6 +94,13 @@ const Preview = () => {
 								)}
 							</div>
 						))}
+						{!isPreview && (
+							<div className="card-actions ">
+								<button className={twJoin('btn', isDirty ? 'btn-primary' : 'btn-disabled')}>
+									Submit
+								</button>
+							</div>
+						)}
 					</form>
 				</div>
 			) : (
@@ -95,4 +110,4 @@ const Preview = () => {
 	);
 };
 
-export default Preview;
+export default Parser;

@@ -126,6 +126,7 @@ model EventForm {
 model FormResponse {
   formId  String
   userId  String
+  response Json
   form    EventForm @relation(fields: [formId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@id([formId, userId])

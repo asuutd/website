@@ -6,7 +6,7 @@ import { twJoin } from 'tailwind-merge';
 import Details from './Details';
 import Form from './Form';
 import { FormContext } from '../Forms/Creator';
-import { CustomField, CustomFormData } from '@/utils/forms';
+import { CustomField, CustomFormData, transformData } from '@/utils/forms';
 import { Prisma } from '@prisma/client';
 
 type Event = RouterOutput['event']['getEventAdmin'];
@@ -16,11 +16,7 @@ const Event = ({ eventId }: { eventId: string }) => {
 		{ eventId: eventId },
 		{
 			onSuccess: (data) => {
-				const formTemplate = data.forms[0]?.form as Prisma.JsonArray;
-				const parsedTemplate = formTemplate.map((item) => ({
-					json: item
-				})) as CustomFormData[];
-				console.log(parsedTemplate);
+				const parsedTemplate = transformData(data.forms);
 				setData(parsedTemplate);
 			}
 		}

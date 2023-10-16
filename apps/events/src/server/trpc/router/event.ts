@@ -245,5 +245,93 @@ export const eventRouter = t.router({
 					form: input.forms
 				}
 			});
+		}),
+
+	//For User
+	getEventForm: authedProcedure
+		.input(
+			z.object({
+				eventId: z.string()
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			const userResponse = await ctx.prisma.formResponse.findFirst({
+				where: {
+					form: {
+						eventId: input.eventId
+					},
+					userId: ctx.session.user.id
+				}
+			});
+			if (userResponse) {
+				throw new TRPCError({
+					code: 'CONFLICT',
+					message: "You've already filled this form"
+				});
+			}
+			const form = await ctx.prisma.eventForm.findMany({
+				where: {
+					eventId: input.eventId
+				},
+				orderBy: {
+					updatedAt: 'desc'
+				},
+				take: 1
+			});
+
+			if (form[0]) {
+				return form[0];
+			} else {
+				throw new TRPCError({
+					code: 'NOT_FOUND'
+				});
+			}
+		}),
+	createSurveyResponse: authedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+				value: z.array(
+					z.object({
+						label: z.string(),
+						response: z.union([z.string(), z.array(z.string())])
+					})
+				)
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const ticket = await ctx.prisma.ticket.findFirst({
+				where: {
+					eventId: input.eventId,
+					userId: ctx.session.user.id
+				},
+				include: {
+					event: {
+						select: {
+							forms: {
+								orderBy: {
+									updatedAt: 'desc'
+								},
+								take: 1
+							}
+						}
+					}
+				}
+			});
+
+			if (ticket && ticket.event.forms[0]) {
+				await ctx.prisma.formResponse.create({
+					data: {
+						formId: ticket.event.forms[0].id,
+						userId: ctx.session.user.id,
+						response: input.value
+					}
+				});
+			} else {
+				throw new TRPCError({
+					code: 'UNAUTHORIZED',
+					message: 'You do not have a ticket for this event'
+				});
+			}
 		})
 });

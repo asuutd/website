@@ -1,14 +1,16 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { FormContext } from '../Forms/Creator';
 import Selector from '../Forms/Selector';
 import Editor from '../Forms/Editor';
 import Modal from '@/components/Modal';
-import Preview from '../Forms/Preview';
+import Preview from '../Forms/Parser';
 import { isEqual } from 'lodash';
 import { trpc } from '@/utils/trpc';
 import { EventForm, Prisma } from '@prisma/client';
-import { CustomFormData } from '@/utils/forms';
+import { format } from 'date-fns';
+import { twJoin } from 'tailwind-merge';
+import { transformData } from '@/utils/forms';
 
 const Form = ({ forms, eventId }: { forms: EventForm[]; eventId: string }) => {
 	const [showDrawer, setShowDrawer] = useState(false);
@@ -20,6 +22,10 @@ const Form = ({ forms, eventId }: { forms: EventForm[]; eventId: string }) => {
 		console.log(forms);
 	}, [forms]);
 
+	const unChanged = useMemo(() => {
+		return isEqual(transformData(forms), data);
+	}, [data, forms]);
+
 	const handleSyncChanges = () => {
 		updateMut.mutate({
 			eventId,
@@ -29,14 +35,22 @@ const Form = ({ forms, eventId }: { forms: EventForm[]; eventId: string }) => {
 	return (
 		<>
 			<div className="">
-				<div className="flex justify-end">
-					<button
-						className="btn btn-sm join-item justify-end text-right"
-						onClick={() => handleSyncChanges()}
-					>
-						{updateMut.isLoading && <span className="loading loading-spinner loading-xs" />}
-						PUSH CHANGES
-					</button>
+				<div className="md:flex md:justify-between ">
+					{forms[0] && <h1>Updated On {format(forms[0].updatedAt, 'EE dd yyyy, hh:mma')}</h1>}
+					<div className="join">
+						<button
+							className={twJoin('btn btn-sm join-item text-right', unChanged && 'btn-disabled')}
+							onClick={() => handleSyncChanges()}
+						>
+							{updateMut.isLoading && <span className="loading loading-spinner loading-xs" />}
+							PUSH CHANGES
+						</button>
+
+						<button className="btn btn-sm btn-secondary join-item text-right">
+							{updateMut.isLoading && <span className="loading loading-spinner loading-xs" />}
+							VIEW RESPONSES
+						</button>
+					</div>
 				</div>
 
 				<div className="join flex justify-end my-4">
@@ -69,7 +83,11 @@ const Form = ({ forms, eventId }: { forms: EventForm[]; eventId: string }) => {
 						sidebarContentEl
 					)}
 
-				{showPreview ? <Preview /> : <Editor />}
+				{showPreview ? (
+					<Preview isPreview={true} onSubmit={(fields) => console.log(fields)} data={data} />
+				) : (
+					<Editor />
+				)}
 			</div>
 		</>
 	);

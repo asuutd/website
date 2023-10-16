@@ -1,3 +1,4 @@
+import { EventForm, Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 export const ZodCustomTextField = z.object({
@@ -49,6 +50,12 @@ export const ZodCustomField = z.union([
 
 export type CustomField = z.infer<typeof ZodCustomField>;
 
+export type CustomResponseField = {
+	label: string;
+	response: string | string[];
+	type: CustomField['type'];
+};
+
 export type CustomFormData = {
 	json: CustomField;
 };
@@ -59,4 +66,12 @@ export type CustomFormContext = {
 	setData: (value: CustomFormData[]) => void;
 	edit: (id: number, value: Partial<CustomField>) => void;
 	deleteElement: (id: number) => void;
+};
+
+export const transformData = (data: EventForm[]) => {
+	const formTemplate = data[0]?.form as Prisma.JsonArray;
+	const parsedTemplate = formTemplate.map((item) => ({
+		json: item
+	})) as CustomFormData[];
+	return parsedTemplate;
 };
