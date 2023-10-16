@@ -1,18 +1,15 @@
-import { trpc } from '@/utils/trpc';
-import React, { useEffect } from 'react';
-import Image from 'next/image';
-import z from 'zod';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Event as PrismaEvent, EventLocation } from '@prisma/client';
-import dynamic from 'next/dynamic';
-import { format, parseISO } from 'date-fns';
-import ImageWithFallback from '../Utils/ImageWithFallback';
-import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '@/utils/constants';
-import { imageUpload } from '@/utils/imageUpload';
-import { useSession } from 'next-auth/react';
+import ImageWithFallback from '@/components/Utils/ImageWithFallback';
 import { RouterOutput } from '@/server/trpc/router';
-
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/utils/constants';
+import { imageUpload } from '@/utils/imageUpload';
+import { trpc } from '@/utils/trpc';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { format, parseISO } from 'date-fns';
+import { useSession } from 'next-auth/react';
+import dynamic from 'next/dynamic';
+import React, { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 type Event = RouterOutput['event']['getEventAdmin'];
 
 const zodFileType = z
@@ -26,19 +23,7 @@ const zodFileType = z
 		(files) => files.length == 0 || ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
 		'.jpg, .jpeg, .png and .webp files are accepted.'
 	);
-
-const Event = ({ eventId }: { eventId: string }) => {
-	const { data } = trpc.event.getEventAdmin.useQuery(
-		{ eventId: eventId },
-		{
-			refetchInterval: false
-		}
-	);
-
-	return <>{data && <LoadedEvent event={data} />}</>;
-};
-
-const LoadedEvent = ({ event }: { event: Event }) => {
+const Details = ({ event }: { event: Event }) => {
 	const getDataURI = (file: File | undefined) => {
 		return file ? URL.createObjectURL(file) : undefined;
 	};
@@ -136,7 +121,7 @@ const LoadedEvent = ({ event }: { event: Event }) => {
 					</div>
 
 					<input
-						className="uppercase text-4xl sm:text-5xl font-semibold  my-6 input input-ghost bg-transparent w-auto"
+						className="uppercase text-4xl sm:text-5xl font-semibold  my-6 input input-ghost bg-transparent w-72 md:w-auto"
 						{...register('name')}
 					/>
 
@@ -157,7 +142,12 @@ const LoadedEvent = ({ event }: { event: Event }) => {
 									control={control}
 									render={({ field }) => {
 										// sending integer instead of string.
-										return <MapBoxComponent {...field} className="input input-ghost w-96" />;
+										return (
+											<MapBoxComponent
+												{...field}
+												className="input input-ghost w-screen md:w-96 m-0"
+											/>
+										);
 									}}
 								/>
 
@@ -276,8 +266,8 @@ const LoadedEvent = ({ event }: { event: Event }) => {
 	);
 };
 
-export default Event;
+export default Details;
 
-const MapBoxComponent = dynamic(() => import('../../components/MapBox'), {
+const MapBoxComponent = dynamic(() => import('../../MapBox'), {
 	ssr: false
 });

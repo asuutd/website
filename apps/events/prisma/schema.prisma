@@ -58,6 +58,7 @@ model User {
   tickets       Ticket[]
   RefCode       RefCode[]
   EventAdmin    EventAdmin[]
+  forms         FormResponse[]
   Organizer     Organizer?
 }
 
@@ -92,6 +93,7 @@ model Event {
   Tier         Tier[]
   EventAdmin   EventAdmin[]
   location     EventLocation?
+  forms         EventForm[]
   organizer    Organizer?        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 }
 
@@ -109,6 +111,25 @@ model EventLocation {
   lat     Float
   name    String?
   event   Event  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model EventForm {
+  id        String @id @default(cuid())
+  eventId   String
+  form      Json
+  updatedAt DateTime @default(now())
+  responses FormResponse[]
+  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([eventId])
+}
+
+model FormResponse {
+  formId  String
+  userId  String
+  form    EventForm @relation(fields: [formId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([formId, userId])
+
 }
 
 model Ticket {

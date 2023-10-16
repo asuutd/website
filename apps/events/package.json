@@ -22,7 +22,7 @@
 		"@radix-ui/react-slot": "^1.0.2",
 		"@react-spring/web": "^9.7.3",
 		"@stripe/stripe-js": "^1.38.1",
-		"@tanstack/react-query": "^4.3.9",
+		"@tanstack/react-query": "^4.35.3",
 		"@tanstack/react-query-devtools": "^4.11.0",
 		"@tanstack/react-table": "^8.10.7",
 		"@trpc/client": "10.40.0",
@@ -39,6 +39,7 @@
 		"html-react-parser": "^4.2.2",
 		"html5-qrcode": "^2.3.8",
 		"isbot": "^3.6.6",
+		"lodash": "^4.17.21",
 		"lucide-react": "^0.260.0",
 		"next": "^12.3.1",
 		"next-auth": "^4.23.1",
@@ -61,6 +62,7 @@
 		"zustand": "^4.1.1"
 	},
 	"devDependencies": {
+		"@types/lodash": "^4.14.199",
 		"@types/node": "18.0.0",
 		"@types/qrcode": "^1.5.0",
 		"@types/react": "18.0.14",

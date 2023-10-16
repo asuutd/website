@@ -1,9 +1,10 @@
 import { TRPCClientError } from '@trpc/client';
-import { authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { Fee_Holder } from '@prisma/client';
 import { env } from '@/env/server.mjs';
+import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -58,42 +59,24 @@ export const eventRouter = t.router({
 			return tier;
 		}),
 
-	getEventAdmin: authedProcedure
-		.input(
-			z.object({
-				eventId: z.string()
-			})
-		)
-		.query(async ({ input, ctx }) => {
-			const event = await ctx.prisma.event.findFirstOrThrow({
-				where: {
-					id: input.eventId
-				},
-				include: {
-					EventAdmin: true,
-					Tier: true
-				}
-			});
-			if (
-				event.organizerId === ctx.session.user.id ||
-				event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
-			) {
-				const result = await ctx.prisma.event.findFirstOrThrow({
-					where: {
-						id: input.eventId
+	getEventAdmin: adminProcedure.query(async ({ input, ctx }) => {
+		const result = await ctx.prisma.event.findFirstOrThrow({
+			where: {
+				id: input.eventId
+			},
+			include: {
+				location: true,
+				forms: {
+					orderBy: {
+						updatedAt: 'desc'
 					},
-					include: {
-						location: true
-					}
-				});
-
-				return result;
-			} else {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
+					take: 1
+				}
 			}
-		}),
+		});
+
+		return result;
+	}),
 	getEvents: t.procedure.query(async ({ ctx }) => {
 		return await ctx.prisma.event.findMany({
 			where: {
@@ -248,5 +231,19 @@ export const eventRouter = t.router({
 					code: 'UNAUTHORIZED'
 				});
 			}
+		}),
+	upsertEventForm: adminProcedure
+		.input(
+			z.object({
+				forms: z.array(ZodCustomField)
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			return await ctx.prisma.eventForm.create({
+				data: {
+					eventId: input.eventId,
+					form: input.forms
+				}
+			});
 		})
 });
