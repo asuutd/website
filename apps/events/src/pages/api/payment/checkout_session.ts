@@ -52,6 +52,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 													}
 												]
 											}
+										},
+										forms: {
+											orderBy: {
+												updatedAt: 'desc'
+											},
+											take: 1
 										}
 									}
 							  })
@@ -111,11 +117,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						});
 						console.log(line_items);
 
+						const surveyEnabled = event.forms.length > 0;
+
 						const session = await stripe.checkout.sessions.create({
 							line_items: line_items,
 							...(userSession.user?.email ? { customer_email: userSession.user.email } : {}),
 							mode: 'payment',
-							success_url: `${env.NEXT_PUBLIC_URL}/tickets`,
+							success_url: `${env.NEXT_PUBLIC_URL}/tickets${
+								surveyEnabled && `?survey=${event.id}`
+							}`,
 							cancel_url: `${req.headers.origin}/?canceled=true`,
 							metadata: {
 								eventId: eventId,

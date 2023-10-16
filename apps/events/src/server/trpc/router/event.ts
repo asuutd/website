@@ -1,9 +1,10 @@
 import { TRPCClientError } from '@trpc/client';
-import { authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { Fee_Holder } from '@prisma/client';
 import { env } from '@/env/server.mjs';
+import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -58,42 +59,24 @@ export const eventRouter = t.router({
 			return tier;
 		}),
 
-	getEventAdmin: authedProcedure
-		.input(
-			z.object({
-				eventId: z.string()
-			})
-		)
-		.query(async ({ input, ctx }) => {
-			const event = await ctx.prisma.event.findFirstOrThrow({
-				where: {
-					id: input.eventId
-				},
-				include: {
-					EventAdmin: true,
-					Tier: true
-				}
-			});
-			if (
-				event.organizerId === ctx.session.user.id ||
-				event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
-			) {
-				const result = await ctx.prisma.event.findFirstOrThrow({
-					where: {
-						id: input.eventId
+	getEventAdmin: adminProcedure.query(async ({ input, ctx }) => {
+		const result = await ctx.prisma.event.findFirstOrThrow({
+			where: {
+				id: input.eventId
+			},
+			include: {
+				location: true,
+				forms: {
+					orderBy: {
+						updatedAt: 'desc'
 					},
-					include: {
-						location: true
-					}
-				});
-
-				return result;
-			} else {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
+					take: 1
+				}
 			}
-		}),
+		});
+
+		return result;
+	}),
 	getEvents: t.procedure.query(async ({ ctx }) => {
 		return await ctx.prisma.event.findMany({
 			where: {
@@ -246,6 +229,108 @@ export const eventRouter = t.router({
 			} else {
 				throw new TRPCError({
 					code: 'UNAUTHORIZED'
+				});
+			}
+		}),
+	upsertEventForm: adminProcedure
+		.input(
+			z.object({
+				forms: z.array(ZodCustomField)
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			return await ctx.prisma.eventForm.create({
+				data: {
+					eventId: input.eventId,
+					form: input.forms
+				}
+			});
+		}),
+
+	//For User
+	getEventForm: authedProcedure
+		.input(
+			z.object({
+				eventId: z.string()
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			const userResponse = await ctx.prisma.formResponse.findFirst({
+				where: {
+					form: {
+						eventId: input.eventId
+					},
+					userId: ctx.session.user.id
+				}
+			});
+			if (userResponse) {
+				throw new TRPCError({
+					code: 'CONFLICT',
+					message: "You've already filled this form"
+				});
+			}
+			const form = await ctx.prisma.eventForm.findMany({
+				where: {
+					eventId: input.eventId
+				},
+				orderBy: {
+					updatedAt: 'desc'
+				},
+				take: 1
+			});
+
+			if (form[0]) {
+				return form[0];
+			} else {
+				throw new TRPCError({
+					code: 'NOT_FOUND'
+				});
+			}
+		}),
+	createSurveyResponse: authedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+				value: z.array(
+					z.object({
+						label: z.string(),
+						response: z.union([z.string(), z.array(z.string())])
+					})
+				)
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const ticket = await ctx.prisma.ticket.findFirst({
+				where: {
+					eventId: input.eventId,
+					userId: ctx.session.user.id
+				},
+				include: {
+					event: {
+						select: {
+							forms: {
+								orderBy: {
+									updatedAt: 'desc'
+								},
+								take: 1
+							}
+						}
+					}
+				}
+			});
+
+			if (ticket && ticket.event.forms[0]) {
+				await ctx.prisma.formResponse.create({
+					data: {
+						formId: ticket.event.forms[0].id,
+						userId: ctx.session.user.id,
+						response: input.value
+					}
+				});
+			} else {
+				throw new TRPCError({
+					code: 'UNAUTHORIZED',
+					message: 'You do not have a ticket for this event'
 				});
 			}
 		})
