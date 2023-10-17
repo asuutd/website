@@ -36,7 +36,7 @@ export function CustomPrismaAdapter(p: PrismaClient): Adapter {
 		},
 		async getUserByAccount(provider_providerAccountId) {
 			console.log('GET USER BY ACCOUNT', provider_providerAccountId);
-			var _a;
+			let _a;
 			const account = await p.account.findUnique({
 				where: { provider_providerAccountId },
 				select: { user: true }
