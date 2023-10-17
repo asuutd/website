@@ -29,9 +29,9 @@ model Account {
   providerAccountId String
   refresh_token     String? @db.Text
   access_token      String? @db.Text
-  expires_at        Int?
+  expires_at        Int
   token_type        String?
-  scope             String?
+  scope             String
   id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -127,6 +127,7 @@ model FormResponse {
   formId  String
   userId  String
   response Json
+  createdAt DateTime  @default(now())
   form    EventForm @relation(fields: [formId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@id([formId, userId])

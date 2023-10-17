@@ -270,38 +270,22 @@ const Event: NextPage<{
 						) : (
 							<div className="flex flex-col lg:flex-row justify-between w-72 h-40 lg:h-auto animate-pulse gap-8 text-3xl items-center bg-base-200 px-4 py-8 rounded-md shadow-md my-3"></div>
 						)}
-						{status === 'authenticated' ? (
-							<div className="flex justify-between items-end">
-								<button
-									className={`flex btn btn-primary justify-self-center btn-lg ${
-										!checkout && 'btn-disabled'
-									}`}
-									onClick={openModal}
-								>
-									CHECKOUT
-								</button>
-								{event.data?.ref_quantity && (
-									<button className="text-xs underline" onClick={openRefModal}>
-										Want a referral code?
-									</button>
-								)}
-							</div>
-						) : status === 'loading' ? (
+
+						<div className="flex justify-between items-end">
 							<button
-								className={`flex max-w-md my-6 mx-2 btn btn-primary justify-self-center btn-lg btn-disabled`}
+								className={`flex btn btn-primary justify-self-center btn-lg ${
+									!checkout && 'btn-disabled'
+								}`}
 								onClick={openModal}
 							>
 								CHECKOUT
 							</button>
-						) : (
-							<label
-								tabIndex={0}
-								className="flex max-w-md my-6 mx-2 btn btn-primary justify-self-center btn-lg"
-								htmlFor="my-modal-4"
-							>
-								CHECKOUT
-							</label>
-						)}
+							{event.data?.ref_quantity && (
+								<button className="text-xs underline" onClick={openRefModal}>
+									Want a referral code?
+								</button>
+							)}
+						</div>
 
 						<Modal isOpen={isOpen} closeModal={closeModal}>
 							<TicketSummary

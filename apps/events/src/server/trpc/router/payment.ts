@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client';
 import cuid from 'cuid';
 
 export const paymentRouter = t.router({
-	createCheckoutLink: authedProcedure
+	createCheckoutLink: t.procedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -19,10 +19,38 @@ export const paymentRouter = t.router({
 					})
 				),
 				codeId: z.string().optional(),
-				refCodeId: z.string().optional()
+				refCodeId: z.string().optional(),
+				email: z.string().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+			let user = ctx.session?.user;
+			if (!user) {
+				if (input.email) {
+					const dbUser = await ctx.prisma.user.upsert({
+						where: {
+							email: input.email
+						},
+						create: {
+							email: input.email
+						},
+						update: {}
+					});
+					user = {
+						id: dbUser.id,
+						image: dbUser.image,
+						email: dbUser.email,
+						name: dbUser.name,
+						role: undefined
+					};
+				} else {
+					throw new TRPCError({
+						code: 'BAD_REQUEST',
+						message: 'Email needed for unauthenticated users'
+					});
+				}
+			}
+
 			const [event, code] = await Promise.all([
 				input.eventId
 					? ctx.prisma.event.findFirst({
@@ -150,15 +178,15 @@ export const paymentRouter = t.router({
 				});
 				console.log(line_items);
 
-				const sameOwner = ctx.session.user.id === input?.refCodeId;
+				const sameOwner = user.id === input?.refCodeId;
 				const dataArray: Prisma.TicketCreateManyInput[] = [];
 
 				for (const tier of input.tiers) {
 					for (let i = 0; i < tier.quantity; ++i) {
-						if (input.eventId && ctx.session.user.id) {
+						if (input.eventId && user.id) {
 							const ticket = {
 								id: cuid(),
-								userId: ctx.session.user.id,
+								userId: user.id,
 								eventId: input.eventId,
 								tierId: tier.tierId,
 								...(code //Make sure to change this. Code should be serched before creating ticket
@@ -196,7 +224,7 @@ export const paymentRouter = t.router({
 
 				const session = await stripe.checkout.sessions.create({
 					line_items: line_items,
-					...(ctx.session.user?.email ? { customer_email: ctx.session.user.email } : {}),
+					...(user?.email ? { customer_email: user.email } : {}),
 					mode: 'payment',
 					success_url: `${env.NEXT_PUBLIC_URL}/tickets`,
 					cancel_url: `${ctx.headers.origin}/?canceled=true`,
@@ -205,7 +233,7 @@ export const paymentRouter = t.router({
 						tiers: JSON.stringify(input.tiers),
 						codeId: input.codeId ?? '',
 						refCodeId: input.refCodeId ?? '',
-						userId: ctx.session.user.id,
+						userId: user.id,
 						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 					},
 					payment_intent_data: {
@@ -218,7 +246,7 @@ export const paymentRouter = t.router({
 							tiers: JSON.stringify(input.tiers),
 							codeId: input.codeId ?? '',
 							refCodeId: input.refCodeId ?? '',
-							userId: ctx.session.user.id,
+							userId: user.id,
 							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 						}
 					},
