@@ -98,6 +98,11 @@ export const paymentRouter = t.router({
 									where: {
 										code: input.refCodeId
 									}
+								},
+								_count: {
+									select: {
+										forms: true
+									}
 								}
 							}
 					  })
@@ -226,7 +231,9 @@ export const paymentRouter = t.router({
 					line_items: line_items,
 					...(user?.email ? { customer_email: user.email } : {}),
 					mode: 'payment',
-					success_url: `${env.NEXT_PUBLIC_URL}/tickets`,
+					success_url: `${env.NEXT_PUBLIC_URL}/tickets${
+						event._count.forms > 0 && `?survey=${event.id}`
+					}`,
 					cancel_url: `${ctx.headers.origin}/?canceled=true`,
 					metadata: {
 						eventId: input.eventId,

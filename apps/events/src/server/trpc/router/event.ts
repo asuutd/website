@@ -2,7 +2,7 @@ import { TRPCClientError } from '@trpc/client';
 import { adminProcedure, authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { Fee_Holder } from '@prisma/client';
+import { Fee_Holder, Prisma } from '@prisma/client';
 import { env } from '@/env/server.mjs';
 import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
 
@@ -69,8 +69,7 @@ export const eventRouter = t.router({
 				forms: {
 					orderBy: {
 						updatedAt: 'desc'
-					},
-					take: 1
+					}
 				}
 			}
 		});
@@ -287,6 +286,27 @@ export const eventRouter = t.router({
 				});
 			}
 		}),
+
+	getResponses: adminProcedure
+		.input(
+			z.object({
+				formId: z.string()
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			const responses = await ctx.prisma.formResponse.findMany({
+				where: {
+					formId: input.formId
+				},
+				orderBy: {
+					createdAt: 'asc'
+				}
+			});
+
+			return responses.map(({ response }: { response: any }) =>
+				Object.assign({}, ...response.map((key: any) => ({ [key.label]: key.response })))
+			);
+		}),
 	createSurveyResponse: authedProcedure
 		.input(
 			z.object({
@@ -333,5 +353,29 @@ export const eventRouter = t.router({
 					message: 'You do not have a ticket for this event'
 				});
 			}
+		}),
+	changeFormVersion: adminProcedure
+		.input(
+			z.object({
+				direction: z.enum(['forward', 'backwards']),
+				currentFormTime: z.date()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const form = await ctx.prisma.eventForm.findMany({
+				where: {
+					eventId: input.eventId,
+					updatedAt: {
+						...(input.direction === 'backwards'
+							? { lt: input.currentFormTime }
+							: { gt: input.currentFormTime })
+					}
+				},
+				orderBy: {
+					updatedAt: input.direction === 'backwards' ? 'desc' : 'asc'
+				},
+				take: 1
+			});
+			return form[0];
 		})
 });
