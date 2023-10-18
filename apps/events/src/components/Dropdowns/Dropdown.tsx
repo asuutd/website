@@ -69,15 +69,21 @@ export default function Example() {
 						<button
 							className={`hover:bg-base-200 group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
 						>
-							{session?.user?.role === 'ORGANIZER' ? (
-								<Link href="/organizer/events" className="flex ">
-									<div className="justify-between gap-2">Your Events</div>
-								</Link>
-							) : (
-								<Link href="/register">
-									<div className="justify-between gap-0">Organise an event</div>
-								</Link>
-							)}
+							<Link href="/register">
+								<div className="justify-between gap-0">Organise an event</div>
+							</Link>
+						</button>
+					</li>
+
+					<li>
+						<button
+							className={`hover:bg-base-200 group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
+						>
+							<Link href="/admin/events" className="flex ">
+								<div className="justify-between gap-2">
+									Dashboard <span className="badge badge-neutral">New</span>
+								</div>
+							</Link>
 						</button>
 					</li>
 					<li>

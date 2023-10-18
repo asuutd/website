@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import Event from '@/components/Admin/Event/Event';
 import CreatorProvider from '@/components/Admin/Forms/Creator';
+import Collaborators from '@/components/Admin/Collaborators';
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ');
 }
@@ -190,6 +191,10 @@ const EventsDetailsPage = () => {
 
 								<Tab.Panel className="">
 									<RefCode eventId={eventId} />
+								</Tab.Panel>
+
+								<Tab.Panel className="">
+									<Collaborators eventId={eventId} />
 								</Tab.Panel>
 							</Tab.Panels>
 						</Tab.Group>
