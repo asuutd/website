@@ -69,7 +69,10 @@ const Ticket: NextPage = () => {
 			refetchInterval: Infinity,
 			onSuccess: () => {
 				setSurveyModalOpen(true);
-			}
+			},
+			retry: 2,
+			cacheTime: Infinity,
+			staleTime: Infinity
 		}
 	);
 	const surveyUpload = trpc.event.createSurveyResponse.useMutation();
