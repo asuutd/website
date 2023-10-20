@@ -1,3 +1,4 @@
+import { env } from '@/env/server.mjs';
 import {
 	Body,
 	Button,
@@ -28,7 +29,8 @@ interface CollaboratorInviteEmailProps {
 	invite_link?: string;
 }
 
-const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '';
+
+const baseUrl = env.NEXT_PUBLIC_URL;
 
 export const CollaboratorInviteEmail = ({
 	receiver_name = 'Invitee',
@@ -57,12 +59,8 @@ export const CollaboratorInviteEmail = ({
 			<Preview>{previewText}</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<Img
-						src={`https://existence-locate-shorts-dean.trycloudflare.com/favicon.png`}
-						width="40"
-						height="40"
-						alt="Kazala Logo"
-					/>
+					<Img src={`${baseUrl}/favicon.png`} width="40" height="40" alt="Kazala Logo" />
+
 					<Section>
 						<Text style={text}>Hi {receiver_name},</Text>
 
