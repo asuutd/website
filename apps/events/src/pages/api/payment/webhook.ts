@@ -8,6 +8,14 @@ import { env } from '../../../env/server.mjs';
 import { getServerAuthSession } from '../../../server/common/get-server-auth-session.js';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
+import { NextResponse } from 'next/server';
+import Transaction from './emails/transaction'
+import { Resend } from 'resend'
+import exp from 'node:constants';
+
+
+
+const resend = new Resend(env.RESEND_API_KEY); 
 
 export const config = {
 	api: {
@@ -39,11 +47,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					const tiers = JSON.parse(metadata.tiers ?? '{}');
 					const dataArray: string[] = [];
 					const userId = metadata.userId;
+					
+					const eventName = metadata.eventName;
+					const userEmail = metadata.userEmail;
+					const userName = metadata.userName;
+					const eventPhoto = metadata.eventPhoto;
 					const user_ticket_ids = metadata.ticketIds && JSON.parse(metadata.ticketIds);
 					console.log(user_ticket_ids);
 
 					//Update the payment intent data
-					await prisma.ticket.updateMany({
+
+					const ticket = await prisma.ticket.updateMany({
 						where: {
 							id: {
 								in: user_ticket_ids
@@ -53,6 +67,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 							paymentIntent: paymentIntentData.id
 						}
 					});
+
+					// // Send the email to the buyer
+					// const emailTemplate = createEmailTemplate('URL_TO_PURCHASE_DETAILS'); // Replace with the actual URL
+					// resend.sendEmail({
+					// 	from: 'onboarding@resend',
+					// 	to: 'buyer-email@example.com', // Replace with the buyer's email
+					// 	subject: 'Purchase Successful',
+					// 	html: emailTemplate,
+					// });
+
+					
+					try{
+						if (userEmail && userName && eventName  && eventPhoto){
+							const data = await resend.sendEmail({
+								from: 'ticket@mails.kazala.co',
+								to: userEmail, // Replace with the buyer's email
+								subject: `Your Tickets for ${eventName} are in!`,
+								react: Transaction({
+									user_name: userName,
+									event_name: eventName,
+									event_photo: eventPhoto,
+									order_date: new Date().toLocaleDateString(),
+									tiers: tiers
+								}),
+							})
+						}
+					} catch (error) {
+						console.error(error)
+					}
+					
 					res.status(200).json({ received: true });
 					break;
 				case 'checkout.session.expired':
@@ -72,7 +116,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				//Fix up refunds. Should differentiate between
 				case 'charge.refunded':
 					const chargeData = event.data.object as Stripe.Charge;
-					console.log(chargeData.metadata.ticketIds);
+					console.log(chargeData.metadata.ticketId);
 
 					if (chargeData.refunds) {
 						const ticketIds = chargeData.refunds.data.map((data) => data.metadata?.ticketId);

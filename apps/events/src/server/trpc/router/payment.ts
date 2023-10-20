@@ -6,6 +6,7 @@ import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
 import cuid from 'cuid';
+import { UndoIcon } from 'lucide-react';
 
 export const paymentRouter = t.router({
 	createCheckoutLink: t.procedure
@@ -98,6 +99,11 @@ export const paymentRouter = t.router({
 									where: {
 										code: input.refCodeId
 									}
+								},
+								_count: {
+									select: {
+										forms: true
+									}
 								}
 							}
 					  })
@@ -115,8 +121,10 @@ export const paymentRouter = t.router({
 					  })
 					: null
 			]);
+
 			console.log(event);
-			input.tiers.forEach((tier) => {
+			const transformTiers = input.tiers.map((tier) => {
+				 
 				const foundTier = event?.Tier.find((dbTier) => dbTier.id === tier.tierId);
 				if (foundTier) {
 					if (
@@ -128,8 +136,13 @@ export const paymentRouter = t.router({
 							message: 'The ticket quantity is greater than the limit'
 						});
 					}
+					return({tierName: foundTier.name, quantity: tier.quantity, tierId: foundTier.id, tierPrice: foundTier.price})
 				}
-			});
+				else{
+					return null
+				}
+				
+			}).filter(tier => tier !== null) as {tierName: string; quantity: number; tierId: string; tierPrice: number}[];
 
 			let total = 0;
 			if (event?.Tier && event.organizer?.stripeAccountId) {
@@ -226,7 +239,9 @@ export const paymentRouter = t.router({
 					line_items: line_items,
 					...(user?.email ? { customer_email: user.email } : {}),
 					mode: 'payment',
-					success_url: `${env.NEXT_PUBLIC_URL}/tickets`,
+					success_url: `${env.NEXT_PUBLIC_URL}/tickets${
+						event._count.forms > 0 && `?survey=${event.id}`
+					}`,
 					cancel_url: `${ctx.headers.origin}/?canceled=true`,
 					metadata: {
 						eventId: input.eventId,
@@ -243,7 +258,13 @@ export const paymentRouter = t.router({
 						},
 						metadata: {
 							eventId: input.eventId,
-							tiers: JSON.stringify(input.tiers),
+							eventName: event.name,
+							eventPhoto: event.ticketImage,
+							...(user.email &&{
+								userEmail: user.email,
+								userName: user.name??user.email
+							}),
+							tiers: JSON.stringify(transformTiers),
 							codeId: input.codeId ?? '',
 							refCodeId: input.refCodeId ?? '',
 							userId: user.id,

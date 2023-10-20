@@ -3,6 +3,11 @@ import { env } from '../../../env/server.mjs';
 import stripe from '../../../utils/stripe';
 import { authedProcedure, organizerProcedure, t } from '../trpc';
 import { z } from 'zod';
+import { NextResponse } from 'next/server';
+import Collaborater from './emails/collaborater'
+import { Resend } from 'resend'
+const resend = new Resend(env.RESEND_API_KEY); 
+
 
 export const organizerRouter = t.router({
 	createOrganizer: authedProcedure.mutation(async ({ input, ctx }) => {
@@ -11,7 +16,7 @@ export const organizerRouter = t.router({
 				id: ctx.session.user.id
 			},
 			include: {
-				user: true
+				user: true,
 			}
 		});
 		console.log(organizer);
@@ -124,11 +129,35 @@ export const organizerRouter = t.router({
 					email: input.email
 				},
 				include: {
-					user: true
+					user: true,
+					event: true,
 				}
 			});
+
+						
 			console.log(invite.token);
-			`${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`;
+			
+			
+			try{
+					const data = await resend.sendEmail({
+						from: 'ticket@mails.kazala.co',
+						to: invite.email, // Replace with the buyer's email
+						subject: `Invite to collaborate on ${invite.event.name}.`,
+						react: Collaborater({
+							receiver_name: invite.user.name??"invitee",
+							receiver_photo: invite.user.image??"",
+							sender_email: ctx.session.user.email??"",
+							sender_name: ctx.session.user.name??"",
+							event_name: invite.event.name,
+							event_image: invite.event.ticketImage??"",
+							invite_link: `${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`,
+						}),
+					})
+			} catch (error) {
+				console.error(error)
+			}
+
+
 
 			return invite;
 		}),

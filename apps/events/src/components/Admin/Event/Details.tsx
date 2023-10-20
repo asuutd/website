@@ -2,6 +2,7 @@ import ImageWithFallback from '@/components/Utils/ImageWithFallback';
 import { RouterOutput } from '@/server/trpc/router';
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/utils/constants';
 import { imageUpload } from '@/utils/imageUpload';
+import { isValidHttpUrl } from '@/utils/misc';
 import { trpc } from '@/utils/trpc';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format, parseISO } from 'date-fns';
@@ -40,7 +41,8 @@ const Details = ({ event }: { event: Event }) => {
 			.optional(),
 		bannerImage: zodFileType.optional(),
 		ticketImage: zodFileType.optional(),
-		feeBearer: z.boolean()
+		feeBearer: z.boolean(),
+		description: z.string().optional()
 	});
 	type FormInput = z.infer<typeof FormSchema>;
 
@@ -64,7 +66,10 @@ const Details = ({ event }: { event: Event }) => {
 							coordinates: [event.location.lat, event.location.long]
 						}
 				  }
-				: {})
+				: {}),
+			...(event.description && {
+				description: event.description
+			})
 		}
 	});
 
@@ -76,36 +81,57 @@ const Details = ({ event }: { event: Event }) => {
 
 	const onSubmit = async (fields: FormInput) => {
 		console.log(fields);
-		if (fields.bannerImage[0] && fields.ticketImage[0]) {
+		const isBannerURL = isValidHttpUrl(event.image ?? '');
+		const isTicketURL = isValidHttpUrl(event.ticketImage ?? '');
+		if ((fields.bannerImage[0] || isBannerURL) && (fields.ticketImage[0] || isTicketURL)) {
 			const [bannerUploadResponse, ticketImageUploadResponse] = await Promise.all([
-				imageUpload(fields.bannerImage[0], { user: session?.user?.id ?? '' }),
-				imageUpload(fields.ticketImage[0], { user: session?.user?.id ?? '' })
+				!isBannerURL
+					? imageUpload(fields.bannerImage[0], { user: session?.user?.id ?? '' })
+					: Promise.resolve(event.image ?? ''),
+				!isTicketURL
+					? imageUpload(fields.ticketImage[0], { user: session?.user?.id ?? '' })
+					: Promise.resolve(event.ticketImage ?? '')
 			]);
-
-			if (bannerUploadResponse.ok && ticketImageUploadResponse.ok) {
-				const [bannerResult, ticketImageResult] = await Promise.all([
-					bannerUploadResponse.json(),
-					ticketImageUploadResponse.json()
-				]);
-				console.log(bannerResult, ticketImageResult);
-				updateMutation.mutate(
-					{
-						eventId: event.id,
-						name: fields.name,
-						startTime: parseISO(fields.startTime),
-						endTime: parseISO(fields.endTime),
-						bannerImage: `https://ucarecdn.com/${bannerResult[fields.bannerImage[0].name]}/`,
-						ticketImage: `https://ucarecdn.com/${ticketImageResult[fields.ticketImage[0].name]}/`,
-						location: fields.location,
-						feeBearer: fields.feeBearer ? 'USER' : 'ORGANIZER'
-					},
-					{
-						onSuccess: () => {
-							utils.event.getEvents.invalidate();
-						}
-					}
-				);
+			if (
+				(typeof bannerUploadResponse !== 'string' && !bannerUploadResponse.ok) ||
+				(typeof ticketImageUploadResponse !== 'string' && !ticketImageUploadResponse.ok)
+			) {
+				return;
 			}
+
+			const [bannerResult, ticketImageResult] = await Promise.all([
+				typeof bannerUploadResponse !== 'string'
+					? bannerUploadResponse.json()
+					: Promise.resolve(bannerUploadResponse),
+				typeof ticketImageUploadResponse !== 'string'
+					? ticketImageUploadResponse.json()
+					: Promise.resolve(ticketImageUploadResponse)
+			]);
+			console.log(bannerResult, ticketImageResult);
+			updateMutation.mutate(
+				{
+					eventId: event.id,
+					name: fields.name,
+					startTime: parseISO(fields.startTime),
+					endTime: parseISO(fields.endTime),
+					bannerImage:
+						typeof bannerUploadResponse !== 'string'
+							? `https://ucarecdn.com/${bannerResult[fields.bannerImage[0].name]}/`
+							: bannerResult,
+					ticketImage:
+						typeof ticketImageUploadResponse !== 'string'
+							? `https://ucarecdn.com/${ticketImageResult[fields.ticketImage[0].name]}/`
+							: ticketImageResult,
+					location: fields.location,
+					feeBearer: fields.feeBearer ? 'USER' : 'ORGANIZER',
+					description: fields.description
+				},
+				{
+					onSuccess: () => {
+						utils.event.getEvents.invalidate();
+					}
+				}
+			);
 		}
 	};
 	return (
@@ -180,13 +206,14 @@ const Details = ({ event }: { event: Event }) => {
 							</div>
 						</div>
 					</div>
-					{/* {event.data?.description && (
-						<>
-							<h2 className="text-4xl text-primary font-bold  my-6">Description</h2>
 
-							<div>{parse(event.data.description)}</div>
-						</>
-					)} */}
+					<>
+						<h2 className="text-4xl text-primary font-bold  my-6">Description</h2>
+
+						<div>
+							<textarea className="textarea textarea-lg w-full" {...register('description')} />
+						</div>
+					</>
 
 					<div className="form-control">
 						<label className="label">
