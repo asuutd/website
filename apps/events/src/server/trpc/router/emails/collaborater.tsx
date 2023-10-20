@@ -29,6 +29,7 @@ interface CollaboratorInviteEmailProps {
 	invite_link?: string;
 }
 
+
 const baseUrl = env.NEXT_PUBLIC_URL;
 
 export const CollaboratorInviteEmail = ({
@@ -59,6 +60,7 @@ export const CollaboratorInviteEmail = ({
 			<Body style={main}>
 				<Container style={container}>
 					<Img src={`${baseUrl}/favicon.png`} width="40" height="40" alt="Kazala Logo" />
+
 					<Section>
 						<Text style={text}>Hi {receiver_name},</Text>
 
