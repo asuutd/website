@@ -32,6 +32,7 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 			amount: z.string(),
 			tierId: z.string(),
 			percentage: z.boolean(),
+			limit: z.string(),
 			price: z.string()
 		})
 		.refine(
@@ -60,6 +61,7 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 				type: fields.percentage ? 'percent' : 'flat',
 				num_codes: parseInt(fields.amount),
 				value: parseFloat(fields.price) * (fields.percentage ? 0.01 : 1), //Wrong wording
+				limit: parseInt(fields.limit),
 				tierId: fields.tierId
 			},
 			{
@@ -121,6 +123,19 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 								/>
 								{errors.amount && (
 									<span className="text-error">{errors.amount.message?.toString()}</span>
+								)}
+							</div>
+
+							<div className="form-control">
+								<label htmlFor="amount">Limit per Code</label>
+								<input
+									id="amount"
+									type="number"
+									className="input input-bordered w-32"
+									{...register('limit')}
+								/>
+								{errors.limit && (
+									<span className="text-error">{errors.limit.message?.toString()}</span>
 								)}
 							</div>
 
