@@ -54,7 +54,7 @@ export const PurchaseEmail = ({user_name = "Buyer Buyerton",
         />
       </Head>
       <Tailwind>
-        <Preview>You've now made a transaction with Kazala!</Preview>       
+        <Preview>You&apos;ve now made a transaction with Kazala!</Preview>       
           <Body style={main}>
             {/* HEADER */}
             <Container>
@@ -140,7 +140,7 @@ export const PurchaseEmail = ({user_name = "Buyer Buyerton",
                 <Hr style={hr} />
 
                 {tiers.map(tier => 
-                  <Section>
+                  <Section  key ={tier.tierId}>
                     <Column style={{ width: '64px' }}>
                       <Img
                         src={event_photo}
