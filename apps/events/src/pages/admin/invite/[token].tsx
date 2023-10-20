@@ -1,6 +1,7 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Link from 'next/link';
 import React from 'react';
+import { prisma } from '../../../server/db/client';
 import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
 
 const Invite: NextPage<{
