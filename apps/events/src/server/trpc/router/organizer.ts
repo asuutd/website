@@ -122,9 +122,13 @@ export const organizerRouter = t.router({
 				data: {
 					eventId: input.eventId,
 					email: input.email
+				},
+				include: {
+					user: true
 				}
 			});
 			console.log(invite.token);
+			`${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`;
 
 			return invite;
 		}),
