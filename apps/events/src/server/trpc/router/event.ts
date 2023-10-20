@@ -163,6 +163,7 @@ export const eventRouter = t.router({
 							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
 					})
 					.optional(),
+				description: z.string().optional(),
 				feeBearer: z.nativeEnum(Fee_Holder)
 			})
 		)
@@ -223,7 +224,8 @@ export const eventRouter = t.router({
 										}
 									}
 							  }
-							: {})
+							: {}),
+						description: input.description
 					}
 				});
 			} else {
