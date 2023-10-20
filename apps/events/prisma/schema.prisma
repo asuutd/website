@@ -59,7 +59,10 @@ model User {
   RefCode       RefCode[]
   EventAdmin    EventAdmin[]
   forms         FormResponse[]
+  invites       AdminInvite[]
   Organizer     Organizer?
+
+  @@index(email)
 }
 
 model Organizer {
@@ -93,7 +96,8 @@ model Event {
   Tier         Tier[]
   EventAdmin   EventAdmin[]
   location     EventLocation?
-  forms         EventForm[]
+  forms        EventForm[]
+  invites      AdminInvite[]
   organizer    Organizer?        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 }
 
@@ -103,6 +107,14 @@ model EventAdmin {
   event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
   userId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AdminInvite {
+  token   String @id @default(uuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
+  email  String
+  user    User   @relation(fields: [email], references: [email], onDelete: Cascade)
 }
 
 model EventLocation {

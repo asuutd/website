@@ -45,13 +45,14 @@ const Events: NextPage = () => {
 		onError: (err) => {
 			switch (err?.data?.code) {
 				case 'UNAUTHORIZED':
-					setErrorMsg('You are not authorized to view this page. Please sign in to continue.');
+					setErrorMsg(err?.message);
 					break;
 				default:
 					setErrorMsg('An error occured while fetching your tickets. Please try again later.');
 					break;
 			}
-		}
+		},
+		retry: 3
 	});
 	const paymentLink = trpc.payment.createStripeAccountLink.useMutation();
 	const handlePaymentClick = () => {
@@ -70,14 +71,16 @@ const Events: NextPage = () => {
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
 				<div className="justify-between flex items-center">
 					<h1 className="text-4xl font-bold">Events</h1>
-					<div className="join">
-						<button className="btn  btn-sm join-item" onClick={() => handlePaymentClick()}>
-							Payments
-						</button>
-						<button className="btn btn-primary btn-sm join-item" onClick={() => setIsOpen(true)}>
-							+ New
-						</button>
-					</div>
+					{events.data && (
+						<div className="join">
+							<button className="btn  btn-sm join-item" onClick={() => handlePaymentClick()}>
+								Payments
+							</button>
+							<button className="btn btn-primary btn-sm join-item" onClick={() => setIsOpen(true)}>
+								+ New
+							</button>
+						</div>
+					)}
 				</div>
 
 				{events.isLoading && <p>Loading...</p>}
@@ -122,7 +125,7 @@ const Events: NextPage = () => {
 								)}
 							>
 								{upcoming.length === 0 ? (
-									<div className="flex flex-wrap gap-8 bg-white">
+									<div className="flex flex-wrap gap-8 bg-white rounded-md p-2">
 										<p>You have no tickets for upcoming events.</p>
 									</div>
 								) : (
@@ -141,7 +144,7 @@ const Events: NextPage = () => {
 								)}
 							>
 								{past.length === 0 ? (
-									<div className="flex flex-wrap gap-8 bg-white">
+									<div className="flex flex-wrap gap-8 bg-white rounded-md p-2">
 										<p>You have no tickets for past events.</p>
 									</div>
 								) : (
@@ -185,7 +188,7 @@ const EventCard = ({ event }: { event: ReturnedEvent }) => {
 				</div>
 			</div>
 			<div className="card-actions justify-end">
-				<Link href={`/organizer/events/${event.id}`} shallow={true}>
+				<Link href={`/admin/events/${event.id}`} shallow={true}>
 					<a className="btn btn-primary rounded-tr-none rounded-bl-none">Details</a>
 				</Link>
 			</div>
