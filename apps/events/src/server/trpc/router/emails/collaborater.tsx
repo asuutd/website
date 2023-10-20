@@ -77,7 +77,7 @@ import {
                 >
                   {sender_email}
                 </Link>
-                ) has requested for you to become a collaborator for the  "<strong>{event_name}</strong>" event on{' '}
+                ) has requested for you to become a collaborator for the <strong>{event_name}</strong> event on{' '}
                 <strong>Kazala</strong>.
               </Text>
   
@@ -127,7 +127,7 @@ import {
                 This invitation was intended for{' '}
                 <span className="text-black">{receiver_name} </span>. If you were not
                 expecting this invitation, you can ignore this email. If you are
-                concerned about your account's safety, please reply to this email to
+                concerned about your account&apos;s safety, please reply to this email to
                 get in touch with us.
               </Text>
             </Section>
