@@ -19,12 +19,6 @@ type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']>;
 
 const columnHelper = createColumnHelper<Ticket>();
 
-declare module '@tanstack/react-table' {
-	interface FilterFns {
-		myCustomFilter: FilterFn<Ticket>;
-	}
-}
-
 const TicketTable = ({ eventId }: { eventId: string }) => {
 	const [page, setPage] = useState(0);
 	const [filter, setFilter] = useState<Record<string, any>>();
