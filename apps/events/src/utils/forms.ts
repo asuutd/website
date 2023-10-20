@@ -68,7 +68,7 @@ export type CustomFormContext = {
 	deleteElement: (id: number) => void;
 };
 
-export const transformData = (data: EventForm[], index: number = 0) => {
+export const transformData = (data: EventForm[], index = 0) => {
 	const formTemplate = data[index]?.form as Prisma.JsonArray;
 	const parsedTemplate = formTemplate.map((item) => ({
 		json: item
