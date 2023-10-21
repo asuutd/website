@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 	const session = await getServerAuthSession({ req, res });
 
 	if (token && prisma) {
-		console.log(token, prisma, session)
+		console.log(token, session);
 		if (session && session.user?.email) {
 			const result = await prisma?.adminInvite.findFirst({
 				where: {
