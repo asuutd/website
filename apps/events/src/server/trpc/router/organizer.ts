@@ -4,10 +4,9 @@ import stripe from '../../../utils/stripe';
 import { authedProcedure, organizerProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import Collaborater from './emails/collaborater'
-import { Resend } from 'resend'
-const resend = new Resend(env.RESEND_API_KEY); 
-
+import Collaborater from './emails/collaborater';
+import { Resend } from 'resend';
+const resend = new Resend(env.RESEND_API_KEY);
 
 export const organizerRouter = t.router({
 	createOrganizer: authedProcedure.mutation(async ({ input, ctx }) => {
@@ -16,7 +15,7 @@ export const organizerRouter = t.router({
 				id: ctx.session.user.id
 			},
 			include: {
-				user: true,
+				user: true
 			}
 		});
 		console.log(organizer);
@@ -130,34 +129,30 @@ export const organizerRouter = t.router({
 				},
 				include: {
 					user: true,
-					event: true,
+					event: true
 				}
 			});
 
-						
 			console.log(invite.token);
-			
-			
-			try{
-					const data = await resend.sendEmail({
-						from: 'ticket@mails.kazala.co',
-						to: invite.email, // Replace with the buyer's email
-						subject: `Invite to collaborate on ${invite.event.name}.`,
-						react: Collaborater({
-							receiver_name: invite.user.name??"invitee",
-							receiver_photo: invite.user.image??"",
-							sender_email: ctx.session.user.email??"",
-							sender_name: ctx.session.user.name??"",
-							event_name: invite.event.name,
-							event_image: invite.event.ticketImage??"",
-							invite_link: `${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`,
-						}),
+
+			try {
+				const data = await resend.sendEmail({
+					from: 'ticket@mails.kazala.co',
+					to: invite.email, // Replace with the buyer's email
+					subject: `Invite to collaborate on ${invite.event.name}.`,
+					react: Collaborater({
+						receiver_name: invite.user.name ?? 'invitee',
+						receiver_photo: invite.user.image ?? '',
+						sender_email: ctx.session.user.email ?? '',
+						sender_name: ctx.session.user.name ?? '',
+						event_name: invite.event.name,
+						event_image: invite.event.ticketImage ?? '',
+						invite_link: `${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`
 					})
+				});
 			} catch (error) {
-				console.error(error)
+				console.error(error);
 			}
-
-
 
 			return invite;
 		}),
@@ -196,5 +191,58 @@ export const organizerRouter = t.router({
 				}
 			});
 			return;
+		}),
+	acceptInvite: authedProcedure
+		.input(
+			z.object({
+				token: z.string()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const result = await ctx.prisma.adminInvite.findFirst({
+				where: {
+					token: input.token
+				},
+				include: {
+					user: {
+						select: {
+							id: true
+						}
+					},
+					event: {
+						select: {
+							name: true,
+							EventAdmin: {
+								where: {
+									userId: ctx.session.user.id
+								}
+							}
+						}
+					}
+				}
+			});
+			if (
+				(result && result.email === ctx.session.user.email) ||
+				result?.event.EventAdmin.length === 0
+			) {
+				try {
+					await ctx.prisma?.eventAdmin.create({
+						data: {
+							eventId: result.eventId,
+							userId: result.user.id
+						}
+					});
+				} catch (err: any) {
+					console.log(err.message);
+				}
+
+				return {
+					status: 'successful',
+					event: {
+						id: result.eventId,
+						name: result.event.name
+					}
+				};
+			}
 		})
 });
