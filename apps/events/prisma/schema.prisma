@@ -107,6 +107,7 @@ model EventAdmin {
   event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
   userId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([eventId, userId])
 }
 
 model AdminInvite {

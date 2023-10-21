@@ -60,12 +60,16 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 				}
 			});
 			if (result && result.email === session.user.email) {
-				await prisma?.eventAdmin.create({
-					data: {
-						eventId: result.eventId,
-						userId: result.user.id
-					}
-				});
+				try {
+					await prisma?.eventAdmin.create({
+						data: {
+							eventId: result.eventId,
+							userId: result.user.id
+						}
+					});
+				} catch (err: any) {
+					console.log(err.message);
+				}
 
 				return {
 					props: {
