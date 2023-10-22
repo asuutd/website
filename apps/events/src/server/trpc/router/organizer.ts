@@ -61,14 +61,16 @@ export const organizerRouter = t.router({
 			accountLink
 		};
 	}),
-	getEvents: adminProcedure.query(async ({ ctx }) => {
+	getEvents: authedProcedure.query(async ({ ctx }) => {
 		return ctx.prisma.event.findMany({
 			where: {
 				OR: [
 					{ organizerId: ctx.session.user.id },
 					{
 						EventAdmin: {
-							some: {}
+							some: {
+								id: ctx.session.user.id
+							}
 						}
 					}
 				]
