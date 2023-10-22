@@ -29,9 +29,9 @@ model Account {
   providerAccountId String
   refresh_token     String? @db.Text
   access_token      String? @db.Text
-  expires_at        Int?
+  expires_at        Int
   token_type        String?
-  scope             String?
+  scope             String
   id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -50,7 +50,7 @@ model Session {
 model User {
   id            String       @id @default(cuid())
   name          String?
-  email         String?      @unique
+  email         String      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -58,7 +58,11 @@ model User {
   tickets       Ticket[]
   RefCode       RefCode[]
   EventAdmin    EventAdmin[]
+  forms         FormResponse[]
+  invites       AdminInvite[]
   Organizer     Organizer?
+
+  @@index(email)
 }
 
 model Organizer {
@@ -92,6 +96,8 @@ model Event {
   Tier         Tier[]
   EventAdmin   EventAdmin[]
   location     EventLocation?
+  forms        EventForm[]
+  invites      AdminInvite[]
   organizer    Organizer?        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 }
 
@@ -101,6 +107,15 @@ model EventAdmin {
   event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
   userId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([eventId, userId])
+}
+
+model AdminInvite {
+  token   String @id @default(uuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
+  email  String
+  user    User   @relation(fields: [email], references: [email], onDelete: Cascade)
 }
 
 model EventLocation {
@@ -109,6 +124,27 @@ model EventLocation {
   lat     Float
   name    String?
   event   Event  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model EventForm {
+  id        String @id @default(cuid())
+  eventId   String
+  form      Json
+  updatedAt DateTime @default(now())
+  responses FormResponse[]
+  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([eventId])
+}
+
+model FormResponse {
+  formId  String
+  userId  String
+  response Json
+  createdAt DateTime  @default(now())
+  form    EventForm @relation(fields: [formId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([formId, userId])
+
 }
 
 model Ticket {

@@ -4,6 +4,8 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Tier } from '@prisma/client';
 import Image from 'next/image';
 import { calculateApplicationFee } from '@/utils/misc';
+import { twJoin } from 'tailwind-merge';
+import { useSession } from 'next-auth/react';
 
 type Ticket = {
 	tier: Tier;
@@ -25,6 +27,8 @@ const TicketSummary = ({
 	discountCode: string | undefined;
 }) => {
 	const checkoutQuery = trpc.payment.createCheckoutLink.useMutation();
+	const { status } = useSession();
+	const [email, setEmail] = useState<string>();
 	const event = trpc.useContext().event.getEvent.getData({
 		eventId
 	});
@@ -81,6 +85,11 @@ const TicketSummary = ({
 				...(refCode !== ''
 					? {
 							refCodeId: refCode
+					  }
+					: {}),
+				...(email
+					? {
+							email
 					  }
 					: {})
 			},
@@ -235,6 +244,20 @@ const TicketSummary = ({
 									</svg>
 								</div>
  */}
+				{status !== 'authenticated' && (
+					<div className="form-control">
+						<label className="label">
+							<span className="label-text">You are not logged in so your email is necessary</span>
+						</label>
+						<input
+							type="email"
+							className="input input-sm input-bordered mt-2 w-64 mr-2"
+							placeholder="Email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
+					</div>
+				)}
 
 				<div className="flex justify-end items-center">
 					<span className="text-primary text-lg mr-3">Total:</span>${realTotal}
@@ -242,9 +265,11 @@ const TicketSummary = ({
 				<div className="mt-4 ">
 					<button
 						type="button"
-						className={`btn btn-primary btn-sm mx-auto ${
-							stripeLoading ? 'btn-disabled animate-pulse' : ''
-						} `}
+						className={twJoin(
+							'btn btn-primary btn-sm mx-auto',
+							stripeLoading && 'btn-disabled animate-pulse',
+							!(email && email !== '') && status !== 'authenticated' && 'btn-disabled'
+						)}
 						onClick={getStripeCheckout}
 					>
 						PAY

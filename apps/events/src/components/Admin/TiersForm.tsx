@@ -27,6 +27,7 @@ const TiersForm: React.FC<Props> = ({ eventId, closeModal }) => {
 	const FormSchema = z.object({
 		name: z.string(),
 		price: z.string(),
+		limit: z.string().optional(),
 		startTime: z.string(),
 		endTime: z.string()
 	});
@@ -48,6 +49,7 @@ const TiersForm: React.FC<Props> = ({ eventId, closeModal }) => {
 			{
 				name: fields.name,
 				price: parseInt(fields.price),
+				...(fields.limit && { limit: parseInt(fields.price) }),
 				startTime: parseISO(fields.startTime),
 				endTime: parseISO(fields.endTime),
 				eventId: eventId
@@ -94,7 +96,9 @@ const TiersForm: React.FC<Props> = ({ eventId, closeModal }) => {
 							</div>
 
 							<div className="form-control">
-								<label htmlFor="price">Price</label>
+								<label className="label">
+									<span className="label-text">Price</span>
+								</label>
 								<input
 									id="price"
 									type="number"
@@ -107,7 +111,24 @@ const TiersForm: React.FC<Props> = ({ eventId, closeModal }) => {
 							</div>
 
 							<div className="form-control">
-								<label htmlFor="appt">Start Time</label>
+								<label className="label">
+									<span className="label-text">Limit</span>
+								</label>
+								<input
+									id="price"
+									type="number"
+									className="input input-bordered w-32"
+									{...register('limit')}
+								/>
+								{errors.limit && (
+									<span className="text-error">{errors.limit.message?.toString()}</span>
+								)}
+							</div>
+
+							<div className="form-control">
+								<label className="label">
+									<span className="label-text">Start Time</span>
+								</label>
 								<input
 									id="endtime"
 									type="datetime-local"
@@ -120,7 +141,9 @@ const TiersForm: React.FC<Props> = ({ eventId, closeModal }) => {
 							</div>
 
 							<div className="form-control">
-								<label htmlFor="endtime">End Time</label>
+								<label className="label">
+									<span className="label-text">End Time</span>
+								</label>
 								<input
 									id="endtime"
 									type="datetime-local"

@@ -6,6 +6,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '../../../server/db/client';
 import { env } from '../../../env/server.mjs';
+import { CustomPrismaAdapter } from '@/utils/adapter';
 
 export const authOptions: NextAuthOptions = {
 	// Include user.id on session
@@ -29,7 +30,7 @@ export const authOptions: NextAuthOptions = {
 		}
 	},
 	// Configure one or more authentication providers
-	adapter: PrismaAdapter(prisma),
+	adapter: CustomPrismaAdapter(prisma),
 	providers: [
 		GoogleProvider({
 			clientId: env.GOOGLE_CLIENT_ID,
