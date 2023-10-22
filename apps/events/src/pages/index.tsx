@@ -99,7 +99,7 @@ const Home: NextPage = () => {
 											clip-rule="evenodd"
 											fill-rule="evenodd"
 											stroke-linejoin="round"
-											stroke-miterlimit="2"
+											strokeMiterlimit="2"
 											viewBox="0 0 24 24"
 											xmlns="http://www.w3.org/2000/svg"
 										>
@@ -117,7 +117,7 @@ const Home: NextPage = () => {
 												clip-rule="evenodd"
 												fill-rule="evenodd"
 												stroke-linejoin="round"
-												stroke-miterlimit="2"
+												strokeMiterlimit="2"
 												viewBox="0 0 24 24"
 												xmlns="http://www.w3.org/2000/svg"
 											>
