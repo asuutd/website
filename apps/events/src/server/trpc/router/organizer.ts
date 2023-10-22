@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { env } from '../../../env/server.mjs';
 import stripe from '../../../utils/stripe';
-import { authedProcedure, organizerProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, organizerProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import Collaborater from './emails/collaborater';
@@ -62,33 +62,15 @@ export const organizerRouter = t.router({
 		};
 	}),
 	getEvents: authedProcedure.query(async ({ ctx }) => {
-		const user = await ctx.prisma.user.findFirst({
-			where: {
-				id: ctx.session.user.id
-			},
-			include: {
-				EventAdmin: {
-					take: 1
-				},
-				Organizer: true
-			}
-		});
-		console.log(user);
-
-		if (user?.EventAdmin.length == 0 && !user.Organizer) {
-			throw new TRPCError({
-				code: 'UNAUTHORIZED',
-				message: 'You are not an event admin or organizer'
-			});
-		}
-
 		return ctx.prisma.event.findMany({
 			where: {
 				OR: [
 					{ organizerId: ctx.session.user.id },
 					{
 						EventAdmin: {
-							some: {}
+							some: {
+								id: ctx.session.user.id
+							}
 						}
 					}
 				]
