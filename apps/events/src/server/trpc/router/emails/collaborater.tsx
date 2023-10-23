@@ -29,7 +29,6 @@ interface CollaboratorInviteEmailProps {
 	invite_link?: string;
 }
 
-
 const baseUrl = env.NEXT_PUBLIC_URL;
 
 export const CollaboratorInviteEmail = ({
@@ -80,7 +79,7 @@ export const CollaboratorInviteEmail = ({
 								</Column>
 								<Column align="center">
 									<Img
-										src={`${baseUrl}/vercel-arrow.png`}
+										src={`${baseUrl}/email-arrow.png`}
 										width="12"
 										height="9"
 										alt="invited you to"
@@ -91,7 +90,7 @@ export const CollaboratorInviteEmail = ({
 								</Column>
 							</Row>
 						</Section>
-						<Section style={{ alignItems: 'center' }}>
+						<Section style={{ alignItems: 'center', textAlign: 'center' }}>
 							<Button pX={20} pY={12} style={button} href={invite_link}>
 								Join the team
 							</Button>
