@@ -202,7 +202,7 @@ const Ticket: NextPage = () => {
 					<ModalChild>
 						<Parser
 							onSubmit={(fields) => onSurveySubmit(fields)}
-							data={transformData([surveyQuery.data])}
+							data={transformData([surveyQuery.data]) ?? []}
 						/>
 					</ModalChild>
 				)}
