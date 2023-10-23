@@ -69,9 +69,9 @@ export type CustomFormContext = {
 };
 
 export const transformData = (data: EventForm[], index = 0) => {
-	const formTemplate = data[index]?.form as Prisma.JsonArray;
-	const parsedTemplate = formTemplate.map((item) => ({
+	const formTemplate = data[index]?.form as Prisma.JsonArray | undefined;
+	const parsedTemplate = formTemplate?.map((item) => ({
 		json: item
-	})) as CustomFormData[];
+	})) as CustomFormData[] | undefined;
 	return parsedTemplate;
 };

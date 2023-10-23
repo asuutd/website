@@ -42,12 +42,14 @@ const Form = ({ forms, eventId }: { forms: EventForm[]; eventId: string }) => {
 	const changeVersion = (direction: 'increment' | 'decrement') => {
 		if (direction === 'decrement' && currentIndex < forms.length - 1) {
 			setCurrentIndex(currentIndex + 1);
-			setData(transformData(forms, currentIndex + 1));
+			const transformedData = transformData(forms, currentIndex + 1);
+			transformedData && setData(transformedData);
 		}
 
 		if (direction === 'increment' && currentIndex > 0) {
 			setCurrentIndex(currentIndex - 1);
-			setData(transformData(forms, currentIndex - 1));
+			const transformedData = transformData(forms, currentIndex - 1);
+			transformedData && setData(transformedData);
 		}
 	};
 	return (
