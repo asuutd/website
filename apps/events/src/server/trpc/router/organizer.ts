@@ -95,7 +95,8 @@ export const organizerRouter = t.router({
 				where: {
 					user: {
 						email: input.email
-					}
+					},
+					eventId: input.eventId
 				}
 			});
 			if (existingInvitee) {
