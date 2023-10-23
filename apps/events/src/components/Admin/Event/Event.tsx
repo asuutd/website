@@ -17,7 +17,7 @@ const Event = ({ eventId }: { eventId: string }) => {
 		{
 			onSuccess: (data) => {
 				const parsedTemplate = transformData(data.forms);
-				setData(parsedTemplate);
+				parsedTemplate && setData(parsedTemplate);
 			}
 		}
 	);
