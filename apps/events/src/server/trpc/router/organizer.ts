@@ -105,16 +105,23 @@ export const organizerRouter = t.router({
 					message: 'Collaborator already exists'
 				});
 			}
-			const invite = await ctx.prisma.adminInvite.create({
-				data: {
-					eventId: input.eventId,
-					email: input.email
-				},
-				include: {
-					user: true,
-					event: true
-				}
-			});
+			const [invite, user] = await Promise.all([
+				ctx.prisma.adminInvite.create({
+					data: {
+						eventId: input.eventId,
+						email: input.email
+					},
+					include: {
+						event: true
+					}
+				}),
+
+				ctx.prisma.user.findFirst({
+					where: {
+						email: input.email
+					}
+				})
+			]);
 
 			console.log(invite.token);
 
@@ -124,8 +131,8 @@ export const organizerRouter = t.router({
 					to: invite.email, // Replace with the buyer's email
 					subject: `Invite to collaborate on ${invite.event.name}.`,
 					react: Collaborater({
-						receiver_name: invite.user.name ?? 'invitee',
-						receiver_photo: invite.user.image ?? '',
+						receiver_name: user?.name ?? 'Invitee',
+						receiver_photo: user?.image ?? '',
 						sender_email: ctx.session.user.email ?? '',
 						sender_name: ctx.session.user.name ?? '',
 						event_name: invite.event.name,
