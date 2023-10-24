@@ -27,9 +27,12 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 			columnHelper.accessor('user.image', {
 				cell: (info) => (
 					<div className="flex items-center space-x-3">
-						<div className="h-12 w-12 tooltip tooltip-right" data-tip={info.row.original.user.name}>
+						<div
+							className="h-12 w-12 tooltip tooltip-right"
+							data-tip={info.row.original.user.name ?? info.row.original.user.email}
+						>
 							<Image
-								src={info.getValue() ?? '/placeholder.svg'}
+								src={info.getValue() ?? '/email_assets/Missing_avatar.svg'}
 								width={50}
 								height={50}
 								className="rounded-md "
