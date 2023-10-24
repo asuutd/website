@@ -15,7 +15,11 @@ export const serverSchema = z.object({
 	STRIPE_SECRET_KEY: z.string(),
 	WEBHOOK_SECRET: z.string(),
 	UPLOADCARE_SECRET_KEY: z.string(),
-	RESEND_API_KEY: z.string()
+	RESEND_API_KEY: z.string(),
+	R2_ACCOUNT_ID: z.string(),
+	R2_ACCESS_KEY_ID: z.string(),
+	R2_SECRET_ACCESS_KEY: z.string(),
+	QRCODE_BUCKET: z.string()
 });
 
 /**
