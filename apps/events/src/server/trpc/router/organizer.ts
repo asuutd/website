@@ -146,7 +146,7 @@ export const organizerRouter = t.router({
 
 			return invite;
 		}),
-	getCollaborators: organizerProcedure.query(async ({ input, ctx }) => {
+	getCollaborators: adminProcedure.query(async ({ input, ctx }) => {
 		return await ctx.prisma.eventAdmin.findMany({
 			where: {
 				eventId: input.eventId
