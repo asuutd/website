@@ -11,6 +11,7 @@
 		"start": "next start"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.433.0",
 		"@fontsource/inter": "^4.5.13",
 		"@formkit/auto-animate": "^1.0.0-beta.3",
 		"@headlessui/react": "^1.7.16",

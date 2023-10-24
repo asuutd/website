@@ -1,4 +1,4 @@
-import { env } from '@/env/server.mjs';
+import { env } from '@/env/client.mjs';
 import {
 	Html,
 	Body,
@@ -16,6 +16,7 @@ import {
 	Column,
 	Section
 } from '@react-email/components';
+import React from 'react';
 import { CSSProperties } from 'react';
 
 const baseUrl = env.NEXT_PUBLIC_URL;
@@ -28,6 +29,7 @@ interface purchaseEmailProps {
 	event_photo: string;
 	order_date: string;
 	tiers: { tierName: string; quantity: number; tierId: string; tierPrice: number }[];
+	ticketQRCodes: string[];
 }
 
 export const PurchaseEmail = ({
@@ -35,7 +37,11 @@ export const PurchaseEmail = ({
 	event_name = 'All White Party',
 	event_photo = 'https://ucarecdn.com/45048ba5-accf-4379-a0a9-320b011ec681/',
 	order_date = 'July 26, 2019',
-	tiers = [{ tierName: 'General Sale', tierId: '', quantity: 1, tierPrice: 12 }]
+	tiers = [
+		{ tierName: 'General Sale', tierId: '', quantity: 1, tierPrice: 12 },
+		{ tierName: 'Presale', tierId: '', quantity: 3, tierPrice: 15 }
+	],
+	ticketQRCodes = ['https://qrcode-dev.kazala.co/test_4.png']
 }: purchaseEmailProps) => {
 	const totalPrice = tiers.reduce((sum, tier) => sum + tier.tierPrice, 0);
 	const firstName = user_name.split(' ')[0];
@@ -104,28 +110,6 @@ export const PurchaseEmail = ({
 							</Row>
 						</Section>
 
-						{/* TICKET DISPLAY BODY MIDDLD */}
-						<Section>
-							{/* <Img
-                    src={`${baseUrl}/static/ticket-100.png`} 
-                    alt="ticket border"
-                    width="300"
-                    height="300"
-                  >
-                  </Img> */}
-							<Img
-								src={`${baseUrl}/placeholder-square.png`}
-								alt="QR CODE HERE"
-								width="150"
-								height="150"
-								style={{
-									...QR_Img
-									// position: 'absolute',
-									// transform: 'translate(0px, -200px)'
-								}}
-							/>
-						</Section>
-
 						{/* ORDER INFORMATION BODY BOTTOM */}
 						<Section>
 							<Heading
@@ -143,45 +127,67 @@ export const PurchaseEmail = ({
 
 							{tiers.map((tier) => (
 								<Section key={tier.tierId}>
-									<Column style={{ width: '64px' }}>
-										<Img
-											src={event_photo}
-											width="64"
-											height="64"
-											alt="Event Photo"
-											style={productIcon}
-										/>
-									</Column>
+									<Row>
+										<Column style={{ width: '64px' }}>
+											<Img
+												src={event_photo}
+												width="64"
+												height="64"
+												alt="Event Photo"
+												style={productIcon}
+											/>
+										</Column>
 
-									<Column style={productDescriptionWrapper}>
-										<Text style={productTitle}>{event_name}</Text>
-										<Text style={productDescription}>{tier.tierName}</Text>
-										<Text style={productDescription}>Purchased {order_date}</Text>
-									</Column>
+										<Column style={productDescriptionWrapper}>
+											<Text style={productTitle}>{event_name}</Text>
+											<Text style={productDescription}>{tier.tierName}</Text>
+											<Text style={productDescription}>Purchased {order_date}</Text>
+										</Column>
 
-									<Column style={productQuantityWrappper}>
-										<Text style={productQuantity}>{tier.quantity}x</Text>
-									</Column>
+										<Column style={productQuantityWrappper}>
+											<Text style={productQuantity}>{tier.quantity}x</Text>
+										</Column>
 
-									<Column style={productPriceWrapper} align="right">
-										<Text style={productPrice}>${tier.tierPrice.toFixed(2)}</Text>
-									</Column>
+										<Column style={productPriceWrapper} align="right">
+											<Text style={productPrice}>${tier.tierPrice.toFixed(2)}</Text>
+										</Column>
+									</Row>
 								</Section>
 							))}
-
-							{/* TOTAL */}
-
-							<Row>
-								<Column align="right">
-									<Column style={tableCell} align="right">
-										<Text style={productPriceTotal}>TOTAL</Text>
-									</Column>
-									<Column style={productPriceLargeWrapper}>
-										<Text style={productPriceLarge}>${totalPrice.toFixed(2)}</Text>
-									</Column>
-								</Column>
-							</Row>
 						</Section>
+						{/* TOTAL */}
+
+						<Section width={576}>
+							<Heading className=" text-right">
+								<Column>
+									<Text style={productPriceTotal} className="text-right">
+										TOTAL
+									</Text>
+								</Column>
+								<Column style={productPriceLargeWrapper}>
+									<Text style={productPriceLarge}>${totalPrice.toFixed(2)}</Text>
+								</Column>
+							</Heading>
+						</Section>
+
+						<Heading
+							style={{
+								marginBottom: '4px',
+								marginTop: '50px',
+								fontSize: 'x-large',
+								fontWeight: 'bold',
+								color: '#2e2e2e'
+							}}
+						>
+							Ticket QRCodes
+						</Heading>
+						<Hr style={hr} />
+
+						{ticketQRCodes.map((qrcode, index) => (
+							<Section key={index}>
+								<Img src={qrcode} alt="QR Code" width="200" height="200" style={logo} />
+							</Section>
+						))}
 					</Container>
 
 					{/* FOOTER */}
@@ -316,21 +322,13 @@ const hr = {
 };
 
 const main = {
-	backgroundColor: '#f0ece9',
+	backgroundColor: '#F2F1F0',
 	margin: '0 auto',
-	fontFamily: "'Bricolage Grotesque', sans-serif"
+	fontFamily: "'Bricolage Grotesque', sans-serif",
+	width: '36rem'
 };
 
-const bodyContainer = {
-	backgroundColor: '#eee5dd',
-	maxWidth: '36rem',
-	marginTop: '3rem',
-	marginLeft: 'auto',
-	marginRight: 'auto',
-	padding: '2rem',
-	borderRadius: '0.5rem',
-	boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-};
+const bodyContainer = {};
 
 const footerContainer: CSSProperties = {
 	padding: '2rem',
@@ -342,11 +340,6 @@ const footerContainer: CSSProperties = {
 	textAlign: 'center',
 	alignItems: 'center',
 	justifyContent: 'center'
-};
-
-const QR_Img = {
-	margin: '0 auto',
-	padding: '40px 20px 20px'
 };
 
 const Font = ({

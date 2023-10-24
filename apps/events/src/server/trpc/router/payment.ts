@@ -123,26 +123,35 @@ export const paymentRouter = t.router({
 			]);
 
 			console.log(event);
-			const transformTiers = input.tiers.map((tier) => {
-				 
-				const foundTier = event?.Tier.find((dbTier) => dbTier.id === tier.tierId);
-				if (foundTier) {
-					if (
-						foundTier._count.Ticket + tier.quantity >
-						(foundTier.limit ?? Number.MAX_SAFE_INTEGER)
-					) {
-						throw new TRPCError({
-							code: 'CONFLICT',
-							message: 'The ticket quantity is greater than the limit'
-						});
+			const transformTiers = input.tiers
+				.map((tier) => {
+					const foundTier = event?.Tier.find((dbTier) => dbTier.id === tier.tierId);
+					if (foundTier) {
+						if (
+							foundTier._count.Ticket + tier.quantity >
+							(foundTier.limit ?? Number.MAX_SAFE_INTEGER)
+						) {
+							throw new TRPCError({
+								code: 'CONFLICT',
+								message: 'The ticket quantity is greater than the limit'
+							});
+						}
+						return {
+							tierName: foundTier.name,
+							quantity: tier.quantity,
+							tierId: foundTier.id,
+							tierPrice: foundTier.price
+						};
+					} else {
+						return null;
 					}
-					return({tierName: foundTier.name, quantity: tier.quantity, tierId: foundTier.id, tierPrice: foundTier.price})
-				}
-				else{
-					return null
-				}
-				
-			}).filter(tier => tier !== null) as {tierName: string; quantity: number; tierId: string; tierPrice: number}[];
+				})
+				.filter((tier) => tier !== null) as {
+				tierName: string;
+				quantity: number;
+				tierId: string;
+				tierPrice: number;
+			}[];
 
 			let total = 0;
 			if (event?.Tier && event.organizer?.stripeAccountId) {
@@ -235,13 +244,16 @@ export const paymentRouter = t.router({
 					});
 				}
 
+				const return_url = new URL(`${env.NEXT_PUBLIC_URL}/tickets`);
+				if (event._count.forms > 0) {
+					return_url.searchParams.append('survey', event.id);
+				}
+
 				const session = await stripe.checkout.sessions.create({
 					line_items: line_items,
 					...(user?.email ? { customer_email: user.email } : {}),
 					mode: 'payment',
-					success_url: `${env.NEXT_PUBLIC_URL}/tickets${
-						event._count.forms > 0 && `?survey=${event.id}`
-					}`,
+					success_url: return_url.toString(),
 					cancel_url: `${ctx.headers.origin}/?canceled=true`,
 					metadata: {
 						eventId: input.eventId,
@@ -260,9 +272,9 @@ export const paymentRouter = t.router({
 							eventId: input.eventId,
 							eventName: event.name,
 							eventPhoto: event.ticketImage,
-							...(user.email &&{
+							...(user.email && {
 								userEmail: user.email,
-								userName: user.name??user.email
+								userName: user.name ?? user.email
 							}),
 							tiers: JSON.stringify(transformTiers),
 							codeId: input.codeId ?? '',
