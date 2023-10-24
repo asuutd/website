@@ -33,7 +33,7 @@ const baseUrl = env.NEXT_PUBLIC_URL;
 
 export const CollaboratorInviteEmail = ({
 	receiver_name = 'Invitee',
-	receiver_photo = `${baseUrl}/vercel-user.png`,
+	receiver_photo = `${baseUrl}/email_assets/Missing_avatar.svg`,
 	sender_email = 'bukinoshita@example.com',
 	sender_name = 'Inviter',
 	event_name = 'All White Party',
@@ -58,7 +58,7 @@ export const CollaboratorInviteEmail = ({
 			<Preview>{previewText}</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<Img src={`${baseUrl}/favicon.png`} width="40" height="40" alt="Kazala Logo" />
+					<Img src={`${baseUrl}/favicon.png`} width="40" height="48" alt="Kazala Logo" />
 
 					<Section>
 						<Text style={text}>Hi {receiver_name},</Text>
@@ -172,22 +172,20 @@ const Font = ({
 	return (
 		<style>
 			{`
-            @font-face {
-                font-style: ${fontStyle};
-                font-family: ${fontFamily};
-                font-weight: ${fontWeight};
-                mso-font-alt: ${
-									Array.isArray(fallbackFontFamily) ? fallbackFontFamily[0] : fallbackFontFamily
-								};
-                ${src}
-            }
-  
-            * {
-                font-family: ${fontFamily}, ${
+			  @font-face {
+				  font-style: ${fontStyle};
+				  font-family: ${fontFamily};
+				  font-weight: ${fontWeight};
+				  mso-font-alt: ${Array.isArray(fallbackFontFamily) ? fallbackFontFamily[0] : fallbackFontFamily};
+				  ${src}
+			  }
+	
+			  * {
+				  font-family: ${fontFamily}, ${
 				Array.isArray(fallbackFontFamily) ? fallbackFontFamily.join(', ') : fallbackFontFamily
 			};
-            }
-            `}
+			  }
+			  `}
 		</style>
 	);
 };
