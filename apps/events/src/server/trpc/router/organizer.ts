@@ -111,12 +111,15 @@ export const organizerRouter = t.router({
 					email: input.email
 				},
 				include: {
-					user: true,
 					event: true
 				}
 			});
 
-			console.log(invite.token);
+			const user = await ctx.prisma.user.findFirst({
+				where: {
+					email: input.email
+				}
+			});
 
 			try {
 				const data = await resend.sendEmail({
@@ -124,8 +127,8 @@ export const organizerRouter = t.router({
 					to: invite.email, // Replace with the buyer's email
 					subject: `Invite to collaborate on ${invite.event.name}.`,
 					react: Collaborater({
-						receiver_name: invite.user.name ?? 'invitee',
-						receiver_photo: invite.user.image ?? '',
+						receiver_name: user?.name ?? 'invitee',
+						receiver_photo: user?.image ?? '',
 						sender_email: ctx.session.user.email ?? '',
 						sender_name: ctx.session.user.name ?? '',
 						event_name: invite.event.name,
@@ -155,6 +158,17 @@ export const organizerRouter = t.router({
 			}
 		});
 	}),
+	getInvitedCollaborators: organizerProcedure.query(async ({ input, ctx }) => {
+		return await ctx.prisma.adminInvite.findMany({
+			where: {
+				eventId: input.eventId
+			},
+			select: {
+				eventId: true,
+				email: true
+			}
+		});
+	}),
 	removeCollaborator: organizerProcedure
 		.input(
 			z.object({
@@ -174,6 +188,23 @@ export const organizerRouter = t.router({
 				}
 			});
 			return;
+		}),
+	removeInvite: organizerProcedure
+		.input(
+			z.object({
+				email: z.string(),
+				eventId: z.string()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			await ctx.prisma.adminInvite.delete({
+				where: {
+					eventId_email: {
+						email: input.email,
+						eventId: input.eventId
+					}
+				}
+			});
 		}),
 	acceptInvite: authedProcedure
 		.input(

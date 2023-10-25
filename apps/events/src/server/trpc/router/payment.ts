@@ -247,6 +247,9 @@ export const paymentRouter = t.router({
 				const return_url = new URL(`${env.NEXT_PUBLIC_URL}/tickets`);
 				if (event._count.forms > 0) {
 					return_url.searchParams.append('survey', event.id);
+					if (user.email) {
+						return_url.searchParams.append('email', user.email);
+					}
 				}
 
 				const session = await stripe.checkout.sessions.create({

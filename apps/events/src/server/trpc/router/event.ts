@@ -249,21 +249,39 @@ export const eventRouter = t.router({
 		}),
 
 	//For User
-	getEventForm: authedProcedure
+	getEventForm: t.procedure
 		.input(
 			z.object({
-				eventId: z.string()
+				eventId: z.string(),
+				userEmail: z.string().optional()
 			})
 		)
 		.query(async ({ input, ctx }) => {
+			if (!input.userEmail && !ctx.session?.user) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'You need to be logged in or have an email'
+				});
+			}
+			console.log(ctx.session?.user?.id, input.userEmail);
 			const userResponse = await ctx.prisma.formResponse.findFirst({
 				where: {
 					form: {
 						eventId: input.eventId
 					},
-					userId: ctx.session.user.id
+					OR: [
+						{
+							userId: ctx.session?.user?.id
+						},
+						{
+							user: {
+								email: input.userEmail
+							}
+						}
+					]
 				}
 			});
+			console.log(userResponse);
 			if (userResponse) {
 				throw new TRPCError({
 					code: 'CONFLICT',
