@@ -1,12 +1,15 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
-import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
 
-// Prisma adapter for NextAuth, optional and can be removed
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '../../../server/db/client';
 import { env } from '../../../env/server.mjs';
 import { CustomPrismaAdapter } from '@/utils/adapter';
+import EmailProvider from "next-auth/providers/email"
+import LoginLinkEmail from '@/server/trpc/router/emails/login';
+import { Resend } from 'resend';
+import { v4 as uuidv4 } from 'uuid';
+const resend = new Resend(env.RESEND_API_KEY);
+
 
 export const authOptions: NextAuthOptions = {
 	// Include user.id on session
@@ -31,12 +34,36 @@ export const authOptions: NextAuthOptions = {
 	},
 	// Configure one or more authentication providers
 	adapter: CustomPrismaAdapter(prisma),
+	theme: {
+		logo: '../../../favicon.png',
+		brandColor: '#4B140A',
+	},
+	pages: {
+		signIn: '/signin',
+	},
 	providers: [
 		GoogleProvider({
 			clientId: env.GOOGLE_CLIENT_ID,
 			clientSecret: env.GOOGLE_CLIENT_SECRET
+		}),
+		EmailProvider({
+			async sendVerificationRequest({
+				identifier: email,
+				url,
+			  }) {
+				const data = await resend.sendEmail({
+					from: 'Kazala Tickets <login@mails.kazala.co>',
+					to: email,
+					subject: `Log in to Kazala`,
+					react: LoginLinkEmail({
+						login_link: url,
+					}),
+					headers: {
+						'X-Entity-Ref-ID': uuidv4()
+					}
+				});
+			}
 		})
-		// ...add more providers here
 	]
 };
 
