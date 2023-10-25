@@ -54,7 +54,7 @@ const Code = ({ eventId }: { eventId: string }) => {
 						{codes.data?.map((code) => (
 							<tr key={code.id} >
 								<td className='flex gap-1'>
-									{!newCodes.has(code.id) && <span className="ml-1 badge badge-neutral">New</span>} 
+									{newCodes.has(code.id) && <span className="ml-1 badge badge-neutral animate-pulse">New</span>} 
 									<p>{code._count.tickets < code.limit ? <>{code.code}</> : <s>{code.code}</s>}</p>
 									</td>
 								<td>{code.tier.name}</td>
