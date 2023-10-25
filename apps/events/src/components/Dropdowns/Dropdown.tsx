@@ -81,7 +81,7 @@ export default function Example() {
 						>
 							<Link href="/admin/events" className="flex ">
 								<div className="justify-between gap-2">
-									Dashboard <span className="badge badge-neutral">New</span>
+									Dashboard <span className="ml-1 badge badge-neutral">New</span>
 								</div>
 							</Link>
 						</button>
