@@ -1,6 +1,6 @@
 import { RouterOutput } from '@/server/trpc/router';
 import { trpc } from '@/utils/trpc';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ArrayElement } from '@/utils/misc';
 import {
 	createColumnHelper,
@@ -11,11 +11,10 @@ import {
 import ImageWithFallback from '../Utils/ImageWithFallback';
 type Collaborator = ArrayElement<RouterOutput['organizer']['getCollaborators']>;
 
-const columnHelper = createColumnHelper<Collaborator>();
+const columnHelper = createColumnHelper<Collaborator & {invite: boolean}>();
+const model = getCoreRowModel()
 
 const Collaborators = ({ eventId }: { eventId: string }) => {
-	const createInvite = trpc.organizer.createInvite.useMutation();
-	const removeCollaborator = trpc.organizer.removeCollaborator.useMutation();
 	const collaboratorsQuery = trpc.organizer.getCollaborators.useQuery(
 		{
 			eventId
@@ -25,6 +24,33 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 			retry: 3
 		}
 	);
+	const invitedCollaboratorsQuery = trpc.organizer.getInvitedCollaborators.useQuery(
+		{
+			eventId
+		},
+		{
+			refetchInterval: 60000,
+			retry: 3
+		}
+	);
+
+	const removeCollaborator = trpc.organizer.removeCollaborator.useMutation({
+		onSuccess: () => {
+			collaboratorsQuery.refetch();
+		}
+	});
+	const removeInvite = trpc.organizer.removeInvite.useMutation({
+		onSuccess: () => {
+			invitedCollaboratorsQuery.refetch();
+		}
+	}); 
+
+	const createInvite = trpc.organizer.createInvite.useMutation({
+		onSuccess: () => {
+			invitedCollaboratorsQuery.refetch();
+		}
+	});
+	
 	const [email, setEmail] = useState<string>('');
 
 	const handleInvite = () => {
@@ -37,16 +63,22 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 	};
 
 	const handleRemoveCollaborator = useCallback(
-		async (userId: string) => {
-			await removeCollaborator.mutateAsync({
+		async (userId: string, invite: boolean) => {
+			if (invite) await removeInvite.mutateAsync({
 				eventId,
-				userId: userId
+				email: userId
 			});
+			else {
+				await removeCollaborator.mutateAsync({
+					eventId,
+					userId
+				});
+			}
 		},
 		[eventId]
 	);
 
-	const columns = React.useMemo(
+	const columns = useMemo(
 		() => [
 			columnHelper.accessor('user.image', {
 				cell: (info) => (
@@ -68,7 +100,8 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 				cell: (info) => (
 					<button
 						className="btn btn-error btn-xs"
-						onClick={() => handleRemoveCollaborator(info.getValue())}
+						onClick={() => {
+							handleRemoveCollaborator(info.getValue(), info.row.original.invite)}}
 					>
 						Remove
 					</button>
@@ -79,16 +112,25 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 		[handleRemoveCollaborator]
 	);
 
-	const table = useReactTable({
-		data: collaboratorsQuery.data ?? [],
-		columns,
-
-		filterFns: {
-			myCustomFilter: (rows, columns, filterValue) => {
-				return true;
-			}
+	const data = useMemo(() => [
+		...(collaboratorsQuery.data?.map(c=>({ ...c, invite: false })) ?? []), 
+		...(invitedCollaboratorsQuery.data?.map((c)=>({
+		id: c.email,
+		eventId: c.eventId,
+		userId: c.email,
+		user: {
+			id: c.email,
+			name: c.email + ' (Invited)',
+			image: '/placeholder.svg'
 		},
-		getCoreRowModel: getCoreRowModel()
+		invite: true
+	})) ?? [])], [collaboratorsQuery.data, invitedCollaboratorsQuery.data]);
+
+	
+	const table = useReactTable({
+		data,
+		columns,
+		getCoreRowModel: model
 	});
 	return (
 		<div className="p-3">

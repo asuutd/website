@@ -38,7 +38,9 @@ const Tiers = ({ eventId }: { eventId: string }) => {
 
 export default Tiers;
 
-const TierCard = ({ tier }: { tier: Tier }) => {
+const TierCard = ({ tier }: { tier: Tier & {
+	_count: {Ticket: number}
+} }) => {
 	const FormSchema = z.object({
 		name: z.string(),
 		price: z.string(),
@@ -123,8 +125,10 @@ const TierCard = ({ tier }: { tier: Tier }) => {
 					/>
 				</div>
 
+				<p>Tickets Sold: {tier._count.Ticket}</p>
+
 				<div className="card-actions justify-end">
-					<button className={`btn  ${isDirty ? 'btn-primary' : 'btn-disabled'}`}>Update</button>
+					<button disabled={mutation.isLoading} className={`btn ${isDirty ? 'btn-primary' : 'btn-disabled'}`}>{mutation.isLoading ?'Updating...' : 'Update'}</button>
 				</div>
 			</form>
 		</div>

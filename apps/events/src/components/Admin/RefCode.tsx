@@ -42,7 +42,7 @@ const RefCode = ({ eventId }: { eventId: string }) => {
 											xmlns="http://www.w3.org/2000/svg"
 											xmlnsXlink="http://www.w3.org/1999/xlink"
 											height="100%"
-											stroke-miterlimit="10"
+											strokeMiterlimit="10"
 											version="1.1"
 											viewBox="0 0 140 250"
 											width="100%"

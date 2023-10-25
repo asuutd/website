@@ -42,7 +42,9 @@ export const adminProcedure = authedProcedure
 			event.organizerId === ctx.session.user.id ||
 			event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
 		) {
-			return next();
+			return next({ctx: {
+				...ctx, event
+			}});
 		} else {
 			throw new TRPCError({ code: 'UNAUTHORIZED' });
 		}
@@ -62,7 +64,9 @@ export const organizerProcedure = authedProcedure
 			}
 		});
 		if (event.organizerId === ctx.session.user.id) {
-			return next();
+			return next({ctx: {
+				...ctx, event
+			}});
 		} else {
 			throw new TRPCError({ code: 'UNAUTHORIZED' });
 		}
