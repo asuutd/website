@@ -111,12 +111,15 @@ export const organizerRouter = t.router({
 					email: input.email
 				},
 				include: {
-					user: true,
 					event: true
 				}
 			});
 
-			console.log(invite.token);
+			const user = await ctx.prisma.user.findFirst({
+				where: {
+					email: input.email
+				}
+			});
 
 			try {
 				const data = await resend.sendEmail({
@@ -155,6 +158,17 @@ export const organizerRouter = t.router({
 			}
 		});
 	}),
+	getInvitedCollaborators: organizerProcedure.query(async ({ input, ctx }) => {
+		return await ctx.prisma.adminInvite.findMany({
+			where: {
+				eventId: input.eventId
+			},
+			select: {
+				eventId: true,
+				email: true
+			}
+		});
+	}),
 	removeCollaborator: organizerProcedure
 		.input(
 			z.object({
@@ -174,6 +188,19 @@ export const organizerRouter = t.router({
 				}
 			});
 			return;
+		}),
+	removeInvite: organizerProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			await ctx.prisma.adminInvite.delete({
+				where: {
+					id: input.id
+				}
+			});
 		}),
 	acceptInvite: authedProcedure
 		.input(
