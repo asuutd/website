@@ -105,7 +105,7 @@ export const CollaboratorInviteEmail = ({
 
 						<Hr style={hr} />
 						<Text style={text}>
-							This invitation was intended for <span className="text-black">{receiver_name} </span>.
+							This invitation was intended for <span className="text-black">{receiver_name}</span>.
 							If you were not expecting this invitation, you can ignore this email. If you are
 							concerned about your account&apos;s safety, please reply to this email to get in touch
 							with us.
