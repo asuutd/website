@@ -127,8 +127,8 @@ export const organizerRouter = t.router({
 					to: invite.email, // Replace with the buyer's email
 					subject: `Invite to collaborate on ${invite.event.name}.`,
 					react: Collaborater({
-						receiver_name: user.name ?? 'invitee',
-						receiver_photo: user.image ?? '',
+						receiver_name: user?.name ?? 'invitee',
+						receiver_photo: user?.image ?? '',
 						sender_email: ctx.session.user.email ?? '',
 						sender_name: ctx.session.user.name ?? '',
 						event_name: invite.event.name,
