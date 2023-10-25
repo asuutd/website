@@ -297,7 +297,8 @@ export const ticketRouter = t.router({
 					user: {
 						select: {
 							image: true,
-							name: true
+							name: true,
+							email: true
 						}
 					},
 					tier: {
