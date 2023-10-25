@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import Parser from '@/components/Admin/Forms/Parser';
 import { transformData } from '@/utils/forms';
 import ModalChild from '@/components/ModalChild';
+import { NextSeo } from 'next-seo';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -93,9 +94,7 @@ const Ticket: NextPage = () => {
 
 	return (
 		<>
-			<Head>
-				<title>Tickets</title>
-			</Head>
+			<NextSeo title="Tickets" nofollow={true} />
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
 				<h1 className="text-4xl font-bold">Tickets</h1>
 				{ticket.isLoading && <p>Loading...</p>}

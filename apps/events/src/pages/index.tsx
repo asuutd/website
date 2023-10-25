@@ -7,6 +7,7 @@ import { trpc } from '@/utils/trpc';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { MouseEventHandler, useEffect, useMemo, useState } from 'react';
+import { NextSeo } from 'next-seo';
 
 const Home: NextPage = () => {
 	const data = useMemo(
@@ -45,10 +46,13 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Kazala</title>
-				<meta name="description" content="Pay for special events that ASU hosts" />
 				<link rel="icon" href="/favicon.svg" />
 			</Head>
+
+			<NextSeo
+				title="Kazala"
+				description="Kazala links you to campus activities and organization-hosted gatherings, enabling you to explore and engage in what matters most to you."
+			/>
 			<main className="py-2 ">
 				<div className="relative overflow-hidden">
 					<div
