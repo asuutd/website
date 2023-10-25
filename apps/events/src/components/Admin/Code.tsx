@@ -29,6 +29,7 @@ const Code = ({ eventId }: { eventId: string }) => {
 							<th>Tier</th>
 							<th>Value</th>
 							<th>Used</th>
+							<th>Notes</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -41,6 +42,9 @@ const Code = ({ eventId }: { eventId: string }) => {
 								<td>
 									{code._count.tickets}/{code.limit}
 								</td>
+								<td>
+									{code.notes}
+								</td>
 							</tr>
 						))}
 					</tbody>
@@ -48,7 +52,10 @@ const Code = ({ eventId }: { eventId: string }) => {
 			</div>
 
 			<Modal isOpen={isOpen} closeModal={() => setIsOpen(false)}>
-				<CodeForm tiers={tiers.data} closeModal={() => setIsOpen(false)} />
+				<CodeForm tiers={tiers.data} closeModal={() => {
+					setIsOpen(false)
+					codes.refetch()
+				}} />
 			</Modal>
 		</>
 	);

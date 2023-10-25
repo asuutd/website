@@ -155,14 +155,16 @@ export const codeRouter = t.router({
 				}
 			});
 		}),
-	createCode: authedProcedure
+	createCode: adminProcedure
 		.input(
 			z.object({
 				num_codes: z.number().default(1),
 				tierId: z.string(),
 				type: z.string().default('percent'),
-				limit: z.number().default(1),
-				value: z.number()
+				limit: z.number(),
+				value: z.number(),
+				notes: z.string(),
+				eventId: z.string()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -175,7 +177,15 @@ export const codeRouter = t.router({
 					event: true
 				}
 			});
-			if (tier?.event.organizerId === ctx.session.user.id) {
+
+			if (!tier) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'Invalid tier'
+				});
+			}
+
+
 				if (input.type === 'flat' && input.value > tier.price) {
 					throw new TRPCError({
 						code: 'BAD_REQUEST',
@@ -189,13 +199,14 @@ export const codeRouter = t.router({
 						type: input.type,
 						limit: input.limit,
 						value: input.value,
-						code: generateCode(6)
+					code: generateCode(6),
+					notes: input.notes
 					});
 				}
 				const code = await ctx.prisma.code.createMany({
 					data: codeData
 				});
-			}
+
 		}),
 	createReferalCode: authedProcedure
 		.input(
