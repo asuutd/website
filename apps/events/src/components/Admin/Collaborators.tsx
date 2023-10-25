@@ -50,7 +50,7 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 		async (userId: string, invite: boolean) => {
 			if (invite) await removeInvite.mutateAsync({
 				eventId,
-				id: userId
+				email: userId
 			});
 			else {
 				await removeCollaborator.mutateAsync({

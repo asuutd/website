@@ -192,13 +192,17 @@ export const organizerRouter = t.router({
 	removeInvite: organizerProcedure
 		.input(
 			z.object({
-				id: z.string(),
+				email: z.string(),
+				eventId: z.string()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
 			await ctx.prisma.adminInvite.delete({
 				where: {
-					id: input.id
+					eventId_email: {
+						email: input.email,
+						eventId: input.eventId
+					}
 				}
 			});
 		}),
