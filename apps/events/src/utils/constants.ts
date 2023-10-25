@@ -5,3 +5,4 @@ export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'im
  * 3% service fee
  */
 export const SERVICE_PERCENTAGE = 0.03;
+export const DEFAULT_PROFILE_IMAGE_PATH = "/email_assets/Missing_avatar.svg"
