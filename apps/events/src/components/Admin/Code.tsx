@@ -7,8 +7,25 @@ const Code = ({ eventId }: { eventId: string }) => {
 	const tiers = trpc.tier.getTiersAdmin.useQuery({
 		eventId
 	});
-
-	const codes = trpc.code.getCodes.useQuery({ eventId });
+	
+	const [newCodes, setNewCodes] = useState<Set<string>>(new Set());
+	const codes = trpc.code.getCodes.useQuery({ eventId }, {
+		structuralSharing(oldData, newData) {
+			if (!oldData) {
+				setNewCodes(new Set())
+				return newData
+			}
+			const newCodes: Set<string> = new Set()
+			for (const code of newData) {
+				const newCode = oldData.find((c) => c.id === code.id)
+				if (!newCode) {
+					newCodes.add(code.id)
+				}
+			}
+			setNewCodes(newCodes)
+			return newData
+		},
+	});
 
 	const [isOpen, setIsOpen] = useState(false);
 	return (
@@ -35,8 +52,11 @@ const Code = ({ eventId }: { eventId: string }) => {
 					<tbody>
 						{/* row 1 */}
 						{codes.data?.map((code) => (
-							<tr key={code.id}>
-								<td>{code._count.tickets < code.limit ? <>{code.code}</> : <s>{code.code}</s>}</td>
+							<tr key={code.id} >
+								<td className='flex gap-1'>
+									{!newCodes.has(code.id) && <span className="ml-1 badge badge-neutral">New</span>} 
+									<p>{code._count.tickets < code.limit ? <>{code.code}</> : <s>{code.code}</s>}</p>
+									</td>
 								<td>{code.tier.name}</td>
 								<td>{code.type === 'percent' ? <>{code.value * 100}%</> : <>${code.value}</>}</td>
 								<td>
