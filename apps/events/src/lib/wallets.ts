@@ -35,8 +35,6 @@ export const createApplePass = async (
 		messageEncoding: 'iso-8859-1'
 	};
 
-	event.start.setMonth(10);
-	event.end.setMonth(10);
 	const pass = template.createPass({
 		serialNumber: `event-${event.id}-ticket-${ticket.id}`,
 		description:
@@ -49,7 +47,8 @@ export const createApplePass = async (
 		barcode,
 		barcodes: [barcode],
 		appLaunchURL: `${env.NEXT_PUBLIC_URL}/tickets`,
-		logoText: event?.organizer?.user.name || 'Kazala',
+		// more than 15 chars leads to overlapping text
+		logoText: event?.organizer?.user.name?.slice(0,15).trim() || 'Kazala',
 		teamIdentifier: env.APPLE_TEAM_ID,
 		passTypeIdentifier: env.APPLE_TICKET_PASS_TYPE_IDENTIFIER
 	});
