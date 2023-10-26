@@ -327,7 +327,7 @@ export const eventRouter = t.router({
 				Object.assign({}, ...response.map((key: any) => ({ [key.label]: key.response })))
 			);
 		}),
-	createSurveyResponse: authedProcedure
+	createSurveyResponse: t.procedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -336,14 +336,31 @@ export const eventRouter = t.router({
 						label: z.string(),
 						response: z.union([z.string(), z.array(z.string())])
 					})
-				)
+				),
+				userEmail: z.string().email().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+			if (!input.userEmail && !ctx.session?.user) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'You need to be logged in or have an email'
+				});
+			}
+
 			const ticket = await ctx.prisma.ticket.findFirst({
 				where: {
 					eventId: input.eventId,
-					userId: ctx.session.user.id
+					OR: [
+						{
+							userId: ctx.session?.user?.id
+						},
+						{
+							user: {
+								email: input.userEmail
+							}
+						}
+					]
 				},
 				include: {
 					event: {
@@ -363,7 +380,7 @@ export const eventRouter = t.router({
 				await ctx.prisma.formResponse.create({
 					data: {
 						formId: ticket.event.forms[0].id,
-						userId: ctx.session.user.id,
+						userId: ticket.userId,
 						response: input.value
 					}
 				});

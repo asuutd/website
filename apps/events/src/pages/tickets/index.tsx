@@ -89,7 +89,8 @@ const Ticket: NextPage = () => {
 				value: Object.keys(fields).map((key) => ({
 					label: key,
 					response: fields[key]
-				}))
+				})),
+				userEmail: emailString
 			});
 		}
 
