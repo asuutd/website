@@ -42,7 +42,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 			}
 		};
 		generateQR(`${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`);
-	}, []);
+	}, [ticket]);
 	const root = useRef(null);
 	useEffect(() => {
 		if (!root.current) return;
@@ -124,7 +124,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 											></Image>
 										)}
 
-										<a target="_blank" href={`/api/ticket/${ticket.id}/apple_wallet`}>
+										<a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/apple_wallet`}>
 							<button type="button">
 							<Image
 							src={AppleWallet}
