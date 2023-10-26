@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 
 export const codeRouter = t.router({
-	getCode: authedProcedure
+	getCode: t.procedure
 		.input(
 			z.object({
 				code: z.string()
@@ -34,7 +34,6 @@ export const codeRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-
 			return await ctx.prisma.code.findMany({
 				where: {
 					tier: {
@@ -63,7 +62,7 @@ export const codeRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const {event} = ctx
+			const { event } = ctx;
 			if (!event.ref_quantity || event.ref_quantity === 0) {
 				throw new TRPCError({
 					code: 'PRECONDITION_FAILED'
@@ -132,7 +131,6 @@ export const codeRouter = t.router({
 				});
 			}
 
-
 			if (input.type === 'flat' && input.value > tier.price) {
 				throw new TRPCError({
 					code: 'BAD_REQUEST',
@@ -153,7 +151,6 @@ export const codeRouter = t.router({
 			const code = await ctx.prisma.code.createMany({
 				data: codeData
 			});
-
 		}),
 	createReferalCode: authedProcedure
 		.input(
