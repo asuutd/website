@@ -121,6 +121,15 @@ export const paymentRouter = t.router({
 					  })
 					: null
 			]);
+			//Make sure code is one-time use
+			const codeTier = input.tiers.find((tier) => tier.tierId === tier?.tierId);
+
+			if (codeTier && codeTier.quantity > 1) {
+				throw new TRPCError({
+					message: 'Only one ticket is allowed for this code type',
+					code: 'BAD_REQUEST'
+				});
+			}
 
 			console.log(event);
 			const transformTiers = input.tiers

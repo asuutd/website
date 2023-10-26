@@ -1,12 +1,9 @@
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment, useRef } from 'react';
 import React, { MouseEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
 	ClientSafeProvider,
 	getProviders,
 	LiteralUnion,
-	signIn,
 	signOut,
 	useSession
 } from 'next-auth/react';
@@ -14,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { env } from '@/env/client.mjs';
+import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 
 export default function Example() {
 	const [providers, setProviders] = useState<Record<
@@ -43,7 +41,7 @@ export default function Example() {
 				<label tabIndex={0} className="">
 					<div className="w-10 hover:scale-110 transition ease-in-out">
 						<Image
-							src={session?.user?.image || '/Missing_avatar.svg'}
+							src={session?.user?.image || DEFAULT_PROFILE_IMAGE_PATH}
 							layout="intrinsic"
 							className="w-10 mask mask-squircle"
 							alt="Profile Pic"
