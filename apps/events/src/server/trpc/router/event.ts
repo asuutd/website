@@ -299,7 +299,7 @@ export const eventRouter = t.router({
 			});
 
 			if (form[0]) {
-				return form[0];
+				return form;
 			} else {
 				throw new TRPCError({
 					code: 'NOT_FOUND'

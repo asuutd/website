@@ -70,7 +70,7 @@ const Ticket: NextPage = () => {
 	const surveyQuery = trpc.event.getEventForm.useQuery(
 		{
 			eventId: eventId as string,
-			userEmail: email
+			userEmail: decodeURI(email ?? '')
 		},
 		{
 			enabled: typeof eventId === 'string',
@@ -206,11 +206,11 @@ const Ticket: NextPage = () => {
 			</Modal>
 
 			<Modal isOpen={surveyModalOpen} closeModal={() => setSurveyModalOpen(false)}>
-				{surveyQuery.data && (
+				{surveyQuery.data && surveyQuery.data.length > 0 && (
 					<ModalChild>
 						<Parser
 							onSubmit={(fields) => onSurveySubmit(fields)}
-							data={transformData([surveyQuery.data]) ?? []}
+							data={transformData(surveyQuery.data) ?? []}
 						/>
 					</ModalChild>
 				)}
