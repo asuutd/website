@@ -8,7 +8,7 @@ import EmailProvider from "next-auth/providers/email"
 import LoginLinkEmail from '@/server/trpc/router/emails/login';
 import { Resend } from 'resend';
 import { v4 as uuidv4 } from 'uuid';
-import { NextApiRequest } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 const resend = new Resend(env.RESEND_API_KEY);
 
 
