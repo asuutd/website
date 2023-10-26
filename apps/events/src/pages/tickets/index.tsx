@@ -24,16 +24,12 @@ type TicketWithEventData = Ticket & {
 
 const Ticket: NextPage = () => {
 	const router = useRouter();
-	const { survey, email: emailQuery } = router.query;
+	const { survey, email } = router.query;
 	const eventId =
 		typeof survey === 'string' ? survey : survey == undefined ? undefined : survey[0]!;
 
-	const email =
-		typeof emailQuery === 'string'
-			? emailQuery
-			: emailQuery == undefined
-			? undefined
-			: emailQuery[0]!;
+	const emailString =
+		typeof email === 'string' ? email : email == undefined ? undefined : email[0]!;
 	const [past, setPast] = useState<TicketWithEventData[]>([]);
 	const [upcoming, setUpcoming] = useState<TicketWithEventData[]>([]);
 	const [isOpen, setIsOpen] = useState(false);
@@ -70,7 +66,7 @@ const Ticket: NextPage = () => {
 	const surveyQuery = trpc.event.getEventForm.useQuery(
 		{
 			eventId: eventId as string,
-			userEmail: decodeURI(email ?? '')
+			userEmail: decodeURI(emailString ?? '')
 		},
 		{
 			enabled: typeof eventId === 'string',
@@ -83,6 +79,7 @@ const Ticket: NextPage = () => {
 			staleTime: Infinity
 		}
 	);
+
 	const surveyUpload = trpc.event.createSurveyResponse.useMutation();
 
 	const onSurveySubmit = (fields: Record<string, any>) => {
