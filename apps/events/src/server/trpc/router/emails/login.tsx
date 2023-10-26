@@ -1,5 +1,4 @@
 import { env } from '@/env/server.mjs';
-import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 import {
 	Body,
 	Button,
@@ -11,37 +10,20 @@ import {
 	Preview,
 	Section,
 	Text,
-	Row,
-	Column,
 	Hr
 } from '@react-email/components';
 import * as React from 'react';
 
-interface CollaboratorInviteEmailProps {
-	receiver_name?: string;
-	sender_name?: string;
-	resetPasswordLink?: string;
-	event_name?: string;
-	username?: string;
-	receiver_photo?: string;
-	invitedByUsername?: string;
-	sender_email?: string;
-	event_image?: string;
-	invite_link?: string;
+interface LoginLinkEmailProps {
+	login_link: string;
 }
 
 const baseUrl = env.NEXT_PUBLIC_URL;
 
-export const CollaboratorInviteEmail = ({
-	receiver_name = 'Invitee',
-	receiver_photo = `${baseUrl}${DEFAULT_PROFILE_IMAGE_PATH}}`,
-	sender_email = 'bukinoshita@example.com',
-	sender_name = 'Inviter',
-	event_name = 'All White Party',
-	event_image = `${baseUrl}/vercel-team.png`,
-	invite_link = 'https://vercel.com/teams/invite/foo'
-}: CollaboratorInviteEmailProps) => {
-	const previewText = `Join ${sender_name} in hosting the ${event_name} on Kazala!`;
+export const LoginLinkEmail = ({
+	login_link = 'https://vercel.com/teams/invite/foo'
+}: LoginLinkEmailProps) => {
+	const previewText = `Log in to Kazala`;
 	return (
 		<Html>
 			<Head>
@@ -62,52 +44,27 @@ export const CollaboratorInviteEmail = ({
 					<Img src={`${baseUrl}/favicon.png`} width="40" height="48" alt="Kazala Logo" />
 
 					<Section>
-						<Text style={text}>Hi {receiver_name},</Text>
+						<Text style={text}>Hi 👋,</Text>
 
 						<Text style={text}>
-							<strong>{sender_name}</strong> (
-							<Link href={`mailto:${sender_email}`} style={anchor}>
-								{sender_email}
-							</Link>
-							) has requested for you to become a collaborator for the <strong>{event_name}</strong>{' '}
-							event on <strong>Kazala</strong>.
+							Welcome back to <Link href={baseUrl}>Kazala</Link>. Use the button below to sign in.
 						</Text>
 
-						<Section>
-							<Row>
-								<Column align="right">
-									<Img className="rounded-full" src={receiver_photo} width="64" height="64" />
-								</Column>
-								<Column align="center">
-									<Img
-										src={`${baseUrl}/email-arrow.png`}
-										width="12"
-										height="9"
-										alt="invited you to"
-									/>
-								</Column>
-								<Column align="left">
-									<Img className="rounded-full" src={event_image} width="64" height="64" />
-								</Column>
-							</Row>
-						</Section>
 						<Section style={{ alignItems: 'center', textAlign: 'center' }}>
-							<Button pX={20} pY={12} style={button} href={invite_link}>
-								Join the team
+							<Button pX={10} pY={12} style={button} href={login_link}>
+								Login
 							</Button>
 						</Section>
 						<Text style={text}>
-							or copy and paste this URL into your browser:{' '}
-							<Link href={invite_link} style={anchor}>
-								{invite_link}
+							Alternatively, copy and paste this URL into your browser:{' '}
+							<Link href={login_link} style={anchor}>
+								{login_link}
 							</Link>
 						</Text>
-						<Text style={text}>Enjoy the Event!</Text>
 
 						<Hr style={hr} />
 						<Text style={text}>
-							This invitation was intended for <span className="text-black">{receiver_name}</span>.
-							If you were not expecting this invitation, you can ignore this email. If you are
+							If you did not request this email, you can safely ignore it. If you are
 							concerned about your account&apos;s safety, please reply to this email to get in touch
 							with us.
 						</Text>
@@ -118,7 +75,7 @@ export const CollaboratorInviteEmail = ({
 	);
 };
 
-export default CollaboratorInviteEmail;
+export default LoginLinkEmail;
 
 const main = {
 	backgroundColor: '#f0ece9',

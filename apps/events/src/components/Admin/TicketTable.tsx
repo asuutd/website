@@ -15,6 +15,7 @@ import {
 	useReactTable
 } from '@tanstack/react-table';
 import { createPortal } from 'react-dom';
+import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']>;
 
 const columnHelper = createColumnHelper<Ticket>();
@@ -32,7 +33,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 							data-tip={info.row.original.user.name ?? info.row.original.user.email}
 						>
 							<Image
-								src={info.getValue() ?? '/email_assets/Missing_avatar.svg'}
+								src={info.getValue() ?? DEFAULT_PROFILE_IMAGE_PATH}
 								width={50}
 								height={50}
 								className="rounded-md "
