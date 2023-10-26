@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { calculateApplicationFee } from '@/utils/misc';
 import { twJoin } from 'tailwind-merge';
 import { useSession } from 'next-auth/react';
+import { cloneDeep } from 'lodash';
 
 type Ticket = {
 	tier: Tier;
@@ -14,7 +15,7 @@ type Ticket = {
 };
 
 const TicketSummary = ({
-	tickets,
+	tickets: initialTickets,
 	eventId,
 	isOpen,
 	refCodeQuery,
@@ -27,6 +28,7 @@ const TicketSummary = ({
 	discountCode: string | undefined;
 }) => {
 	const checkoutQuery = trpc.payment.createCheckoutLink.useMutation();
+	const [tickets, setTickets] = useState(cloneDeep(initialTickets));
 	const { status } = useSession();
 	const [email, setEmail] = useState<string>();
 	const event = trpc.useContext().event.getEvent.getData({
