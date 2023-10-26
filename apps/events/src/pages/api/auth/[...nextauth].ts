@@ -8,6 +8,7 @@ import EmailProvider from "next-auth/providers/email"
 import LoginLinkEmail from '@/server/trpc/router/emails/login';
 import { Resend } from 'resend';
 import { v4 as uuidv4 } from 'uuid';
+import { NextApiRequest, NextApiResponse } from 'next';
 const resend = new Resend(env.RESEND_API_KEY);
 
 
@@ -68,4 +69,12 @@ export const authOptions: NextAuthOptions = {
 	]
 };
 
-export default NextAuth(authOptions);
+
+export default async function auth(req: NextApiRequest, res: NextApiResponse) {
+	// https://next-auth.js.org/tutorials/avoid-corporate-link-checking-email-provider
+	if (req.method === "HEAD") {
+		return res.status(200).end()
+	 }
+
+	return await NextAuth(req, res, authOptions)
+  }
