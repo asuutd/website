@@ -1,11 +1,11 @@
-import { authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import generateCode from '../../../utils/generateCode';
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 
 export const codeRouter = t.router({
-	getCode: authedProcedure
+	getCode: t.procedure
 		.input(
 			z.object({
 				code: z.string()
@@ -27,41 +27,13 @@ export const codeRouter = t.router({
 
 			return code;
 		}),
-	getCodes: authedProcedure
+	getCodes: adminProcedure
 		.input(
 			z.object({
 				eventId: z.string()
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const event = await ctx.prisma.event.findFirst({
-				where: {
-					AND: [
-						{
-							OR: [
-								{ organizerId: ctx.session.user.id },
-								{
-									EventAdmin: {
-										some: {
-											userId: ctx.session.user.id
-										}
-									}
-								}
-							]
-						},
-						{
-							id: input.eventId
-						}
-					]
-				}
-			});
-			console.log(event);
-			if (!event) {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
-			}
-
 			return await ctx.prisma.code.findMany({
 				where: {
 					tier: {
@@ -83,40 +55,14 @@ export const codeRouter = t.router({
 				}
 			});
 		}),
-	getReferralCodesAdmin: authedProcedure
+	getReferralCodesAdmin: adminProcedure
 		.input(
 			z.object({
 				eventId: z.string()
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const event = await ctx.prisma.event.findFirst({
-				where: {
-					AND: [
-						{
-							OR: [
-								{ organizerId: ctx.session.user.id },
-								{
-									EventAdmin: {
-										some: {
-											userId: ctx.session.user.id
-										}
-									}
-								}
-							]
-						},
-						{
-							id: input.eventId
-						}
-					]
-				}
-			});
-			console.log(event);
-			if (!event) {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
-			}
+			const { event } = ctx;
 			if (!event.ref_quantity || event.ref_quantity === 0) {
 				throw new TRPCError({
 					code: 'PRECONDITION_FAILED'
@@ -155,14 +101,16 @@ export const codeRouter = t.router({
 				}
 			});
 		}),
-	createCode: authedProcedure
+	createCode: adminProcedure
 		.input(
 			z.object({
 				num_codes: z.number().default(1),
 				tierId: z.string(),
 				type: z.string().default('percent'),
-				limit: z.number().default(1),
-				value: z.number()
+				limit: z.number(),
+				value: z.number(),
+				notes: z.string(),
+				eventId: z.string()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -175,27 +123,34 @@ export const codeRouter = t.router({
 					event: true
 				}
 			});
-			if (tier?.event.organizerId === ctx.session.user.id) {
-				if (input.type === 'flat' && input.value > tier.price) {
-					throw new TRPCError({
-						code: 'BAD_REQUEST',
-						message: 'Discount more than ticket price'
-					});
-				}
-				const codeData: Prisma.CodeCreateManyInput[] = [];
-				for (let i = 0; i < input.num_codes; ++i) {
-					codeData.push({
-						tierId: input.tierId,
-						type: input.type,
-						limit: input.limit,
-						value: input.value,
-						code: generateCode(6)
-					});
-				}
-				const code = await ctx.prisma.code.createMany({
-					data: codeData
+
+			if (!tier) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'Invalid tier'
 				});
 			}
+
+			if (input.type === 'flat' && input.value > tier.price) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'Discount more than ticket price'
+				});
+			}
+			const codeData: Prisma.CodeCreateManyInput[] = [];
+			for (let i = 0; i < input.num_codes; ++i) {
+				codeData.push({
+					tierId: input.tierId,
+					type: input.type,
+					limit: input.limit,
+					value: input.value,
+					code: generateCode(6),
+					notes: input.notes
+				});
+			}
+			const code = await ctx.prisma.code.createMany({
+				data: codeData
+			});
 		}),
 	createReferalCode: authedProcedure
 		.input(

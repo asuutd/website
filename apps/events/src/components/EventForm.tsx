@@ -47,6 +47,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 	const utils = trpc.useContext();
 
 	const mutation = trpc.event.createEvent.useMutation();
+	const updateMutation = trpc.event.updateEvent.useMutation();
 
 	const {
 		register,
@@ -130,7 +131,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 								control={control}
 								render={({ field }) => {
 									// sending integer instead of string.
-									return <MapBoxComponent {...field} />;
+									return <MapBoxComponent {...field} className="input input-bordered" />;
 								}}
 							/>
 

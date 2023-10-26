@@ -69,6 +69,7 @@ export const tierRouter = t.router({
 				tierId: z.string(),
 				name: z.string().optional(),
 				price: z.number().optional(),
+				limit: z.number().optional(),
 				startTime: z.date().optional(),
 				endTime: z.date().optional()
 			})
@@ -114,6 +115,7 @@ export const tierRouter = t.router({
 						name: input.name,
 						price: input.price,
 						start: input.startTime,
+						limit: input.limit,
 						end: input.endTime
 					}
 				});
@@ -129,6 +131,7 @@ export const tierRouter = t.router({
 			z.object({
 				name: z.string(),
 				price: z.number(),
+				limit: z.number().optional(),
 				startTime: z.date(),
 				endTime: z.date(),
 				eventId: z.string()
@@ -151,6 +154,7 @@ export const tierRouter = t.router({
 					data: {
 						name: input.name,
 						start: input.startTime,
+						limit: input.limit,
 						end: input.endTime,
 						eventId: input.eventId,
 						price: input.price

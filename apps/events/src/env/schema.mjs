@@ -22,6 +22,12 @@ export const serverSchema = z.object({
 	APPLE_PASS_PRIVATE_KEY: z.string(),
 	APPLE_PASS_PRIVATE_KEY_PASSPHRASE: z.string().optional(),
 	APPLE_PASS_CERTIFICATE_PASSWORD: z.string().optional(),
+	UPLOADCARE_SECRET_KEY: z.string(),
+	RESEND_API_KEY: z.string(),
+	R2_ACCOUNT_ID: z.string(),
+	R2_ACCESS_KEY_ID: z.string(),
+	R2_SECRET_ACCESS_KEY: z.string(),
+	QRCODE_BUCKET: z.string()
 });
 
 /**

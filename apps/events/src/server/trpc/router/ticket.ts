@@ -1,4 +1,4 @@
-import { authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
@@ -267,42 +267,25 @@ export const ticketRouter = t.router({
 		});
 	}),
 
-	getTicketsAdmin: authedProcedure
+	getTicketsAdmin: adminProcedure
 		.input(
 			z.object({
 				limit: z.number().min(1).max(100).nullish(),
-				cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
-				eventId: z.string()
+				cursor: z.string().nullish(),
+				filter: z
+					.object({
+						tier: z.string().optional()
+					})
+					.optional(),
+				orderBy: z
+					.object({
+						createdAt: z.enum(['asc', 'desc']).default('asc'),
+						checkedInAt: z.enum(['asc, desc'])
+					})
+					.optional()
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const event = await ctx.prisma.event.findFirst({
-				where: {
-					AND: [
-						{
-							OR: [
-								{ organizerId: ctx.session.user.id },
-								{
-									EventAdmin: {
-										some: {
-											userId: ctx.session.user.id
-										}
-									}
-								}
-							]
-						},
-						{
-							id: input.eventId
-						}
-					]
-				}
-			});
-			console.log(event);
-			if (!event) {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
-			}
 			const limit = input.limit ?? 50;
 			const { cursor } = input;
 			const items = await ctx.prisma.ticket.findMany({
@@ -314,7 +297,8 @@ export const ticketRouter = t.router({
 					user: {
 						select: {
 							image: true,
-							name: true
+							name: true,
+							email: true
 						}
 					},
 					tier: {
