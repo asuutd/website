@@ -178,11 +178,11 @@ export const eventRouter = t.router({
 			});
 			
 			const imagesToDelete: string[] = []
-			if (event.image !== input.bannerImage) {
+			if (event.image && event.image !== input.bannerImage) {
 				imagesToDelete.push(event.image)
 			}
 
-			if (event.ticketImage !== input.ticketImage) {
+			if (event.ticketImage && event.ticketImage !== input.ticketImage) {
 				imagesToDelete.push(event.ticketImage)
 			}
 
