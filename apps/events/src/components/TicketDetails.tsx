@@ -6,6 +6,8 @@ import Image from 'next/future/image';
 import { useSession } from 'next-auth/react';
 import VanillaTilt from 'vanilla-tilt';
 import { env } from '@/env/client.mjs';
+import AppleWallet from "@/../public/apple-wallet.svg"
+import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -40,7 +42,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 			}
 		};
 		generateQR(`${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`);
-	}, []);
+	}, [ticket]);
 	const root = useRef(null);
 	useEffect(() => {
 		if (!root.current) return;
@@ -73,7 +75,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 					<div className="pt-6 bg-white">
 						<div className="flex flex-col place-items-center">
 							<Image
-								src={session?.user?.image || '/pic_4.png'}
+								src={session?.user?.image || DEFAULT_PROFILE_IMAGE_PATH}
 								alt=""
 								className="w-10 rounded-full"
 								width="50"
@@ -109,7 +111,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 									<Tab.Panel
 										className={classNames(
 											'rounded-xl bg-white p-3',
-											'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
+											'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2 flex flex-col justify-items-center items-center gap-4'
 										)}
 									>
 										{QRCodeUrl && (
@@ -121,13 +123,25 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 												alt=""
 											></Image>
 										)}
+
+										<a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/apple_wallet`}>
+							<button type="button">
+							<Image
+							src={AppleWallet}
+							alt="Add to Apple Wallet"
+							width={192}
+
+							className=""
+						/>
+							</button>
+						</a>
 									</Tab.Panel>
 								</Tab.Panels>
 							</Tab.Group>
 							<div className="mt-6 border-t-2 border-b-gray-400 border-dashed p-6 font-mono flex flex-col gap-4 align-middle">
 								<p className="text-[0.5rem]">
 									This digital ticket #{ticket.id} grants 1 entry to{' '}
-									<span className="italic">{ticket.event.name}</span>, presented by UTD ASU.
+									<span className="italic">{ticket.event.name}</span>.
 								</p>
 								<ul className="text-xs font-mono flex  border border-primary divide-x divide-primary text-primary w-max">
 									<li className="py-1 px-2">${ticket.tier?.price || '0'}</li>

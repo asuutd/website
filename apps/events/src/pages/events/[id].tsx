@@ -2,7 +2,7 @@ import type { Tier, Event } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { GetServerSideProps, NextPage } from 'next/types';
+import { GetServerSideProps, NextPage, InferGetServerSidePropsType } from 'next/types';
 import React, { useEffect, useState } from 'react';
 import Modal from '../../components/Modal';
 import RefCode from '../../components/RefCode';
@@ -31,13 +31,7 @@ enum UpOrDown {
 	Desc = 'Descending'
 }
 
-const Event: NextPage<{
-	meta: {
-		id: string;
-		title: string;
-		image: string;
-	} | null;
-}> = (props) => {
+const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (props) => {
 	const router = useRouter();
 	const { data: session, status } = useSession();
 	//const [modalOpen, setModalOpen] = useState(false);
@@ -146,6 +140,10 @@ const Event: NextPage<{
 						{ url: props.meta?.image ?? ':)', width: 480, height: 270, alt: 'Profile Picture' }
 					]
 				}}
+				description={
+					props.meta?.description ??
+					"Join us for an exciting event that promises to be a memorable experience. While the event details are not provided by the organizer, you can expect a day filled with fun, entertainment, and engagement. Stay tuned for updates and surprises as we get closer to the event date. Don't miss out on this fantastic opportunity to connect with like-minded individuals and enjoy a day of excitement. Save the date, and we look forward to sharing more information soon!"
+				}
 			/>
 			<Head>
 				<title>{props.meta?.title ?? event.data?.name ?? 'Event'}</title>
@@ -371,13 +369,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 	const id = typeof query.id === 'string' ? query.id : query.id == undefined ? ':)' : query.id[0]!;
 	res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
 	if (isbot(req.headers['user-agent'])) {
-		const client = appRouter.createCaller({
-			session: await getServerAuthSession({ req, res }),
-			prisma: prisma,
-			headers: req.headers
-		});
-		const data = await client.event.getEvent({
-			eventId: id
+		const data = await prisma.event.findFirst({
+			where: {
+				id: id
+			}
 		});
 
 		return {
@@ -385,7 +380,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 				meta: {
 					id: data?.id,
 					title: data?.name,
-					image: data?.image
+					image: data?.image,
+					description: data?.description
 				}
 			}
 		};
