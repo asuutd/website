@@ -9,6 +9,7 @@ import { Resend } from 'resend';
 import { uploadImage } from '@/utils/r2';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
+import { createApplePass } from '@/lib/wallets';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -72,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					// 	subject: 'Purchase Successful',
 					// 	html: emailTemplate,
 					// });
-
+					
 					try {
 						if (userEmail && userName && eventName && eventPhoto && eventId) {
 							const qr_code_links = await Promise.all(
@@ -98,6 +99,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								})
 							);
 
+							const ticketData = await prisma.ticket.findMany({
+								where: {
+									id: {in: user_ticket_ids}
+								},
+								include: {
+									user: true,
+									event: {
+										include: {
+											location: true,
+											organizer: {
+												include: { user: true }
+											}
+										}
+									},
+									tier: true
+								}
+							});
+		
+							const passes: [Buffer, (typeof ticketData)[number]][] = await Promise.all(ticketData.map(async (ticket) => [await createApplePass(ticket, ticket.event, ticket.tier), ticket]))
+							const tierDisplayText = (tier: typeof ticketData[number]['tier']) => {
+								if (!tier) return ''
+								return `| ${tier.name} | `
+							}
+
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
 								to: userEmail, // Replace with the buyer's email
@@ -112,7 +137,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								}),
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()
-								}
+								},
+								attachments: passes.map(([pass, ticket]) => ({
+									filename: `${ticket.event.name} ${tierDisplayText}#${ticket.id}.pkpass`,
+									content: pass
+								}))
 							});
 						}
 					} catch (error) {
