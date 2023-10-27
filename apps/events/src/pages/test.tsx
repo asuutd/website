@@ -19,6 +19,7 @@ import { useAddressAutofillCore } from '@mapbox/search-js-react';
 import { randomUUID } from 'crypto';
 import dynamic from 'next/dynamic';
 import { trpc } from '@/utils/trpc';
+import { NextSeo } from 'next-seo';
 const qrcodeRegionId = 'html5qr-code-full-region';
 
 // Creates the configuration object for Html5QrcodeScanner.
@@ -108,7 +109,11 @@ export default function Test() {
 		return uuidv4();
 	}, []);
 
-	return <></>;
+	return (
+		<>
+			<NextSeo nofollow={true} />
+		</>
+	);
 }
 
 const Scanner = dynamic(() => import('../components/Admin/BarCodeScanner'), {

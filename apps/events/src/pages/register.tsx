@@ -82,7 +82,10 @@ const Register = () => {
 	};
 	return (
 		<>
-			<NextSeo title="Organizer | Kazala" />
+			<NextSeo
+				title="Organizer | Kazala"
+				description="Make a seamless and inexpensive ticketing experience for your eventgoers with Kazala"
+			/>
 			<div className="hero min-h-[70vh]   rounded-md">
 				<div className="hero-content text-center w-full">
 					<div className="max-w-md">
