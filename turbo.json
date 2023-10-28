@@ -14,7 +14,12 @@
 			"outputs": [".svelte-kit/**", ".vercel/**", ".next/**"],
 			"dependsOn": ["db:generate", "^build"]
 		},
-		"lint": {},
+		"lint": {
+			"cache": false
+		},
+		"lint:fix": {
+			"cache": false
+		},
 		"dev": {
 			"dependsOn": ["db:generate"],
 			"persistent": true,
