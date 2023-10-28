@@ -1,16 +1,18 @@
-import { useEffect, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useRef } from 'react';
 import React from 'react';
 import { OnResultFunction } from 'react-qr-reader';
 import dynamic from 'next/dynamic';
 import { trpc } from '@/utils/trpc';
 import { NextSeo } from 'next-seo';
+import { Dialog, Transition } from '@headlessui/react';
 
-export default function Test() {
+export default function Wrapper() {
 	const [text, setText] = React.useState<string | null>(null);
+	const root = useRef(null);
 	const validateMut = trpc.ticket.validateTicket.useMutation();
 	const resetTime = 3000;
 
-	const onNewScanResult: OnResultFunction = (result, error) => {
+	const onNewScanResult: OnResultFunction = (result) => {
 		if (!!result) {
 			const url = new URL(result?.getText());
 			const ticketId = url.searchParams.get('id');
@@ -47,10 +49,19 @@ export default function Test() {
 	}, [text]);
 
 	return (
-		<>
-			<NextSeo nofollow={true} />
-
-			<>
+		<Transition.Child
+			as={Fragment}
+			enter="ease-out duration-300"
+			enterFrom="opacity-0 scale-95"
+			enterTo="opacity-100 scale-100"
+			leave="ease-in duration-200"
+			leaveFrom="opacity-100 scale-100"
+			leaveTo="opacity-0 scale-95"
+		>
+			<Dialog.Panel
+				ref={root}
+				className="w-[320px] bg-white transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all"
+			>
 				{text && (
 					<div className="flex justify-start items-center">
 						{validateMut.isSuccess && (
@@ -94,11 +105,11 @@ export default function Test() {
 					</div>
 				)}
 				<Scanner onResult={onNewScanResult} />
-			</>
-		</>
+			</Dialog.Panel>
+		</Transition.Child>
 	);
 }
 
-const Scanner = dynamic(() => import('../components/Admin/Scanner/BarCodeScanner'), {
+const Scanner = dynamic(() => import('./BarCodeScanner'), {
 	ssr: false
 });
