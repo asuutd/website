@@ -1,24 +1,24 @@
 import type { Tier, Event } from '@prisma/client';
-import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { GetServerSideProps, NextPage, InferGetServerSidePropsType } from 'next/types';
+import { NextPage, GetStaticPaths, InferGetStaticPropsType, GetStaticPropsContext } from 'next/types';
+import { createServerSideHelpers } from '@trpc/react-query/server';
 import React, { useEffect, useState } from 'react';
 import Modal from '../../components/Modal';
 import RefCode from '../../components/RefCode';
 import TicketSummary from '../../components/TicketSummary';
 import Timer from '../../components/Timer/Timer';
-import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { appRouter } from '../../server/trpc/router';
-import { useModalStore } from '../../utils/modalStore';
 import { trpc } from '../../utils/trpc';
 import { prisma } from '../../server/db/client';
-import isbot from 'isbot';
 import { NextSeo } from 'next-seo';
 import { env } from '../../env/client.mjs';
 import Image from 'next/image';
 import Display from '@/components/Map/Display';
 import parse from 'html-react-parser';
+import superjson from 'superjson';
+import { createContextInner } from '@/server/trpc/context';
+import { EVENT_PAGE_REVALIDATION } from '@/utils/constants';
 
 type Ticket = {
 	tier: Tier;
@@ -31,14 +31,8 @@ enum UpOrDown {
 	Desc = 'Descending'
 }
 
-const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (props) => {
+const Event: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (props) => {
 	const router = useRouter();
-	const { data: session, status } = useSession();
-	//const [modalOpen, setModalOpen] = useState(false);
-
-	const modalOpen = useModalStore((state: any) => state.modal);
-	const open = useModalStore((state: any) => state.open);
-	const close = useModalStore((state: any) => state.close);
 	const [checkout, setCheckout] = useState(false);
 	const [quantity, setQuantity] = useState(0);
 
@@ -75,7 +69,9 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 	const event = trpc.event.getEvent.useQuery(
 		{ eventId: eventId },
 		{
-			refetchInterval: false
+			refetchInterval: false,
+			refetchOnMount: false,
+			refetchOnWindowFocus: false 
 		}
 	);
 
@@ -127,28 +123,27 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 	return (
 		<>
 			<NextSeo
-				title={props?.meta?.title ?? 'Event'}
+				title={event.data?.name ?? 'Event'}
 				openGraph={{
-					title: `${props?.meta?.title}` ?? 'Event',
-					description: `Event Details of ${props?.meta?.title}`,
-					url: `https://${env.NEXT_PUBLIC_URL}/seller/${props.meta?.id}`,
+					title: `${event.data?.name}` ?? 'Event',
+					description: `Event Details of ${event.data?.name}`,
+					url: `https://${env.NEXT_PUBLIC_URL}/seller/${event.data?.id}`,
 					type: 'profile',
 					profile: {
-						username: props?.meta?.title
+						username: event.data?.organizer?.user.name ?? undefined
 					},
-					images: [
-						{ url: props.meta?.image ?? ':)', width: 480, height: 270, alt: 'Profile Picture' }
-					]
+					images: (event.data?.image ? [{ url: event.data.image, width: 480, height: 270 }] : [])
+					
 				}}
 				description={
-					props.meta?.description ??
+					event.data?.description ??
 					"Join us for an exciting event that promises to be a memorable experience. While the event details are not provided by the organizer, you can expect a day filled with fun, entertainment, and engagement. Stay tuned for updates and surprises as we get closer to the event date. Don't miss out on this fantastic opportunity to connect with like-minded individuals and enjoy a day of excitement. Save the date, and we look forward to sharing more information soon!"
 				}
 			/>
 			<Head>
-				<title>{props.meta?.title ?? event.data?.name ?? 'Event'}</title>
+				<title>{event.data?.name ?? 'Event'}</title>
 			</Head>
-			<main className="mx-2   py-2 ">
+			<main className="mx-2 py-2 ">
 				<div className="flex flex-col justify-center mx-auto max-w-3xl">
 					<div className="">
 						{event.data?.image ? (
@@ -176,7 +171,7 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 								</h3>
 								<div className="flex items-center gap-2">
 									By
-									<div className="flex items-center h-6">
+									<div className="flex items-center h-6 gap-2">
 										<div className="h-6 w-6">
 											<Image
 												src={event.data?.organizer?.user.image ?? ''}
@@ -365,28 +360,49 @@ const TierCard = ({
 		</div>
 	);
 };
-export const getServerSideProps: GetServerSideProps = async ({ req, query, res }) => {
-	const id = typeof query.id === 'string' ? query.id : query.id == undefined ? ':)' : query.id[0]!;
-	res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
-	if (isbot(req.headers['user-agent'])) {
-		const data = await prisma.event.findFirst({
-			where: {
-				id: id
-			}
-		});
 
-		return {
-			props: {
-				meta: {
-					id: data?.id,
-					title: data?.name,
-					image: data?.image,
-					description: data?.description
-				}
-			}
-		};
-	}
+export async function getStaticProps(
+	context: GetStaticPropsContext<{ id: string }>,
+  ) {
+	const helpers = createServerSideHelpers({
+	  router: appRouter,
+	  transformer: superjson,
+	  ctx: await createContextInner({
+		session: null,
+		headers: {}
+	  }),
+	});
+
+	const id = context.params?.id as string;
+	await helpers.event.getEvent.prefetch({ eventId: id });
+
 	return {
-		props: {} // will be passed to the page component as props
+	  props: {
+		trpcState: helpers.dehydrate(),
+		id,
+	  },
+	  revalidate: EVENT_PAGE_REVALIDATION,
+	};
+  }
+
+export const getStaticPaths: GetStaticPaths = async () => {
+	const events = await prisma.event.findMany({
+		select: {
+			id: true,
+		},
+		where: {
+			end: {
+				gt: new Date()
+			}
+		}
+	});
+
+	return {
+		paths: events.map((post) => ({
+			params: {
+				id: post.id,
+			},
+		})),
+		fallback: 'blocking',
 	};
 };
