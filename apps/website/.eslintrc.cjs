@@ -1,6 +1,6 @@
 module.exports = {
 	root: true,
-	extends: ['eslint:recommended', 'prettier',  "plugin:svelte/recommended",],
+	extends: ["plugin:svelte/recommended", "../.."],
 	
 	overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
 	parserOptions: {
