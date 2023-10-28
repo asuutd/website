@@ -117,11 +117,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								}
 							});
 		
-							const passes: [Buffer, (typeof ticketData)[number]][] = await Promise.all(ticketData.map(async (ticket) => [await createApplePass(ticket, ticket.event, ticket.tier), ticket]))
-							const tierDisplayText = (tier: typeof ticketData[number]['tier']) => {
-								if (!tier) return ''
-								return `| ${tier.name} | `
-							}
+							const passes = await Promise.all(ticketData.map(async (ticket) => await createApplePass(ticket, ticket.event, ticket.tier)))
 
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
@@ -138,8 +134,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()
 								},
-								attachments: passes.map(([pass, ticket]) => ({
-									filename: `${ticket.event.name} ${tierDisplayText}#${ticket.id}.pkpass`,
+								attachments: passes.map(({pass, filename}) => ({
+									filename,
 									content: pass
 								}))
 							});
