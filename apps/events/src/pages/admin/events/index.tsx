@@ -160,7 +160,10 @@ const Events: NextPage = () => {
 				)}
 			</div>
 			<Modal isOpen={isOpen} closeModal={() => setIsOpen(false)}>
-				<EventForm closeModal={() => setIsOpen(false)} />
+				<EventForm closeModal={() => {
+					setIsOpen(false)
+					events.refetch()
+				}} />
 			</Modal>
 		</>
 	);
