@@ -179,10 +179,12 @@ export const PurchaseEmail = ({
 								color: '#2e2e2e'
 							}}
 						>
-							Ticket QRCodes
+							Ticket QR Codes
 						</Heading>
 						<Hr style={hr} />
-
+						<Text style={messageText}>
+									Add your tickets to Apple Wallet by opening the attached .pkpass file(s) on your mobile device.
+								</Text>
 						{ticketQRCodes.map((qrcode, index) => (
 							<Section key={index}>
 								<Img src={qrcode} alt="QR Code" width="200" height="200" style={logo} />

@@ -31,8 +31,8 @@ const createApplePassRoute = async (req: NextApiRequest, res: NextApiResponse) =
 		return res.status(404).send({"err": "Not found"});
 	}
 
-	const pass = await createApplePass(ticket, ticket.event, ticket.tier);
-	res.setHeader('Content-Disposition', 'attachment; filename=ticket.pkpass');
+	const {pass, filename} = await createApplePass(ticket, ticket.event, ticket.tier);
+	res.setHeader('Content-Disposition', `attachment; filename=${encodeURIComponent(filename)}`);
 	res.setHeader('Content-Type', constants.PASS_MIME_TYPE);
 	res.status(200).send(pass);
 };
