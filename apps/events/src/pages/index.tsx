@@ -1,15 +1,19 @@
-import type { NextPage } from 'next';
+import type { GetStaticProps, InferGetStaticPropsType, NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import MobileCarousel from '../components/MobileCarousel';
 import TypeWriter from 'typewriter-effect';
 import { trpc } from '@/utils/trpc';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { MouseEventHandler, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { NextSeo } from 'next-seo';
+import { createContextInner } from '@/server/trpc/context';
+import { appRouter } from '@/server/trpc/router';
+import { createServerSideHelpers } from '@trpc/react-query/server';
+import superjson from 'superjson';
+import { EVENT_PAGE_REVALIDATION } from '@/utils/constants';
 
-const Home: NextPage = () => {
+const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = () => {
 	const data = useMemo(
 		() => [
 			{
@@ -190,3 +194,24 @@ const EventCards = () => {
 		</div>
 	);
 };
+
+
+export const getStaticProps: GetStaticProps = async () => {
+	const helpers = createServerSideHelpers({
+	  router: appRouter,
+	  transformer: superjson,
+	  ctx: await createContextInner({
+		session: null,
+		headers: {}
+	  }),
+	});
+
+	await helpers.event.getEvents.prefetch();
+
+	return {
+	  props: {
+		trpcState: helpers.dehydrate(),
+	  },
+	  revalidate: EVENT_PAGE_REVALIDATION,
+	};
+  }
