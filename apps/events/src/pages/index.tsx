@@ -1,15 +1,19 @@
-import type { NextPage } from 'next';
+import type { GetStaticProps, InferGetStaticPropsType, NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import MobileCarousel from '../components/MobileCarousel';
 import TypeWriter from 'typewriter-effect';
 import { trpc } from '@/utils/trpc';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { MouseEventHandler, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { NextSeo } from 'next-seo';
+import { createContextInner } from '@/server/trpc/context';
+import { appRouter } from '@/server/trpc/router';
+import { createServerSideHelpers } from '@trpc/react-query/server';
+import superjson from 'superjson';
+import { EVENT_PAGE_REVALIDATION } from '@/utils/constants';
 
-const Home: NextPage = () => {
+const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = () => {
 	const data = useMemo(
 		() => [
 			{
@@ -100,16 +104,16 @@ const Home: NextPage = () => {
 										Upcoming Events{' '}
 										<svg
 											className="w-6 h-6 fill-white"
-											clip-rule="evenodd"
-											fill-rule="evenodd"
-											stroke-linejoin="round"
+											clipRule="evenodd"
+											fillRule="evenodd"
+											strokeLinejoin="round"
 											strokeMiterlimit="2"
 											viewBox="0 0 24 24"
 											xmlns="http://www.w3.org/2000/svg"
 										>
 											<path
 												d="m9.001 13.022h-3.251c-.412 0-.75.335-.75.752 0 .188.071.375.206.518 1.685 1.775 4.692 4.945 6.069 6.396.189.2.452.312.725.312.274 0 .536-.112.725-.312 1.377-1.451 4.385-4.621 6.068-6.396.136-.143.207-.33.207-.518 0-.417-.337-.752-.75-.752h-3.251v-9.02c0-.531-.47-1.002-1-1.002h-3.998c-.53 0-1 .471-1 1.002z"
-												fill-rule="nonzero"
+												fillRule="nonzero"
 											/>
 										</svg>
 									</a>
@@ -118,16 +122,16 @@ const Home: NextPage = () => {
 											Run an Event?
 											<svg
 												className="w-6 h-6 fill-black group-hover:fill-white -rotate-90"
-												clip-rule="evenodd"
-												fill-rule="evenodd"
-												stroke-linejoin="round"
+												clipRule="evenodd"
+												fillRule="evenodd"
+												strokeLinejoin="round"
 												strokeMiterlimit="2"
 												viewBox="0 0 24 24"
 												xmlns="http://www.w3.org/2000/svg"
 											>
 												<path
 													d="m9.001 13.022h-3.251c-.412 0-.75.335-.75.752 0 .188.071.375.206.518 1.685 1.775 4.692 4.945 6.069 6.396.189.2.452.312.725.312.274 0 .536-.112.725-.312 1.377-1.451 4.385-4.621 6.068-6.396.136-.143.207-.33.207-.518 0-.417-.337-.752-.75-.752h-3.251v-9.02c0-.531-.47-1.002-1-1.002h-3.998c-.53 0-1 .471-1 1.002z"
-													fill-rule="nonzero"
+													fillRule="nonzero"
 												/>
 											</svg>
 										</a>
@@ -166,7 +170,7 @@ const EventCards = () => {
 						<figure className="px-10 pt-10">
 							<Image
 								src={event.ticketImage ?? ''}
-								alt="Shoes"
+								alt=""
 								className="rounded-xl object-cover aspect-square"
 								width={400}
 								height={400}
@@ -190,3 +194,24 @@ const EventCards = () => {
 		</div>
 	);
 };
+
+
+export const getStaticProps: GetStaticProps = async () => {
+	const helpers = createServerSideHelpers({
+	  router: appRouter,
+	  transformer: superjson,
+	  ctx: await createContextInner({
+		session: null,
+		headers: {}
+	  }),
+	});
+
+	await helpers.event.getEvents.prefetch();
+
+	return {
+	  props: {
+		trpcState: helpers.dehydrate(),
+	  },
+	  revalidate: EVENT_PAGE_REVALIDATION,
+	};
+  }

@@ -151,7 +151,11 @@ export const createApplePass = async (
 		pass.images.add('icon', organizerImage);
 	}
 
-	return await pass.asBuffer();
+	const tierDisplayText = tier ? `| ${tier.name} | ` : ''
+	
+	return {pass: await pass.asBuffer(), filename: `${event.name} ${tierDisplayText}ID${ticket.id}.pkpass`};
+
+
 };
 
 const getImageAsPngBuffer = async (url: string, key: string, resize?: { w: number; h: number }) => {

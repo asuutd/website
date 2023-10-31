@@ -137,6 +137,7 @@ export const eventRouter = t.router({
 						fee_holder: input.feeBearer
 					}
 				});
+				ctx.res?.revalidate(`/`)
 				return newEvent;
 			} else {
 				throw new TRPCError({
@@ -144,7 +145,7 @@ export const eventRouter = t.router({
 				});
 			}
 		}),
-	updateEvent: authedProcedure
+	updateEvent: adminProcedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -176,14 +177,54 @@ export const eventRouter = t.router({
 					Tier: true
 				}
 			});
-			if (
-				event.organizerId === ctx.session.user.id ||
-				event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
-			) {
+			
+			const imagesToDelete: string[] = []
+			if (event.image && event.image !== input.bannerImage) {
+				imagesToDelete.push(event.image)
+			}
+
+			if (event.ticketImage && event.ticketImage !== input.ticketImage) {
+				imagesToDelete.push(event.ticketImage)
+			}
+
+
+			await ctx.prisma.event.update({
+				where: {
+					id: input.eventId
+				},
+				data: {
+					name: input.name,
+					start: input.startTime,
+					end: input.endTime,
+					image: input.bannerImage,
+					ticketImage: input.ticketImage,
+					organizerId: ctx.session.user.id,
+					fee_holder: input.feeBearer,
+					...(input.location?.coordinates &&
+					input.location?.coordinates[0] &&
+					input.location?.coordinates[1]
+						? {
+								location: {
+									update: {
+										long: input.location.coordinates[0],
+										lat: input.location.coordinates[1],
+										name: input.location.address
+									}
+								}
+							}
+						: {}),
+					description: input.description
+				}
+			});
+
+			ctx.res?.revalidate(`/events/${event.id}`)
+			ctx.res?.revalidate(`/`)
+
+			if (imagesToDelete.length > 0) {
 				const response = await fetch('https://api.uploadcare.com/files/storage/', {
 					method: 'DELETE',
 					body: JSON.stringify(
-						[event.image, event.ticketImage]
+						imagesToDelete
 							.filter((input) => typeof input === 'string')
 							.map((input) => input?.split('/')[3])
 					),
@@ -199,39 +240,8 @@ export const eventRouter = t.router({
 						message: 'Previous Image Deletion Failed'
 					});
 				}
-				await ctx.prisma.event.update({
-					where: {
-						id: input.eventId
-					},
-					data: {
-						name: input.name,
-						start: input.startTime,
-						end: input.endTime,
-						image: input.bannerImage,
-						ticketImage: input.ticketImage,
-						organizerId: ctx.session.user.id,
-						fee_holder: input.feeBearer,
-						...(input.location?.coordinates &&
-						input.location?.coordinates[0] &&
-						input.location?.coordinates[1]
-							? {
-									location: {
-										update: {
-											long: input.location.coordinates[0],
-											lat: input.location.coordinates[1],
-											name: input.location.address
-										}
-									}
-							  }
-							: {}),
-						description: input.description
-					}
-				});
-			} else {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
 			}
+			
 		}),
 	upsertEventForm: adminProcedure
 		.input(
