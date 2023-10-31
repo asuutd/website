@@ -257,7 +257,7 @@ export const ticketRouter = t.router({
 			where: {
 				userId: ctx.session.user.id,
 				paymentIntent: {
-					not: undefined
+					not: null
 				}
 			},
 			include: {
