@@ -135,22 +135,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					});
 					res.status(200).send('Noice');
 					break;
-				//Fix up refunds. Should differentiate between
+				//For now, Do nothing to their ticket.
+				//FUTURE: Add conditions for refund. To enable manual refund in admin dashboard
 				case 'charge.refunded':
 					const chargeData = event.data.object as Stripe.Charge;
 					console.log(chargeData.metadata.ticketId);
 
 					if (chargeData.refunds) {
 						const ticketIds = chargeData.refunds.data.map((data) => data.metadata?.ticketId);
-						const result = await prisma.ticket.update({
-							where: {
-								id: ticketIds[0]
-							},
-							data: {
-								tierId: null
-							}
-						});
-						res.status(200).json({ received: true, result: result, tickets: ticketIds[0] });
+
+						res.status(200).json({ received: true, tickets: ticketIds[0] });
 					} else {
 						res.status(200).json({
 							received: true,
