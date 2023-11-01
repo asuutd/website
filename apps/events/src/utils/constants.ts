@@ -6,4 +6,3 @@ export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'im
  */
 export const SERVICE_PERCENTAGE = 0.03;
 export const DEFAULT_PROFILE_IMAGE_PATH = "/email_assets/Missing_avatar.svg"
-export const EVENT_PAGE_REVALIDATION = 60 * 60 * 24 // every day

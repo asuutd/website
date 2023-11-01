@@ -137,7 +137,6 @@ export const eventRouter = t.router({
 						fee_holder: input.feeBearer
 					}
 				});
-				ctx.res?.revalidate(`/`)
 				return newEvent;
 			} else {
 				throw new TRPCError({
@@ -216,9 +215,6 @@ export const eventRouter = t.router({
 					description: input.description
 				}
 			});
-
-			ctx.res?.revalidate(`/events/${event.id}`)
-			ctx.res?.revalidate(`/`)
 
 			if (imagesToDelete.length > 0) {
 				const response = await fetch('https://api.uploadcare.com/files/storage/', {
