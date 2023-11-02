@@ -85,7 +85,8 @@ export const codeRouter = t.router({
 					user: {
 						select: {
 							name: true,
-							image: true
+							image: true,
+							email: true
 						}
 					},
 					tickets: {
@@ -93,7 +94,8 @@ export const codeRouter = t.router({
 							user: {
 								select: {
 									name: true,
-									image: true
+									image: true,
+									email: true
 								}
 							}
 						}

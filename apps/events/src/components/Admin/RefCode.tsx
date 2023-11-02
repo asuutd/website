@@ -1,7 +1,8 @@
+import { RouterOutput } from '@/server/trpc/router';
 import { trpc } from '@/utils/trpc';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-
+import { ArrayElement } from '@/utils/misc';
 const RefCode = ({ eventId }: { eventId: string }) => {
 	const refCodeQuery = trpc.code.getReferralCodesAdmin.useQuery({ eventId });
 	const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +28,7 @@ const RefCode = ({ eventId }: { eventId: string }) => {
 								<tr key={code.id}>
 									<td>{code.code}</td>
 									<td>
-										<div className="h-12 w-12 tooltip" data-tip={code.user.name}>
+										<div className="h-12 w-12 tooltip" data-tip={code.user.name ?? code.user.email}>
 											<Image
 												src={code.user.image ?? '/placeholder.svg'}
 												width={50}
@@ -88,16 +89,13 @@ const DisabledRefCode = () => {
 const AvatarStack = ({
 	users
 }: {
-	users: {
-		name: string | null;
-		image: string | null;
-	}[];
+	users: ArrayElement<RouterOutput['code']['getReferralCodesAdmin']>['user'][];
 }) => {
 	useEffect(() => {
 		console.log(users);
 	}, []);
 	return (
-		<div className="tooltip" data-tip={users.map((user) => user.name).toString()}>
+		<div className="tooltip" data-tip={users.map((user) => user.name ?? user.email).toString()}>
 			<div className="avatar-group -space-x-6 ">
 				{users.slice(0, 3).map((user, idx) => (
 					<div className="avatar  h-16 w-16" key={idx}>
