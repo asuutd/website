@@ -122,7 +122,7 @@ export const paymentRouter = t.router({
 					: null
 			]);
 			//Make sure code is one-time use
-			const codeTier = input.tiers.find((tier) => tier.tierId === tier?.tierId);
+			const codeTier = input.tiers.find((tier) => tier.tierId === code?.tierId);
 
 			if (codeTier && codeTier.quantity > 1) {
 				throw new TRPCError({
