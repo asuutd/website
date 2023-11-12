@@ -246,11 +246,6 @@ export const organizerRouter = t.router({
 							userId: result.user.id
 						}
 					});
-					await ctx.prisma.adminInvite.delete({
-						where: {
-							token: result.token
-						}
-					});
 				} catch (err: any) {
 					console.log(err.message);
 				}

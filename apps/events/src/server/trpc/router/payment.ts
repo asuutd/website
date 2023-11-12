@@ -1,8 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { t, authedProcedure } from '../trpc';
-import stripe from '@/utils/stripe';
-import { calculateApplicationFee } from '@/utils/misc';
+import stripe, { calculateApplicationFee } from '@/utils/stripe';
 import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
@@ -109,14 +108,10 @@ export const paymentRouter = t.router({
 							}
 					  })
 					: null,
-				//Work on This Code.
 				input.codeId
 					? ctx.prisma.code.findFirst({
 							where: {
-								code: input.codeId,
-								tierId: {
-									in: input.tiers.map((tier) => tier.tierId)
-								}
+								code: input.codeId
 							},
 							include: {
 								_count: {

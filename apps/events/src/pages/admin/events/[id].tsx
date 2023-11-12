@@ -2,49 +2,31 @@ import Code from '@/components/Admin/Code';
 import TicketTable from '@/components/Admin/TicketTable';
 import Tiers from '@/components/Admin/Tiers';
 import RefCode from '@/components/Admin/RefCode';
+import { Tab } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import React from 'react';
 import Event from '@/components/Admin/Event/Event';
 import CreatorProvider from '@/components/Admin/Forms/Creator';
 import Collaborators from '@/components/Admin/Collaborators';
-import * as Tabs from '@radix-ui/react-tabs';
-import { twJoin } from 'tailwind-merge';
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ');
 }
 const EventsDetailsPage = () => {
 	const router = useRouter();
-	const { id, tab } = router.query;
+	const { id, activeTab } = router.query;
 
 	const eventId: string = typeof id === 'string' ? id : id == undefined ? ':)' : id[0]!;
-	const [activeTab, setActiveTab] = React.useState(tab || 'info');
-
-	const handleTabChange = (value: string | string[]) => {
-		//update the state
-		setActiveTab(value);
-		// update the URL query parameter
-		router.push({ query: { tab: value, id: id } });
-	};
-
-	// if the query parameter changes, update the state
-	React.useEffect(() => {
-		router.query.tab && setActiveTab(router.query.tab);
-	}, [router.query.tab]);
+	const activeTabInt = typeof activeTab === 'string' ? parseInt(activeTab) : undefined;
 
 	return (
 		<CreatorProvider>
 			<div>
 				<div className="mx-auto">
 					<div className="mx-auto">
-						<Tabs.Root
-							defaultValue="info"
-							onValueChange={handleTabChange}
-							value={activeTab as string}
-						>
-							<Tabs.List className="stats shadow mx-auto flex max-w-5xl">
-								<Tabs.Trigger
-									className={twJoin('stat', activeTab === 'info' && 'bg-base-200')}
-									value="info"
+						<Tab.Group defaultIndex={activeTabInt}>
+							<Tab.List className="stats shadow mx-auto flex max-w-5xl">
+								<Tab
+									className={({ selected }) => classNames('stat', selected ? 'bg-base-200' : '')}
 								>
 									<div className="stat-figure text-secondary">
 										<svg
@@ -62,10 +44,9 @@ const EventsDetailsPage = () => {
 										</svg>
 									</div>
 									<div className="stat-title">Info</div>
-								</Tabs.Trigger>
-								<Tabs.Trigger
-									className={twJoin('stat', activeTab === 'tickets' && 'bg-base-200')}
-									value="tickets"
+								</Tab>
+								<Tab
+									className={({ selected }) => classNames('stat', selected ? 'bg-base-200' : '')}
 								>
 									<div className="stat-figure text-secondary">
 										<svg
@@ -87,11 +68,10 @@ const EventsDetailsPage = () => {
 										</svg>
 									</div>
 									<div className="stat-title">Tickets</div>
-								</Tabs.Trigger>
+								</Tab>
 
-								<Tabs.Trigger
-									className={twJoin('stat', activeTab === 'tiers' && 'bg-base-200')}
-									value="tiers"
+								<Tab
+									className={({ selected }) => classNames('stat', selected ? 'bg-base-200' : '')}
 								>
 									<div className="stat-figure text-secondary">
 										<svg
@@ -109,19 +89,17 @@ const EventsDetailsPage = () => {
 										</svg>
 									</div>
 									<div className="stat-title">Tiers</div>
-								</Tabs.Trigger>
-								<Tabs.Trigger
-									className={twJoin('stat', activeTab === 'code' ? 'bg-base-200' : '')}
-									value="code"
+								</Tab>
+								<Tab
+									className={({ selected }) => classNames('stat', selected ? 'bg-base-200' : '')}
 								>
 									<div className="stat-figure text-secondary">
 										<BarCode />
 									</div>
 									<div className="stat-title">Code</div>
-								</Tabs.Trigger>
-								<Tabs.Trigger
-									className={twJoin('stat', activeTab === 'referrals' && 'bg-base-200')}
-									value="referrals"
+								</Tab>
+								<Tab
+									className={({ selected }) => classNames('stat', selected ? 'bg-base-200' : '')}
 								>
 									<div className="stat-figure text-secondary">
 										<svg
@@ -150,10 +128,9 @@ const EventsDetailsPage = () => {
 										</svg>
 									</div>
 									<div className="stat-title">Referrals</div>
-								</Tabs.Trigger>
-								<Tabs.Trigger
-									className={twJoin('stat', activeTab === 'collaborators' && 'bg-base-200')}
-									value="collaborators"
+								</Tab>
+								<Tab
+									className={({ selected }) => classNames('stat', selected ? 'bg-base-200' : '')}
 								>
 									<div className="stat-figure text-secondary">
 										<svg
@@ -194,33 +171,33 @@ const EventsDetailsPage = () => {
 										</svg>
 									</div>
 									<div className="stat-title">Collaborators</div>
-								</Tabs.Trigger>
-							</Tabs.List>
-							<>
-								<Tabs.Content className="" value="info">
+								</Tab>
+							</Tab.List>
+							<Tab.Panels>
+								<Tab.Panel className="">
 									<Event eventId={eventId} />
-								</Tabs.Content>
-								<Tabs.Content className="" value="tickets">
+								</Tab.Panel>
+								<Tab.Panel className="">
 									<TicketTable eventId={eventId} />
-								</Tabs.Content>
+								</Tab.Panel>
 
-								<Tabs.Content className="" value="tiers">
+								<Tab.Panel className="">
 									<Tiers eventId={eventId} />
-								</Tabs.Content>
+								</Tab.Panel>
 
-								<Tabs.Content className="" value="code">
+								<Tab.Panel className="">
 									<Code eventId={eventId} />
-								</Tabs.Content>
+								</Tab.Panel>
 
-								<Tabs.Content className="" value="referrals">
+								<Tab.Panel className="">
 									<RefCode eventId={eventId} />
-								</Tabs.Content>
+								</Tab.Panel>
 
-								<Tabs.Content className="" value="collaborators">
+								<Tab.Panel className="">
 									<Collaborators eventId={eventId} />
-								</Tabs.Content>
-							</>
-						</Tabs.Root>
+								</Tab.Panel>
+							</Tab.Panels>
+						</Tab.Group>
 					</div>
 				</div>
 			</div>

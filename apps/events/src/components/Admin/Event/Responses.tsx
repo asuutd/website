@@ -75,7 +75,7 @@ const Responses = ({
 		getCoreRowModel: getCoreRowModel()
 	});
 	return (
-		<div className=" flex flex-col items-end overflow-x-auto">
+		<div className=" flex flex-col items-end">
 			<table className="table">
 				{/* head */}
 

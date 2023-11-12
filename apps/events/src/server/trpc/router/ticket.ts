@@ -270,13 +270,11 @@ export const ticketRouter = t.router({
 	getTicketsAdmin: adminProcedure
 		.input(
 			z.object({
-				limit: z.number().min(1).nullish(),
+				limit: z.number().min(1).max(100).nullish(),
 				cursor: z.string().nullish(),
 				filter: z
 					.object({
-						tiers: z.array(z.string()).optional(),
-						userEmail: z.string().optional(),
-						code: z.string().optional()
+						tier: z.string().optional()
 					})
 					.optional(),
 				orderBy: z
@@ -290,101 +288,42 @@ export const ticketRouter = t.router({
 		.query(async ({ input, ctx }) => {
 			const limit = input.limit ?? 50;
 			const { cursor } = input;
-			console.log(cursor);
-
-			const transaction = await ctx.prisma.$transaction([
-				ctx.prisma.ticket.count({
-					where: {
-						eventId: input.eventId,
-						tierId: {
-							in:
-								(input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
-									? input.filter?.tiers
-									: undefined
-						},
-						user: {
-							email: {
-								contains: input.filter?.userEmail
-							}
-						},
-						code: {
-							code: input.filter?.code
-						}
-					}
-				}),
-				ctx.prisma.ticket.findMany({
-					take: limit + 1, // get an extra item at the end which we'll use as next cursor
-					where: {
-						eventId: input.eventId,
-						tierId: {
-							in:
-								(input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
-									? input.filter?.tiers
-									: undefined
-						},
-						user: {
-							email: {
-								contains: input.filter?.userEmail
-							}
-						},
-						code: {
-							code: input.filter?.code
+			const items = await ctx.prisma.ticket.findMany({
+				take: limit + 1, // get an extra item at the end which we'll use as next cursor
+				where: {
+					eventId: input.eventId
+				},
+				include: {
+					user: {
+						select: {
+							image: true,
+							name: true,
+							email: true
 						}
 					},
-					include: {
-						user: {
-							select: {
-								image: true,
-								name: true,
-								email: true
-							}
-						},
-						tier: {
-							select: {
-								name: true,
-								id: true
-							}
-						},
-						code: {
-							select: {
-								code: true
-							}
-						},
-						event: {
-							select: {
-								start: true
-							}
+					tier: {
+						select: {
+							name: true
 						}
 					},
-					cursor: cursor ? { id: cursor } : undefined,
-					orderBy: {
-						createdAt: 'asc'
+					event: {
+						select: {
+							start: true
+						}
 					}
-				}),
-				ctx.prisma.tier.findMany({
-					where: {
-						eventId: input.eventId
-					},
-					select: {
-						id: true,
-						name: true
-					}
-				})
-			]);
-
+				},
+				cursor: cursor ? { id: cursor } : undefined,
+				orderBy: {
+					createdAt: 'asc'
+				}
+			});
 			let nextCursor: typeof cursor | undefined = undefined;
-			if (transaction[1].length > limit) {
-				const nextItem = transaction[1].pop();
+			if (items.length > limit) {
+				const nextItem = items.pop();
 				nextCursor = nextItem!.id;
 			}
-			console.log('COUNT cnovbcoerncieornvce', transaction[0]);
 			return {
-				items: {
-					items: transaction[1],
-					tiers: transaction[2],
-					count: transaction[0],
-					nextCursor //Currently not accessible through React Query APIs
-				},
+				items,
 				nextCursor
 			};
 		}),
