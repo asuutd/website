@@ -176,16 +176,15 @@ export const eventRouter = t.router({
 					Tier: true
 				}
 			});
-			
-			const imagesToDelete: string[] = []
+
+			const imagesToDelete: string[] = [];
 			if (event.image && event.image !== input.bannerImage) {
-				imagesToDelete.push(event.image)
+				imagesToDelete.push(event.image);
 			}
 
 			if (event.ticketImage && event.ticketImage !== input.ticketImage) {
-				imagesToDelete.push(event.ticketImage)
+				imagesToDelete.push(event.ticketImage);
 			}
-
 
 			await ctx.prisma.event.update({
 				where: {
@@ -197,7 +196,6 @@ export const eventRouter = t.router({
 					end: input.endTime,
 					image: input.bannerImage,
 					ticketImage: input.ticketImage,
-					organizerId: ctx.session.user.id,
 					fee_holder: input.feeBearer,
 					...(input.location?.coordinates &&
 					input.location?.coordinates[0] &&
@@ -210,7 +208,7 @@ export const eventRouter = t.router({
 										name: input.location.address
 									}
 								}
-							}
+						  }
 						: {}),
 					description: input.description
 				}
@@ -237,7 +235,6 @@ export const eventRouter = t.router({
 					});
 				}
 			}
-			
 		}),
 	upsertEventForm: adminProcedure
 		.input(
