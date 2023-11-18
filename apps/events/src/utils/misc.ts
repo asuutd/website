@@ -1,3 +1,5 @@
+import { Event } from '@prisma/client';
+
 export const calculateApplicationFee = (total: number): number => {
 	const fee = 0.065 * total + 80;
 	console.log(total, fee);
@@ -17,3 +19,19 @@ export function isValidHttpUrl(string: string) {
 }
 
 export type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
+
+export function splitEvents(events: Event[]) {
+	const now = new Date();
+	const ongoingEvents: Event[] = [];
+	const upcomingEvents: Event[] = [];
+
+	events.forEach((event) => {
+		if (event.start <= now && now <= event.end) {
+			ongoingEvents.push(event);
+		} else if (event.start > now) {
+			upcomingEvents.push(event);
+		}
+	});
+
+	return { ongoingEvents, upcomingEvents };
+}

@@ -5,6 +5,7 @@ import { TRPCError } from '@trpc/server';
 import { Fee_Holder, Prisma } from '@prisma/client';
 import { env } from '@/env/server.mjs';
 import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
+import { splitEvents } from '@/utils/misc';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -77,13 +78,16 @@ export const eventRouter = t.router({
 		return result;
 	}),
 	getEvents: t.procedure.query(async ({ ctx }) => {
-		return await ctx.prisma.event.findMany({
+		const events = await ctx.prisma.event.findMany({
 			where: {
-				start: {
-					gte: new Date()
+				end: {
+					gt: new Date()
 				}
 			}
 		});
+		console.log(splitEvents);
+
+		return splitEvents(events);
 	}),
 	createEvent: authedProcedure
 		.input(

@@ -138,12 +138,7 @@ const Home: NextPage = () => {
 					</div>
 				</div>
 
-				<div className="my-5 ">
-					<h2 className="text-3xl" id="events">
-						Upcoming Events
-					</h2>
-					<EventCards />
-				</div>
+				<EventCards />
 			</main>
 		</>
 	);
@@ -154,39 +149,96 @@ export default Home;
 const EventCards = () => {
 	const client = trpc.event.getEvents.useQuery();
 	return (
-		<div className="md:grid md:grid-cols-2  md:gap-2 ">
-			{client.isLoading ? (
-				<>
-					<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
-					<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
-				</>
-			) : (
-				client.data?.map((event) => (
-					<div className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto" key={event.id}>
-						<figure className="px-10 pt-10">
-							<Image
-								src={event.ticketImage ?? ''}
-								alt=""
-								className="rounded-xl object-cover aspect-square"
-								width={400}
-								height={400}
-							/>
-						</figure>
-						<div className="card-body items-center text-center">
-							<h2 className="card-title">{event.name}</h2>
-							<div className="flex items-center gap-2">
-								<img src="/clock.svg" alt="" className="w-5 h-5" />
-								<h2>{format(event.start, 'PPP')}</h2>
-							</div>
-						</div>
-						<div className="card-actions justify-end">
-							<Link href={`/events/${event.id}`} shallow={true}>
-								<a className="btn btn-primary rounded-tr-none rounded-bl-none">Get Tickets</a>
-							</Link>
-						</div>
+		<>
+			{client.data && client.data.upcomingEvents.length > 0 && (
+				<div className="my-5 ">
+					<h2 className="text-3xl" id="events">
+						Upcoming Events
+					</h2>
+					<div className="md:grid md:grid-cols-2  md:gap-2 ">
+						{client.isLoading ? (
+							<>
+								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
+								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
+							</>
+						) : (
+							client.data?.upcomingEvents.map((event) => (
+								<div
+									className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto"
+									key={event.id}
+								>
+									<figure className="px-10 pt-10">
+										<Image
+											src={event.ticketImage ?? ''}
+											alt=""
+											className="rounded-xl object-cover aspect-square"
+											width={400}
+											height={400}
+										/>
+									</figure>
+									<div className="card-body items-center text-center">
+										<h2 className="card-title">{event.name}</h2>
+										<div className="flex items-center gap-2">
+											<img src="/clock.svg" alt="" className="w-5 h-5" />
+											<h2>{format(event.start, 'PPP')}</h2>
+										</div>
+									</div>
+									<div className="card-actions justify-end">
+										<Link href={`/events/${event.id}`} shallow={true}>
+											<a className="btn btn-primary rounded-tr-none rounded-bl-none">Get Tickets</a>
+										</Link>
+									</div>
+								</div>
+							))
+						)}
 					</div>
-				))
+				</div>
 			)}
-		</div>
+
+			{client.data && client.data.ongoingEvents.length > 0 && (
+				<div className="my-5 ">
+					<h2 className="text-3xl" id="events">
+						Ongoing Events
+					</h2>
+					<div className="md:grid md:grid-cols-2  md:gap-2 ">
+						{client.isLoading ? (
+							<>
+								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
+								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
+							</>
+						) : (
+							client.data?.ongoingEvents.map((event) => (
+								<div
+									className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto"
+									key={event.id}
+								>
+									<figure className="px-10 pt-10">
+										<Image
+											src={event.ticketImage ?? ''}
+											alt=""
+											className="rounded-xl object-cover aspect-square"
+											width={400}
+											height={400}
+										/>
+									</figure>
+									<div className="card-body items-center text-center">
+										<h2 className="card-title">{event.name}</h2>
+										<div className="flex items-center gap-2">
+											<img src="/clock.svg" alt="" className="w-5 h-5" />
+											<h2>{format(event.start, 'PPP')}</h2>
+										</div>
+									</div>
+									<div className="card-actions justify-end">
+										<Link href={`/events/${event.id}`} shallow={true}>
+											<a className="btn btn-primary rounded-tr-none rounded-bl-none">Get Tickets</a>
+										</Link>
+									</div>
+								</div>
+							))
+						)}
+					</div>
+				</div>
+			)}
+		</>
 	);
 };
