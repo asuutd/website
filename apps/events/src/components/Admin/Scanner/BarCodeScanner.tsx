@@ -6,7 +6,10 @@ type QRScannerProps = {
 const Test = ({ onResult }: QRScannerProps) => {
 	return (
 		<>
-			<QrReader onResult={onResult} constraints={{ aspectRatio: 300, facingMode: 'environment' }} />
+			<QrReader
+				onResult={onResult}
+				constraints={{ aspectRatio: 30, facingMode: 'environment', height: 300 }}
+			/>
 		</>
 	);
 };
