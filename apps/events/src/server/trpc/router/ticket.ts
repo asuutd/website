@@ -1,4 +1,4 @@
-import { adminProcedure, authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
@@ -267,7 +267,7 @@ export const ticketRouter = t.router({
 		});
 	}),
 
-	getTicketsAdmin: adminProcedure
+	getTicketsAdmin: superAdminProcedure
 		.input(
 			z.object({
 				limit: z.number().min(1).nullish(),

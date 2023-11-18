@@ -11,8 +11,8 @@ import {
 import ImageWithFallback from '../Utils/ImageWithFallback';
 type Collaborator = ArrayElement<RouterOutput['organizer']['getCollaborators']>;
 
-const columnHelper = createColumnHelper<Collaborator & {invite: boolean}>();
-const model = getCoreRowModel()
+const columnHelper = createColumnHelper<Collaborator & { invite: boolean }>();
+const model = getCoreRowModel();
 
 const Collaborators = ({ eventId }: { eventId: string }) => {
 	const collaboratorsQuery = trpc.organizer.getCollaborators.useQuery(
@@ -43,14 +43,14 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 		onSuccess: () => {
 			invitedCollaboratorsQuery.refetch();
 		}
-	}); 
+	});
 
 	const createInvite = trpc.organizer.createInvite.useMutation({
 		onSuccess: () => {
 			invitedCollaboratorsQuery.refetch();
 		}
 	});
-	
+
 	const [email, setEmail] = useState<string>('');
 
 	const handleInvite = () => {
@@ -64,10 +64,11 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 
 	const handleRemoveCollaborator = useCallback(
 		async (userId: string, invite: boolean) => {
-			if (invite) await removeInvite.mutateAsync({
-				eventId,
-				email: userId
-			});
+			if (invite)
+				await removeInvite.mutateAsync({
+					eventId,
+					email: userId
+				});
 			else {
 				await removeCollaborator.mutateAsync({
 					eventId,
@@ -101,7 +102,8 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 					<button
 						className="btn btn-error btn-xs"
 						onClick={() => {
-							handleRemoveCollaborator(info.getValue(), info.row.original.invite)}}
+							handleRemoveCollaborator(info.getValue(), info.row.original.invite);
+						}}
 					>
 						Remove
 					</button>
@@ -112,21 +114,24 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 		[handleRemoveCollaborator]
 	);
 
-	const data = useMemo(() => [
-		...(collaboratorsQuery.data?.map(c=>({ ...c, invite: false })) ?? []), 
-		...(invitedCollaboratorsQuery.data?.map((c)=>({
-		id: c.email,
-		eventId: c.eventId,
-		userId: c.email,
-		user: {
-			id: c.email,
-			name: c.email + ' (Invited)',
-			image: '/placeholder.svg'
-		},
-		invite: true
-	})) ?? [])], [collaboratorsQuery.data, invitedCollaboratorsQuery.data]);
+	const data: any = useMemo(
+		() => [
+			...(collaboratorsQuery.data?.map((c) => ({ ...c, invite: false })) ?? []),
+			...(invitedCollaboratorsQuery.data?.map((c) => ({
+				id: c.email,
+				eventId: c.eventId,
+				userId: c.email,
+				user: {
+					id: c.email,
+					name: c.email + ' (Invited)',
+					image: '/placeholder.svg'
+				},
+				invite: true
+			})) ?? [])
+		],
+		[collaboratorsQuery.data, invitedCollaboratorsQuery.data]
+	);
 
-	
 	const table = useReactTable({
 		data,
 		columns,

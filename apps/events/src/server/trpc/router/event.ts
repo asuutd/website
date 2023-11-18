@@ -1,5 +1,5 @@
 import { TRPCClientError } from '@trpc/client';
-import { adminProcedure, authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { Fee_Holder, Prisma } from '@prisma/client';
@@ -59,7 +59,7 @@ export const eventRouter = t.router({
 			return tier;
 		}),
 
-	getEventAdmin: adminProcedure.query(async ({ input, ctx }) => {
+	getEventAdmin: superAdminProcedure.query(async ({ input, ctx }) => {
 		const result = await ctx.prisma.event.findFirstOrThrow({
 			where: {
 				id: input.eventId
@@ -144,7 +144,7 @@ export const eventRouter = t.router({
 				});
 			}
 		}),
-	updateEvent: adminProcedure
+	updateEvent: superAdminProcedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -236,7 +236,7 @@ export const eventRouter = t.router({
 				}
 			}
 		}),
-	upsertEventForm: adminProcedure
+	upsertEventForm: superAdminProcedure
 		.input(
 			z.object({
 				forms: z.array(ZodCustomField)
@@ -310,7 +310,7 @@ export const eventRouter = t.router({
 			}
 		}),
 
-	getResponses: adminProcedure
+	getResponses: superAdminProcedure
 		.input(
 			z.object({
 				formId: z.string()
@@ -394,7 +394,7 @@ export const eventRouter = t.router({
 				});
 			}
 		}),
-	changeFormVersion: adminProcedure
+	changeFormVersion: superAdminProcedure
 		.input(
 			z.object({
 				direction: z.enum(['forward', 'backwards']),
