@@ -1,7 +1,13 @@
 import { TRPCError } from '@trpc/server';
 import { env } from '../../../env/server.mjs';
 import stripe from '../../../utils/stripe';
-import { adminProcedure, authedProcedure, organizerProcedure, t } from '../trpc';
+import {
+	adminProcedure,
+	authedProcedure,
+	organizerProcedure,
+	superAdminProcedure,
+	t
+} from '../trpc';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import Collaborater from './emails/collaborater';
@@ -69,7 +75,8 @@ export const organizerRouter = t.router({
 					{
 						EventAdmin: {
 							some: {
-								userId: ctx.session.user.id
+								userId: ctx.session.user.id,
+								role: 'SUPER_ADMIN'
 							}
 						}
 					}
