@@ -1,4 +1,4 @@
-import { adminProcedure, authedProcedure, t } from '../trpc';
+import { superAdminProcedure, authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import generateCode from '../../../utils/generateCode';
 import { Prisma } from '@prisma/client';
@@ -27,7 +27,7 @@ export const codeRouter = t.router({
 
 			return code;
 		}),
-	getCodes: adminProcedure
+	getCodes: superAdminProcedure
 		.input(
 			z.object({
 				eventId: z.string()
@@ -55,7 +55,7 @@ export const codeRouter = t.router({
 				}
 			});
 		}),
-	getReferralCodesAdmin: adminProcedure
+	getReferralCodesAdmin: superAdminProcedure
 		.input(
 			z.object({
 				eventId: z.string()
@@ -101,7 +101,7 @@ export const codeRouter = t.router({
 				}
 			});
 		}),
-	createCode: adminProcedure
+	createCode: superAdminProcedure
 		.input(
 			z.object({
 				num_codes: z.number().default(1),
