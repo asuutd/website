@@ -71,6 +71,9 @@ const Events: NextPage = () => {
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
 				<div className="justify-between flex items-center">
 					<h1 className="text-4xl font-bold">Events</h1>
+					<Link className="" href="/scan">
+						<p className="btn btn-sm">Scan Ticket</p>
+					</Link>
 					{events.data && (
 						<div className="join">
 							<button className="btn  btn-sm join-item" onClick={() => handlePaymentClick()}>
