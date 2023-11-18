@@ -1,20 +1,23 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import React from 'react';
 import { OnResultFunction } from 'react-qr-reader';
 import dynamic from 'next/dynamic';
 import { trpc } from '@/utils/trpc';
 import { NextSeo } from 'next-seo';
+import usePrevious from '@/utils/hooks/usePrevious';
+import { debounce } from 'lodash';
 
 export default function ScanPage() {
 	const [text, setText] = React.useState<string | null>(null);
 	const validateMut = trpc.ticket.validateTicket.useMutation();
 	const resetTime = 3000;
 
-	const onNewScanResult: OnResultFunction = (result, error) => {
+	const onNewScanResult: OnResultFunction = debounce((result, error) => {
 		if (!!result) {
 			const url = new URL(result?.getText());
 			const ticketId = url.searchParams.get('id');
 			const eventId = url.searchParams.get('eventId');
+
 			if (ticketId && eventId) {
 				validateMut.mutate(
 					{
@@ -32,7 +35,7 @@ export default function ScanPage() {
 				);
 			}
 		}
-	};
+	}, resetTime);
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
