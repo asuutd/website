@@ -1,7 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { t, authedProcedure } from '../trpc';
-import stripe, { calculateApplicationFee } from '@/utils/stripe';
+import stripe from '@/utils/stripe';
+import { calculateApplicationFee } from '@/utils/misc';
 import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
@@ -108,10 +109,14 @@ export const paymentRouter = t.router({
 							}
 					  })
 					: null,
+				//Work on This Code.
 				input.codeId
 					? ctx.prisma.code.findFirst({
 							where: {
-								code: input.codeId
+								code: input.codeId,
+								tierId: {
+									in: input.tiers.map((tier) => tier.tierId)
+								}
 							},
 							include: {
 								_count: {
@@ -122,7 +127,7 @@ export const paymentRouter = t.router({
 					: null
 			]);
 			//Make sure code is one-time use
-			const codeTier = input.tiers.find((tier) => tier.tierId === tier?.tierId);
+			const codeTier = input.tiers.find((tier) => tier.tierId === code?.tierId);
 
 			if (codeTier && codeTier.quantity > 1) {
 				throw new TRPCError({

@@ -48,7 +48,7 @@ const Events: NextPage = () => {
 					setErrorMsg(err?.message);
 					break;
 				default:
-					setErrorMsg('An error occured while fetching your tickets. Please try again later.');
+					setErrorMsg('An error occured while fetching your events. Please try again later.');
 					break;
 			}
 		},
@@ -160,7 +160,12 @@ const Events: NextPage = () => {
 				)}
 			</div>
 			<Modal isOpen={isOpen} closeModal={() => setIsOpen(false)}>
-				<EventForm closeModal={() => setIsOpen(false)} />
+				<EventForm
+					closeModal={() => {
+						setIsOpen(false);
+						events.refetch();
+					}}
+				/>
 			</Modal>
 		</>
 	);

@@ -2,12 +2,14 @@ import { RouterOutput } from '@/server/trpc/router';
 import { trpc } from '@/utils/trpc';
 import { format } from 'date-fns';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { twJoin } from 'tailwind-merge';
 import { ArrayElement } from '@/utils/misc';
+import { CSVLink } from 'react-csv';
 import {
 	FilterFn,
 	PaginationState,
+	VisibilityState,
 	createColumnHelper,
 	flexRender,
 	functionalUpdate,
@@ -18,193 +20,385 @@ import { createPortal } from 'react-dom';
 import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 import Modal from '../Modal';
 import Wrapper from './Scanner/Wrapper';
-type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']>;
+
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import usePrevious from '@/utils/hooks/usePrevious';
+type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']['items']>;
 
 const columnHelper = createColumnHelper<Ticket>();
+interface State {
+	pagination: PaginationState;
+	filters: {
+		tiers?: string[];
+		userEmail?: string;
+		code?: string;
+	};
+}
+
+const initialState: State = {
+	pagination: { pageIndex: 0, pageSize: 10 },
+	filters: {
+		tiers: []
+	}
+};
+
+type Action =
+	| { type: 'SET_PAGE'; page: number }
+	| { type: 'SET_PAGINATION'; pageIndex: number; pageSize: number }
+	| { type: 'SET_PAGE_SIZE'; pageSize: number }
+	| { type: 'TOGGLE_TIER_FILTER'; tier: string }
+	| { type: 'SET_FILTER'; filters: State['filters'] };
+
+const reducer = (state: State, action: Action): State => {
+	switch (action.type) {
+		case 'SET_PAGE':
+			return {
+				...state,
+				pagination: {
+					...state.pagination,
+					pageIndex: action.page
+				}
+			};
+		case 'SET_PAGE_SIZE':
+			return {
+				...state,
+				pagination: {
+					...state.pagination,
+					pageSize: action.pageSize
+				}
+			};
+		case 'SET_PAGINATION':
+			return {
+				...state,
+				pagination: {
+					pageIndex: action.pageIndex,
+					pageSize: action.pageSize
+				}
+			};
+		case 'TOGGLE_TIER_FILTER':
+			if (!state.filters.tiers) {
+				return {
+					...state,
+					filters: {
+						...state.filters,
+						tiers: [action.tier]
+					}
+				};
+			}
+
+			return {
+				...state,
+				filters: {
+					...state.filters,
+					tiers: state.filters.tiers.includes(action.tier)
+						? state.filters.tiers.filter((t) => t !== action.tier)
+						: [...state.filters.tiers, action.tier]
+				}
+			};
+		case 'SET_FILTER':
+			return {
+				...state,
+				filters: action.filters
+			};
+		default:
+			throw new Error();
+	}
+};
 
 const TicketTable = ({ eventId }: { eventId: string }) => {
 	const [page, setPage] = useState(0);
 	const [filter, setFilter] = useState<Record<string, any>>();
 	const [scannerModal, setScannerModal] = useState(false);
+	const router = useRouter();
+	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+		Code: false,
+		'Purchase Time': false,
+		Email: false
+	});
 	const columns = React.useMemo(
 		() => [
-			columnHelper.accessor('user.image', {
+			columnHelper.accessor('user.name', {
 				cell: (info) => (
-					<div className="flex items-center space-x-3">
+					<>
+						{/* <div className="flex items-center space-x-3">
 						<div
 							className="h-12 w-12 tooltip tooltip-right"
 							data-tip={info.row.original.user.name ?? info.row.original.user.email}
 						>
 							<Image
-								src={info.getValue() ?? DEFAULT_PROFILE_IMAGE_PATH}
+								src={info.getValue() ?? info.row.original.user.email}
 								width={50}
 								height={50}
 								className="rounded-md "
 							/>
 						</div>
-					</div>
-				)
+					</div> */}
+						{info.getValue() ?? info.row.original.user.email}
+					</>
+				),
+				id: 'User',
+				header: 'Name'
+			}),
+
+			columnHelper.accessor('user.email', {
+				cell: (info) => info.getValue(),
+				enableColumnFilter: true,
+				id: 'Email',
+				header: 'Email'
 			}),
 
 			columnHelper.accessor('tier.name', {
 				cell: (info) => info.getValue(),
-				enableColumnFilter: true
+				enableColumnFilter: true,
+				id: 'Tier',
+				header: 'Tier'
 			}),
 
 			columnHelper.accessor(
-				(row) => `${row.checkedInAt ? row.checkedInAt.toLocaleDateString() : 'Not Checked In Yet'}`,
+				(row) => `${row.checkedInAt ? row.checkedInAt.toLocaleString() : 'Not Checked In Yet'}`,
 				{
-					id: 'checkedInAtParsed'
+					id: 'Check-In Time',
+					header: 'Check-In Time'
 				}
-			)
+			),
+
+			columnHelper.accessor((row) => `${row.createdAt.toLocaleString()}`, {
+				id: 'Purchase Time',
+				header: 'Purchase Time'
+			}),
+
+			columnHelper.accessor('code.code', {
+				cell: (info) => (
+					<>
+						{info.getValue() && info.row.original.codeId && (
+							<div>
+								<button
+									className="underline"
+									onClick={() =>
+										router.push({
+											query: {
+												tab: 'code',
+												id: eventId,
+												code: info.row.original.codeId
+											}
+										})
+									}
+								>
+									{info.getValue()}
+								</button>
+							</div>
+						)}
+					</>
+				),
+				id: 'Code',
+				header: 'Code'
+			})
 		],
 		[]
 	);
 
-	const [{ pageIndex, pageSize }, setPagination] = React.useState<PaginationState>({
-		pageIndex: 0,
-		pageSize: 10
+	const [{ pagination, filters }, dispatch] = useReducer(reducer, initialState);
+	const previousPageState = usePrevious<State>({
+		pagination,
+		filters
 	});
-
-	const pagination = React.useMemo(
-		() => ({
-			pageIndex,
-			pageSize
-		}),
-		[pageIndex, pageSize]
-	);
 
 	const myQuery = trpc.ticket.getTicketsAdmin.useInfiniteQuery(
 		{
-			limit: pageSize,
-			eventId: eventId
+			limit: pagination.pageSize,
+			eventId: eventId,
+			filter: filters
 		},
 		{
 			getNextPageParam: (lastPage) => lastPage.nextCursor,
-			keepPreviousData: true
+			enabled: eventId !== undefined,
+			keepPreviousData: true,
+			refetchOnWindowFocus: false,
+			staleTime: 0,
+			cacheTime: 0,
+			refetchInterval: 0
 			// initialCursor: 1, // <-- optional you can pass an initialCursor
 		}
 	);
-
-	const tiers = trpc.tier.getTiersAdmin.useQuery(
-		{
-			eventId
-		},
-		{
-			staleTime: Infinity,
-			cacheTime: Infinity
+	useEffect(() => {
+		console.log(pagination);
+		if (
+			pagination.pageIndex < (previousPageState?.pagination.pageIndex ?? Number.MAX_SAFE_INTEGER)
+		) {
+			if (myQuery.hasPreviousPage) {
+				myQuery.fetchPreviousPage();
+			}
+		} else {
+			if (myQuery.hasNextPage) {
+				myQuery.fetchNextPage();
+			}
 		}
-	);
+	}, [pagination]);
+
+	useEffect(() => {
+		console.log(router.route, router.query);
+	}, [router.query]);
 
 	const table = useReactTable({
-		data: myQuery.data?.pages[pagination.pageIndex]?.items ?? [],
+		data: myQuery.data?.pages[pagination.pageIndex]?.items.items ?? [],
 		columns,
 		pageCount: -1,
 		state: {
-			pagination
+			pagination,
+			columnVisibility
 		},
-		filterFns: {
-			myCustomFilter: (rows, columns, filterValue) => {
-				return true;
-			}
-		},
+		onColumnVisibilityChange: setColumnVisibility,
 		onPaginationChange: (e) => {
-			setPagination((old) => {
-				const newState = functionalUpdate(e, old);
-				console.log(newState, old);
-				if (newState.pageIndex < old.pageIndex) {
-					if (myQuery.hasPreviousPage) {
-						myQuery.fetchPreviousPage();
-						return newState;
-					} else {
-						if (pagination.pageIndex > 0) {
-							console.log(page);
-							return newState;
-						}
-					}
-				} else {
-					if (myQuery.hasNextPage) {
-						myQuery.fetchNextPage();
-						return newState;
-					} else {
-						if (myQuery.data?.pages.length && pagination.pageIndex < myQuery.data.pages.length) {
-							return newState;
-						}
-					}
+			if (pagination) {
+				const newState = functionalUpdate(e, pagination);
+				console.log(pagination, newState);
+				if (newState) {
+					dispatch({
+						type: 'SET_PAGINATION',
+						pageIndex: newState.pageIndex,
+						pageSize: newState.pageSize
+					});
 				}
-				return old;
-			});
+			}
+
+			console.log();
 		},
 		manualPagination: true,
 		getCoreRowModel: getCoreRowModel()
 	});
 
 	return (
-		<div className=" flex flex-col items-end">
-			<div className="flex flex-row items-center gap-2">
-				<button className="btn" onClick={() => setScannerModal(true)}>
-					<svg
-						fill="#000000"
-						height="200px"
-						width="200px"
-						version="1.1"
-						id="Capa_1"
-						xmlns="http://www.w3.org/2000/svg"
-						xmlnsXlink="http://www.w3.org/1999/xlink"
-						viewBox="0 0 74.207 74.207"
-						xmlSpace="preserve"
-						className="w-6 h-6"
+		<div className="">
+			<div className="flex justify-between items-center w-full">
+				<div>
+					{myQuery.data?.pages[0]?.items.count && (
+						<>
+							<span className="text-2xl">{pagination.pageIndex * pagination.pageSize + 1} - </span>
+							<span className="text-2xl">
+								{pagination.pageIndex * pagination.pageSize + table.getRowModel().rows.length}
+							</span>{' '}
+							of <span className="text-2xl">{myQuery.data?.pages[0]?.items.count}</span> tickets
+						</>
+					)}
+				</div>
+
+				<div>
+					<CSVLink
+						className="inline-block"
+						target="_blank"
+						filename={'ticket-details.csv'}
+						data={table
+							.getRowModel()
+							.flatRows.map((row) =>
+								Object.assign(
+									{},
+									...row
+										.getVisibleCells()
+										.map((visible) => ({ [visible.column.id]: visible.getValue() }))
+								)
+							)}
+						headers={table.getFlatHeaders().map((header) => header.getContext().column.id)}
 					>
-						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-						<g id="SVGRepo_iconCarrier">
-							{' '}
-							<g>
-								{' '}
-								<path
-									d="M57.746,14.658h-2.757l-1.021-3.363c-0.965-3.178-3.844-5.313-7.164-5.313H28.801c-3.321,
-								0-6.201,2.135-7.165,5.313 l-1.021,3.363h-4.153C7.385,14.658,0,22.043,0,31.121v20.642c0,9.077,7.385,
-								16.462,16.462,16.462h41.283 c9.077,0,16.462-7.385,16.462-16.462V31.121C74.208,22.043,66.823,14.658,
-								57.746,14.658z M68.208,51.762 c0,5.769-4.693,10.462-10.462,10.462H16.462C10.693,62.223,6,57.53,6,
-								51.762V31.121c0-5.769,4.693-10.462,10.462-10.462h8.603 l2.313-7.621c0.192-0.631,0.764-1.055,
-								1.423-1.055h18.003c0.659,0,1.23,0.424,1.423,1.057l2.314,7.619h7.204 c5.769,0,10.462,4.693,10.462,
-								10.462L68.208,51.762L68.208,51.762z"
-								></path>{' '}
-								<path
-									d="M37.228,25.406c-8.844,0-16.04,7.195-16.04,16.04c0,8.844,7.195,16.039,16.04,16.039s16.041-7.195,
-								16.041-16.039 C53.269,32.601,46.073,25.406,37.228,25.406z M37.228,51.486c-5.536,0-10.04-4.504-10.04-10.039c0-5.536,
-								4.504-10.04,10.04-10.04 c5.537,0,10.041,4.504,10.041,10.04C47.269,46.982,42.765,51.486,37.228,51.486z"
-								></path>{' '}
-							</g>{' '}
-						</g>
-					</svg>
-					SCAN TICKET
-				</button>
-				<FilterCopmonent tiers={tiers.data ?? []} />
+						<button className="btn btn-sm">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								className="w-5 h-5"
+							>
+								<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+								<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+								<g id="SVGRepo_iconCarrier">
+									{' '}
+									<path
+										d="M17 17H17.01M17.4 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H6.6M12 15V4M12 15L9 12M12 15L15 12"
+										stroke="#000000"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>{' '}
+								</g>
+							</svg>
+							DOWNLOAD
+						</button>
+					</CSVLink>
+					<div className="dropdown dropdown-end">
+						<label tabIndex={0} className="btn m-1 btn-sm">
+							<svg
+								fill="#000000"
+								viewBox="0 0 256 256"
+								id="Flat"
+								xmlns="http://www.w3.org/2000/svg"
+								className="w-5 h-5"
+							>
+								<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+								<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+								<g id="SVGRepo_iconCarrier">
+									{' '}
+									<path d="M83.99951,87.99353h-.00012l-44-.001a4,4,0,0,1,.00012-8h.00012l44,.001a4,4,0,0,1-.00012,8Zm136,84a4.00019,4.00019,0,0,1-4,4H191.65967a23.99507,23.99507,0,0,1-47.32031,0H39.99951a4,4,0,0,1,0-8H144.33936a23.99507,23.99507,0,0,1,47.32031,0h24.33984A4.0002,4.0002,0,0,1,219.99951,171.99353Zm-36,0a16,16,0,1,0-16,16A16.01833,16.01833,0,0,0,183.99951,171.99353Zm-104-88a23.99775,23.99775,0,0,1,47.66016-4l88.33984-.001a4,4,0,0,1,0,8l-88.33984.001a23.99775,23.99775,0,0,1-47.66016-4Zm8,0a16,16,0,1,0,16-16A16.01833,16.01833,0,0,0,87.99951,83.99353Z"></path>{' '}
+								</g>
+							</svg>
+							VIEW
+						</label>
+
+						<ul
+							tabIndex={0}
+							className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+						>
+							{table.getAllLeafColumns().map((column) => {
+								return (
+									<li key={column.id} className="px-1">
+										<label>
+											<input
+												className="checkbox checkbox-sm"
+												{...{
+													type: 'checkbox',
+													checked: column.getIsVisible(),
+													onChange: column.getToggleVisibilityHandler()
+												}}
+											/>{' '}
+											{column.id}
+										</label>
+									</li>
+								);
+							})}
+						</ul>
+					</div>
+
+					<FilterComponent tiers={myQuery.data?.pages[0]?.items.tiers ?? []} dispatch={dispatch} />
+				</div>
 			</div>
 
-			<table className="table">
-				{/* head */}
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Tier</th>
-						<th>Checked In</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody className="">
-					{/* row 1 */}
+			<div className="overflow-x-auto">
+				<table className="table">
+					{/* head */}
+					<thead>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<tr key={headerGroup.id}>
+								{headerGroup.headers.map((header) => (
+									<th key={header.id} colSpan={header.colSpan}>
+										{header.isPlaceholder
+											? null
+											: flexRender(header.column.columnDef.header, header.getContext())}
+									</th>
+								))}
+							</tr>
+						))}
+					</thead>
+					<tbody className="">
+						{/* row 1 */}
 
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id}>
-							{row.getVisibleCells().map((cell) => (
-								<td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
+						{table.getRowModel().rows.map((row) => (
+							<tr key={row.id}>
+								{row.getVisibleCells().map((cell) => (
+									<td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+								))}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 
 			<div className="flex gap-2">
 				<div className="join">
@@ -235,9 +429,9 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 						}}
 						className="select"
 					>
-						{[10, 20, 30, 40, 50].map((pageSize) => (
+						{[10, 20, 30, 40, 50, myQuery.data?.pages[0]?.items.count].map((pageSize) => (
 							<option key={pageSize} value={pageSize}>
-								Show {pageSize}
+								Show {pageSize === myQuery.data?.pages[0]?.items.count ? 'All' : pageSize}
 							</option>
 						))}
 					</select>
@@ -251,111 +445,91 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 	);
 };
 
-const FilterCopmonent = ({ tiers }: { tiers: any[] }) => {
-	const utils = trpc.useContext();
-	const [showModal, setShowModal] = useState(false);
-	const sidebarContentEl = document.getElementById('sidebar-content');
+const FilterComponent = ({
+	tiers,
+	dispatch
+}: {
+	tiers: RouterOutput['ticket']['getTicketsAdmin']['items']['tiers'];
 
-	useEffect(() => {
-		console.log(sidebarContentEl);
-		return () => {
-			setShowModal(false);
-		};
-	}, []);
+	dispatch: React.Dispatch<Action>;
+}) => {
+	const [filterState, setFilterState] = useState<State['filters']>({});
+
+	const handleTierChange = (id: string) => {
+		if (!filterState.tiers) {
+			setFilterState({
+				...filterState,
+				tiers: [id]
+			});
+		} else {
+			setFilterState({
+				...filterState,
+				tiers: filterState.tiers.includes(id)
+					? filterState.tiers.filter((t) => t !== id)
+					: [...filterState.tiers, id]
+			});
+		}
+	};
+
+	const handleUserEmailChange = (email: string) => {
+		setFilterState({
+			...filterState,
+			userEmail: email !== '' ? email : undefined
+		});
+	};
+
+	const handleCodeChange = (code: string) => {
+		setFilterState({
+			...filterState,
+			code: code !== '' ? code : undefined
+		});
+	};
+	const applyChanges = () => {
+		dispatch({
+			type: 'SET_FILTER',
+			filters: filterState
+		});
+	};
+
 	return (
-		<>
-			<label
-				htmlFor="my-drawer"
-				className="btn btn-secondary drawer-button"
-				onClick={() => setShowModal(true)}
+		<div className="dropdown dropdown-end">
+			<label className="btn  btn-sm m-1" tabIndex={0}>
+				<svg
+					fill="#fff"
+					viewBox="0 0 32 32"
+					version="1.1"
+					xmlns="http://www.w3.org/2000/svg"
+					stroke="#fff"
+					className="w-5 h-5 fill-black stroke-black"
+				>
+					<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+					<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+					<g id="SVGRepo_iconCarrier">
+						{' '}
+						<title>bars-filter</title>{' '}
+						<path d="M30 6.749h-28c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h28c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0zM24 14.75h-16c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h16c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0zM19 22.75h-6.053c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h6.053c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0z"></path>{' '}
+					</g>
+				</svg>
+				Filter
+			</label>
+
+			<ul
+				tabIndex={0}
+				className="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 menu gap-3"
 			>
-				<svg
-					fill="#fff"
-					viewBox="0 0 32 32"
-					version="1.1"
-					xmlns="http://www.w3.org/2000/svg"
-					stroke="#fff"
-					className="w-4 h-4"
-				>
-					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-					<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-					<g id="SVGRepo_iconCarrier">
-						{' '}
-						<title>bars-filter</title>{' '}
-						<path d="M30 6.749h-28c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h28c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0zM24 14.75h-16c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h16c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0zM19 22.75h-6.053c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h6.053c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0z"></path>{' '}
-					</g>
-				</svg>
-				Filter
-			</label>
-
-			{showModal &&
-				sidebarContentEl &&
-				createPortal(
-					<>
-						<label
-							htmlFor="my-drawer"
-							aria-label="close sidebar"
-							className="drawer-overlay"
-						></label>
-						<ul className="menu bg-base-200 w-56 rounded-box z-[1] dropdown-content">
-							<li>
-								<a>Item 1</a>
-							</li>
-							<li>
-								<details>
-									<summary>Tier</summary>
-									<ul>
-										{tiers?.map((tier) => (
-											<li className="" key={tier.id}>
-												<label className="label cursor-pointer">
-													<input type="checkbox" checked={false} className="checkbox" />
-													<span className="label-text">{tier.name}</span>
-												</label>
-											</li>
-										))}
-									</ul>
-								</details>
-							</li>
-							<li>
-								<a>Item 3</a>
-							</li>
-						</ul>
-					</>,
-					sidebarContentEl
-				)}
-			{/* <div className="dropdown dropdown-end">
-			<label tabIndex={0} className="btn btn-sm btn-secondary">
-				<svg
-					fill="#fff"
-					viewBox="0 0 32 32"
-					version="1.1"
-					xmlns="http://www.w3.org/2000/svg"
-					stroke="#fff"
-					className="w-4 h-4"
-				>
-					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-					<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-					<g id="SVGRepo_iconCarrier">
-						{' '}
-						<title>bars-filter</title>{' '}
-						<path d="M30 6.749h-28c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h28c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0zM24 14.75h-16c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h16c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0zM19 22.75h-6.053c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h6.053c0.69 0 1.25-0.56 1.25-1.25s-0.56-1.25-1.25-1.25v0z"></path>{' '}
-					</g>
-				</svg>
-				Filter
-			</label>
-
-			<ul className="menu bg-base-200 w-56 rounded-box z-[1] dropdown-content">
-				<li>
-					<a>Item 1</a>
-				</li>
 				<li>
 					<details>
 						<summary>Tier</summary>
 						<ul>
 							{tiers?.map((tier) => (
-								<li className="">
+								<li className="" key={tier.id}>
 									<label className="label cursor-pointer">
-										<input type="checkbox" checked={false} className="checkbox" />
+										<input
+											type="checkbox"
+											checked={filterState.tiers?.includes(tier.id)}
+											className="checkbox checkbox-sm"
+											onClick={() => handleTierChange(tier.id)}
+										/>
 										<span className="label-text">{tier.name}</span>
 									</label>
 								</li>
@@ -363,12 +537,36 @@ const FilterCopmonent = ({ tiers }: { tiers: any[] }) => {
 						</ul>
 					</details>
 				</li>
-				<li>
-					<a>Item 3</a>
+
+				<li className="disabled">
+					<input
+						type="text"
+						value={filterState.userEmail ?? ''}
+						onChange={(e) => handleUserEmailChange(e.target.value)}
+						className="input input-sm input-bordered text-black"
+						placeholder="User Email"
+					/>
+				</li>
+
+				<li className="disabled">
+					<input
+						type="text"
+						value={filterState.code ?? ''}
+						onChange={(e) => handleCodeChange(e.target.value)}
+						className="input input-sm input-bordered text-black"
+						placeholder="Code"
+					/>
+				</li>
+
+				<li className="disabled">
+					<div className="">
+						<button className="btn btn-primary py-1 btn-sm" onClick={() => applyChanges()}>
+							APPLY
+						</button>
+					</div>
 				</li>
 			</ul>
-		</div> */}
-		</>
+		</div>
 	);
 };
 
