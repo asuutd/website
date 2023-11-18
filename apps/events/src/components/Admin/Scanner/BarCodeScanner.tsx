@@ -8,7 +8,8 @@ const Test = ({ onResult }: QRScannerProps) => {
 		<>
 			<QrReader
 				onResult={onResult}
-				constraints={{ aspectRatio: 30, facingMode: 'environment', height: 300 }}
+				constraints={{ facingMode: 'environment' }}
+				containerStyle={{ width: '100%', height: '100%' }}
 			/>
 		</>
 	);
