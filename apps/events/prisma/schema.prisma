@@ -213,4 +213,5 @@ enum Fee_Holder {
 enum Admin_Type {
   ADMIN
   SUPER_ADMIN
+  OWNER
 }
