@@ -150,10 +150,10 @@ const EventCards = () => {
 	const client = trpc.event.getEvents.useQuery();
 	return (
 		<>
-			{client.data && client.data.upcomingEvents.length > 0 && (
+			{client.data && client.data.ongoingEvents.length > 0 && (
 				<div className="my-5 ">
 					<h2 className="text-3xl" id="events">
-						Upcoming Events
+						Ongoing Events
 					</h2>
 					<div className="md:grid md:grid-cols-2  md:gap-2 ">
 						{client.isLoading ? (
@@ -162,7 +162,7 @@ const EventCards = () => {
 								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
 							</>
 						) : (
-							client.data?.upcomingEvents.map((event) => (
+							client.data?.ongoingEvents.map((event) => (
 								<div
 									className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto"
 									key={event.id}
@@ -195,10 +195,10 @@ const EventCards = () => {
 				</div>
 			)}
 
-			{client.data && client.data.ongoingEvents.length > 0 && (
+			{client.data && client.data.upcomingEvents.length > 0 && (
 				<div className="my-5 ">
 					<h2 className="text-3xl" id="events">
-						Ongoing Events
+						Upcoming Events
 					</h2>
 					<div className="md:grid md:grid-cols-2  md:gap-2 ">
 						{client.isLoading ? (
@@ -207,7 +207,7 @@ const EventCards = () => {
 								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
 							</>
 						) : (
-							client.data?.ongoingEvents.map((event) => (
+							client.data?.upcomingEvents.map((event) => (
 								<div
 									className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto"
 									key={event.id}
