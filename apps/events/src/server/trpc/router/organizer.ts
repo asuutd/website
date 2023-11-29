@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import Collaborater from './emails/collaborater';
 import { Resend } from 'resend';
+import { Admin_Type, EventAdmin, User } from '@prisma/client';
 const resend = new Resend(env.RESEND_API_KEY);
 
 export const organizerRouter = t.router({
@@ -149,8 +150,8 @@ export const organizerRouter = t.router({
 
 			return invite;
 		}),
-	getCollaborators: organizerProcedure.query(async ({ input, ctx }) => {
-		return await ctx.prisma.eventAdmin.findMany({
+	getCollaborators: superAdminProcedure.query(async ({ input, ctx }) => {
+		const collaborators = await ctx.prisma.eventAdmin.findMany({
 			where: {
 				eventId: input.eventId
 			},
@@ -159,13 +160,24 @@ export const organizerRouter = t.router({
 					select: {
 						id: true,
 						name: true,
-						image: true
+						image: true,
+						email: true
 					}
 				}
 			}
 		});
+
+		return collaborators.sort((a, b) => {
+			if (a.role === 'OWNER') return -1;
+			if (b.role === 'OWNER') return 1;
+
+			if (a.role === 'SUPER_ADMIN') return -1;
+			if (b.role === 'SUPER_ADMIN') return 1;
+
+			return 0;
+		});
 	}),
-	getInvitedCollaborators: organizerProcedure.query(async ({ input, ctx }) => {
+	getInvitedCollaborators: superAdminProcedure.query(async ({ input, ctx }) => {
 		return await ctx.prisma.adminInvite.findMany({
 			where: {
 				eventId: input.eventId
@@ -189,12 +201,72 @@ export const organizerRouter = t.router({
 				}
 			});
 			console.log(collaborator);
-			const deletedColaborator = await ctx.prisma.eventAdmin.delete({
+			const deletedCollaborator = await ctx.prisma.eventAdmin.delete({
 				where: {
 					id: collaborator.id
 				}
 			});
 			return;
+		}),
+	changeCollaboratorStatus: superAdminProcedure
+		.input(
+			z.object({
+				collaboratorId: z.string(),
+				status: z.nativeEnum(Admin_Type)
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const admin = await ctx.prisma.eventAdmin.findFirstOrThrow({
+				where: {
+					userId: input.collaboratorId,
+					eventId: input.eventId
+				}
+			});
+
+			if (input.status === 'OWNER') {
+				throw new TRPCError({
+					code: 'FORBIDDEN',
+					message: 'You are not allowed'
+				});
+			}
+
+			if (admin.role === 'OWNER') {
+				throw new TRPCError({
+					code: 'FORBIDDEN',
+					message: 'You cannot modify the owner of the event'
+				});
+			}
+
+			//Only owners and super admins can
+			if (input.status === 'ADMIN') {
+				if (ctx.admin?.role === 'OWNER') {
+					await ctx.prisma.eventAdmin.update({
+						where: {
+							id: admin.id
+						},
+						data: {
+							role: 'ADMIN'
+						}
+					});
+				}
+			} else if (input.status === 'SUPER_ADMIN') {
+				console.log(ctx.admin);
+				if (ctx.admin?.role === 'SUPER_ADMIN' || ctx.admin?.role === 'OWNER') {
+					await ctx.prisma.eventAdmin.update({
+						where: {
+							id: admin.id
+						},
+						data: {
+							role: 'SUPER_ADMIN'
+						}
+					});
+				} else {
+					throw new TRPCError({
+						code: 'FORBIDDEN',
+						message: 'You are not the owner or a super admin'
+					});
+				}
+			}
 		}),
 	removeInvite: organizerProcedure
 		.input(

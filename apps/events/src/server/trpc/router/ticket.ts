@@ -276,7 +276,8 @@ export const ticketRouter = t.router({
 					.object({
 						tiers: z.array(z.string()).optional(),
 						userEmail: z.string().optional(),
-						code: z.string().optional()
+						code: z.string().optional(),
+						refCode: z.string().optional()
 					})
 					.optional(),
 				orderBy: z
@@ -309,6 +310,9 @@ export const ticketRouter = t.router({
 						},
 						code: {
 							code: input.filter?.code
+						},
+						refCode: {
+							code: input.filter?.refCode
 						}
 					}
 				}),
@@ -329,6 +333,9 @@ export const ticketRouter = t.router({
 						},
 						code: {
 							code: input.filter?.code
+						},
+						refCode: {
+							code: input.filter?.refCode
 						}
 					},
 					include: {

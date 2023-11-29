@@ -4,7 +4,7 @@ import { FormContext } from './Creator';
 const Selector = () => {
 	const { add } = useContext(FormContext);
 	return (
-		<>
+		<div className="flex flex-col gap-2">
 			<li
 				className="btn btn-neutral my-4"
 				onClick={() => {
@@ -72,7 +72,7 @@ const Selector = () => {
 			>
 				+ DROPDOWN FIELD
 			</li>
-		</>
+		</div>
 	);
 };
 

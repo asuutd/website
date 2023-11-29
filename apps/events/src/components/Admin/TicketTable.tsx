@@ -24,17 +24,43 @@ import Wrapper from './Scanner/Wrapper';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import usePrevious from '@/utils/hooks/usePrevious';
+import { z } from 'zod';
+import useQueryReducer from '@/utils/hooks/useQueryReducer';
 type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']['items']>;
 
 const columnHelper = createColumnHelper<Ticket>();
-interface State {
-	pagination: PaginationState;
+type OldState = {
+	pagination: {
+		pageIndex: number;
+		pageSize: number;
+	};
 	filters: {
 		tiers?: string[];
 		userEmail?: string;
 		code?: string;
 	};
-}
+};
+
+const zodState = z.object({
+	pagination: z.object({
+		pageIndex: z.number(),
+		pageSize: z.number()
+	}),
+	filters: z.object({
+		tiers: z.array(z.string()),
+		userEmail: z.string().optional(),
+		code: z.string().optional(),
+		refCode: z.string().optional()
+	}),
+	cursor: z
+		.object({
+			cursorId: z.string(),
+			cursorOffset: z.number()
+		})
+		.optional()
+});
+
+type State = z.infer<typeof zodState>;
 
 const initialState: State = {
 	pagination: { pageIndex: 0, pageSize: 10 },
@@ -48,7 +74,8 @@ type Action =
 	| { type: 'SET_PAGINATION'; pageIndex: number; pageSize: number }
 	| { type: 'SET_PAGE_SIZE'; pageSize: number }
 	| { type: 'TOGGLE_TIER_FILTER'; tier: string }
-	| { type: 'SET_FILTER'; filters: State['filters'] };
+	| { type: 'SET_FILTER'; filters: State['filters'] }
+	| { type: 'SET_CURSOR'; cursor: State['cursor'] };
 
 const reducer = (state: State, action: Action): State => {
 	switch (action.type) {
@@ -96,6 +123,11 @@ const reducer = (state: State, action: Action): State => {
 						: [...state.filters.tiers, action.tier]
 				}
 			};
+		case 'SET_CURSOR':
+			return {
+				...state,
+				cursor: action.cursor
+			};
 		case 'SET_FILTER':
 			return {
 				...state,
@@ -103,6 +135,29 @@ const reducer = (state: State, action: Action): State => {
 			};
 		default:
 			throw new Error();
+	}
+};
+
+type FilterAction =
+	| { type: 'setTiers'; payload: string[] }
+	| { type: 'setUserEmail'; payload: string | undefined }
+	| { type: 'setCode'; payload: string | undefined }
+	| { type: 'setRefCode'; payload: string | undefined };
+
+// Filter reducer
+const filterReducer = (state: State['filters'], action: FilterAction) => {
+	switch (action.type) {
+		case 'setTiers':
+			return { ...state, tiers: action.payload };
+
+		case 'setUserEmail':
+			return { ...state, userEmail: action.payload };
+
+		case 'setCode':
+			return { ...state, code: action.payload };
+
+		default:
+			return state;
 	}
 };
 
@@ -198,7 +253,12 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 		[]
 	);
 
-	const [{ pagination, filters }, dispatch] = useReducer(reducer, initialState);
+	const [{ pagination, filters, cursor }, dispatch] = useQueryReducer<Action, typeof zodState>(
+		reducer,
+		initialState,
+		'tableState',
+		zodState
+	);
 	const previousPageState = usePrevious<State>({
 		pagination,
 		filters
@@ -223,21 +283,39 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 	);
 	useEffect(() => {
 		console.log(pagination);
+		console.log(myQuery?.data?.pageParams[previousPageState?.pagination.pageIndex ?? 0]);
 		if (
 			pagination.pageIndex < (previousPageState?.pagination.pageIndex ?? Number.MAX_SAFE_INTEGER)
 		) {
 			if (myQuery.hasPreviousPage) {
-				myQuery.fetchPreviousPage();
+				myQuery.fetchPreviousPage().then(({ data }) => {
+					dispatch({
+						type: 'SET_CURSOR',
+						cursor: {
+							cursorId: data?.pages[pagination.pageIndex]?.items.items[0]?.id ?? '',
+							cursorOffset: pagination.pageIndex
+						}
+					});
+				});
 			}
 		} else {
 			if (myQuery.hasNextPage) {
-				myQuery.fetchNextPage();
+				myQuery.fetchNextPage().then(({ data }) => {
+					console.log('FETCHED NEXT PAGE');
+					dispatch({
+						type: 'SET_CURSOR',
+						cursor: {
+							cursorId: data?.pages[pagination.pageIndex]?.items.items[0]?.id ?? '',
+							cursorOffset: pagination.pageIndex
+						}
+					});
+				});
 			}
 		}
 	}, [pagination]);
 
 	useEffect(() => {
-		console.log(router.route, router.query);
+		console.log(router.route, router.query.filters);
 	}, [router.query]);
 
 	const table = useReactTable({
@@ -261,8 +339,6 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 					});
 				}
 			}
-
-			console.log();
 		},
 		manualPagination: true,
 		getCoreRowModel: getCoreRowModel()
@@ -366,11 +442,15 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 						</ul>
 					</div>
 
-					<FilterComponent tiers={myQuery.data?.pages[0]?.items.tiers ?? []} dispatch={dispatch} />
+					<FilterComponent
+						tiers={myQuery.data?.pages[0]?.items.tiers ?? []}
+						filters={filters}
+						dispatch={dispatch}
+					/>
 				</div>
 			</div>
 
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto p-4 border-2 border-base-300 rounded-lg shadow-lg">
 				<table className="table">
 					{/* head */}
 					<thead>
@@ -400,7 +480,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 				</table>
 			</div>
 
-			<div className="flex gap-2">
+			<div className="flex gap-2 justify-end p-3">
 				<div className="join">
 					<button
 						className="join-item btn"
@@ -447,43 +527,51 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 
 const FilterComponent = ({
 	tiers,
+	filters,
 	dispatch
 }: {
 	tiers: RouterOutput['ticket']['getTicketsAdmin']['items']['tiers'];
+	filters: State['filters'];
 
 	dispatch: React.Dispatch<Action>;
 }) => {
-	const [filterState, setFilterState] = useState<State['filters']>({});
+	const [filterState, dispatchFilter] = useReducer(filterReducer, filters);
 
+	// Action creators
 	const handleTierChange = (id: string) => {
-		if (!filterState.tiers) {
-			setFilterState({
-				...filterState,
-				tiers: [id]
-			});
-		} else {
-			setFilterState({
-				...filterState,
-				tiers: filterState.tiers.includes(id)
-					? filterState.tiers.filter((t) => t !== id)
-					: [...filterState.tiers, id]
-			});
-		}
-	};
+		let nextTiers = [];
 
+		if (!filterState.tiers) {
+			nextTiers = [id];
+		} else {
+			nextTiers = filterState.tiers.includes(id)
+				? filterState.tiers.filter((t) => t !== id)
+				: [...filterState.tiers, id];
+		}
+
+		dispatchFilter({ type: 'setTiers', payload: nextTiers });
+	};
 	const handleUserEmailChange = (email: string) => {
-		setFilterState({
-			...filterState,
-			userEmail: email !== '' ? email : undefined
+		dispatchFilter({
+			type: 'setUserEmail',
+			payload: email !== '' ? email : undefined
 		});
 	};
 
 	const handleCodeChange = (code: string) => {
-		setFilterState({
-			...filterState,
-			code: code !== '' ? code : undefined
+		dispatchFilter({
+			type: 'setCode',
+			payload: code !== '' ? code : undefined
 		});
 	};
+
+	const handleRefCodeChange = (refCode: string) => {
+		dispatchFilter({
+			type: 'setRefCode',
+			payload: refCode !== '' ? refCode : undefined
+		});
+	};
+
 	const applyChanges = () => {
 		dispatch({
 			type: 'SET_FILTER',
@@ -555,6 +643,16 @@ const FilterComponent = ({
 						onChange={(e) => handleCodeChange(e.target.value)}
 						className="input input-sm input-bordered text-black"
 						placeholder="Code"
+					/>
+				</li>
+
+				<li className="disabled">
+					<input
+						type="text"
+						value={filterState.refCode ?? ''}
+						onChange={(e) => handleRefCodeChange(e.target.value)}
+						className="input input-sm input-bordered text-black"
+						placeholder="Referral Code"
 					/>
 				</li>
 

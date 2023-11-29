@@ -1,6 +1,7 @@
 import { trpc } from '@/utils/trpc';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const RefCode = ({ eventId }: { eventId: string }) => {
 	const refCodeQuery = trpc.code.getReferralCodesAdmin.useQuery({ eventId });
@@ -61,7 +62,11 @@ const RefCode = ({ eventId }: { eventId: string }) => {
 										</svg>
 									</td>
 									<td>
-										<AvatarStack users={code.tickets.map((ticket) => ticket.user)} />
+										<AvatarStack
+											users={code.tickets.map((ticket) => ticket.user)}
+											eventId={eventId}
+											refCode={code.code}
+										/>
 									</td>
 								</tr>
 							))}
@@ -86,18 +91,38 @@ const DisabledRefCode = () => {
 };
 
 const AvatarStack = ({
-	users
+	users,
+	eventId,
+	refCode
 }: {
 	users: {
 		name: string | null;
 		image: string | null;
 	}[];
+	eventId: string;
+	refCode: string;
 }) => {
 	useEffect(() => {
 		console.log(users);
 	}, []);
 	return (
-		<div className="tooltip" data-tip={users.map((user) => user.name).toString()}>
+		<Link
+			className="tooltip"
+			data-tip={users.map((user) => user.name).toString()}
+			href={{
+				query: {
+					tab: 'tickets',
+					id: eventId,
+					tableState: JSON.stringify({
+						pagination: { pageIndex: 0, pageSize: 10 },
+						filters: {
+							tiers: [],
+							refCode
+						}
+					})
+				}
+			}}
+		>
 			<div className="avatar-group -space-x-6 ">
 				{users.slice(0, 3).map((user, idx) => (
 					<div className="avatar  h-16 w-16" key={idx}>
@@ -105,6 +130,7 @@ const AvatarStack = ({
 							src={user.image ?? '/placeholder.svg'}
 							width={100}
 							height={100}
+							alt="Users"
 							className="rounded-md object-fill"
 						/>
 					</div>
@@ -117,6 +143,6 @@ const AvatarStack = ({
 					</div>
 				)}
 			</div>
-		</div>
+		</Link>
 	);
 };
