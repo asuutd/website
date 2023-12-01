@@ -3,6 +3,7 @@ import Modal from '../Modal';
 import { trpc } from '@/utils/trpc';
 import CodeForm from './CodeForm';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Code = ({ eventId }: { eventId: string }) => {
 	const tiers = trpc.tier.getTiersAdmin.useQuery({
@@ -89,7 +90,26 @@ const Code = ({ eventId }: { eventId: string }) => {
 									<td>{code.tier.name}</td>
 									<td>{code.type === 'percent' ? <>{code.value * 100}%</> : <>${code.value}</>}</td>
 									<td>
-										{code._count.tickets}/{code.limit}
+										<Link
+											href={{
+												query: {
+													tab: 'tickets',
+													id: eventId,
+													tableState: JSON.stringify({
+														pagination: { pageIndex: 0, pageSize: 10 },
+														filters: {
+															tiers: [],
+															code: code.code
+														}
+													})
+												}
+											}}
+										>
+											{' '}
+											<>
+												{code._count.tickets}/{code.limit}
+											</>
+										</Link>
 									</td>
 									<td>{code.notes}</td>
 								</tr>

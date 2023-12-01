@@ -1,48 +1,13 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import MobileCarousel from '../components/MobileCarousel';
 import TypeWriter from 'typewriter-effect';
 import { trpc } from '@/utils/trpc';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { MouseEventHandler, useEffect, useMemo, useState } from 'react';
 import { NextSeo } from 'next-seo';
 
 const Home: NextPage = () => {
-	const data = useMemo(
-		() => [
-			{
-				id: 1,
-				name: 'Rare Wind',
-				description: '#a8edea → #fed6e3',
-				css: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-				height: 300,
-				image: 'https://ucarecdn.com/1873c6d8-b49d-4346-8b13-c88802b1b567/'
-			},
-			{
-				id: 2,
-				name: 'Saint Petersburg',
-				description: '#f5f7fa → #c3cfe2',
-				css: 'linear-gradient(135deg, #c3cfe2 0%, #c3cfe2 100%)',
-				height: 300,
-				image: 'https://ucarecdn.com/39567007-8c47-4d19-a39c-a8ecc39aecfc/'
-			}
-		],
-		[]
-	);
-
-	const [currentIndex, setCurrentIndex] = useState(0);
-	useEffect(() => {
-		//Implementing the setInterval method
-		const interval = setInterval(() => {
-			setCurrentIndex((currentIndex) => (currentIndex + 1) % data.length);
-		}, 3000);
-
-		//Clearing the interval
-		return () => clearInterval(interval);
-	}, [data]);
-
 	return (
 		<>
 			<Head>
@@ -113,8 +78,8 @@ const Home: NextPage = () => {
 											/>
 										</svg>
 									</a>
-									<Link className="" href="/register">
-										<a className="group py-3 px-4 bg-base-100 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold hover:bg-accent hover:text-white focus:outline-none focus:ring-2  focus:ring-offset-2 transition-all text-sm dark:text-white ">
+									<Link legacyBehavior href="/register">
+										<div className='className="group py-3 px-4 bg-base-100 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold hover:bg-accent hover:text-white focus:outline-none focus:ring-2  focus:ring-offset-2 transition-all text-sm dark:text-white "'>
 											Run an Event?
 											<svg
 												className="w-6 h-6 fill-black group-hover:fill-white -rotate-90"
@@ -130,7 +95,7 @@ const Home: NextPage = () => {
 													fillRule="nonzero"
 												/>
 											</svg>
-										</a>
+										</div>
 									</Link>
 								</div>
 							</div>
@@ -150,6 +115,53 @@ const EventCards = () => {
 	const client = trpc.event.getEvents.useQuery();
 	return (
 		<>
+			{client.data && client.data.upcomingEvents.length > 0 && (
+				<div className="my-5 ">
+					<h2 className="text-3xl" id="events">
+						Upcoming Events
+					</h2>
+					<div className="md:grid md:grid-cols-2  md:gap-2 ">
+						{client.isLoading ? (
+							<>
+								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
+								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
+							</>
+						) : (
+							client.data?.upcomingEvents.map((event) => (
+								<div
+									className="card w-72 sm:w-96 bg-base-100 drop-shadow my-4 mx-auto border-2 border-base-300"
+									key={event.id}
+								>
+									<figure className="px-6 pt-6">
+										<Image
+											src={event.ticketImage ?? ''}
+											alt=""
+											className="rounded-xl object-cover aspect-square shadow-md"
+											width={500}
+											height={500}
+										/>
+									</figure>
+									<div className="card-body items-center text-center">
+										<h2 className="card-title">{event.name}</h2>
+										<div className="flex items-center gap-2">
+											<img src="/clock.svg" alt="" className="w-5 h-5" />
+											<h2>{format(event.start, 'PPP')}</h2>
+										</div>
+									</div>
+									<div className="card-actions justify-end">
+										<Link legacyBehavior href={`/events/${event.id}`} shallow={true}>
+											<button className="btn btn-primary rounded-tr-none rounded-bl-none">
+												Get Tickets
+											</button>
+										</Link>
+									</div>
+								</div>
+							))
+						)}
+					</div>
+				</div>
+			)}
+
 			{client.data && client.data.ongoingEvents.length > 0 && (
 				<div className="my-5 ">
 					<h2 className="text-3xl" id="events">
@@ -171,7 +183,7 @@ const EventCards = () => {
 										<Image
 											src={event.ticketImage ?? ''}
 											alt=""
-											className="rounded-xl object-cover aspect-square"
+											className="rounded-xl object-cover aspect-square shadow-md"
 											width={400}
 											height={400}
 										/>
@@ -184,53 +196,10 @@ const EventCards = () => {
 										</div>
 									</div>
 									<div className="card-actions justify-end">
-										<Link href={`/events/${event.id}`} shallow={true}>
-											<a className="btn btn-primary rounded-tr-none rounded-bl-none">Get Tickets</a>
-										</Link>
-									</div>
-								</div>
-							))
-						)}
-					</div>
-				</div>
-			)}
-
-			{client.data && client.data.upcomingEvents.length > 0 && (
-				<div className="my-5 ">
-					<h2 className="text-3xl" id="events">
-						Upcoming Events
-					</h2>
-					<div className="md:grid md:grid-cols-2  md:gap-2 ">
-						{client.isLoading ? (
-							<>
-								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
-								<div className="card w-72 sm:w-96 bg-base-100 animate-pulse shadow-xl my-4 mx-auto h-96" />
-							</>
-						) : (
-							client.data?.upcomingEvents.map((event) => (
-								<div
-									className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto"
-									key={event.id}
-								>
-									<figure className="px-10 pt-10">
-										<Image
-											src={event.ticketImage ?? ''}
-											alt=""
-											className="rounded-xl object-cover aspect-square"
-											width={400}
-											height={400}
-										/>
-									</figure>
-									<div className="card-body items-center text-center">
-										<h2 className="card-title">{event.name}</h2>
-										<div className="flex items-center gap-2">
-											<img src="/clock.svg" alt="" className="w-5 h-5" />
-											<h2>{format(event.start, 'PPP')}</h2>
-										</div>
-									</div>
-									<div className="card-actions justify-end">
-										<Link href={`/events/${event.id}`} shallow={true}>
-											<a className="btn btn-primary rounded-tr-none rounded-bl-none">Get Tickets</a>
+										<Link legacyBehavior href={`/events/${event.id}`} shallow={true}>
+											<button className="btn btn-primary rounded-tr-none rounded-bl-none">
+												Get Tickets
+											</button>
 										</Link>
 									</div>
 								</div>

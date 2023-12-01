@@ -9,12 +9,16 @@ import {
 	useReactTable
 } from '@tanstack/react-table';
 import ImageWithFallback from '../Utils/ImageWithFallback';
+import { twJoin } from 'tailwind-merge';
+import { Admin_Type } from '@prisma/client';
+import { useToast } from '@/components/ui/use-toast';
 type Collaborator = ArrayElement<RouterOutput['organizer']['getCollaborators']>;
 
 const columnHelper = createColumnHelper<Collaborator & { invite: boolean }>();
 const model = getCoreRowModel();
 
 const Collaborators = ({ eventId }: { eventId: string }) => {
+	const { toast } = useToast();
 	const collaboratorsQuery = trpc.organizer.getCollaborators.useQuery(
 		{
 			eventId
@@ -45,6 +49,8 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 		}
 	});
 
+	const changeAdminStatus = trpc.organizer.changeCollaboratorStatus.useMutation();
+
 	const createInvite = trpc.organizer.createInvite.useMutation({
 		onSuccess: () => {
 			invitedCollaboratorsQuery.refetch();
@@ -61,6 +67,31 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 			});
 		}
 	};
+	const handleSelect = useCallback(
+		async (userId: string, role: Admin_Type) => {
+			await changeAdminStatus.mutateAsync(
+				{
+					eventId,
+					collaboratorId: userId,
+					status: role
+				},
+				{
+					onSuccess: () => {
+						collaboratorsQuery.refetch();
+					},
+					onError: ({ message }) => {
+						console.log('BIG ERROR');
+						toast({
+							title: 'Error',
+							description: message,
+							variant: 'destructive'
+						});
+					}
+				}
+			);
+		},
+		[eventId]
+	);
 
 	const handleRemoveCollaborator = useCallback(
 		async (userId: string, invite: boolean) => {
@@ -89,24 +120,53 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 								src={info.getValue() ?? '/placeholder.svg'}
 								width={50}
 								height={50}
-								className="rounded-md "
+								className="rounded-md"
+								alt=""
 							/>
 						</div>
-						<p>{info.row.original.user.name}</p>
+						<div>
+							<p className="font-semibold">{info.row.original.user.name}</p>
+							<p>{info.row.original.user.email}</p>
+						</div>
 					</div>
 				)
 			}),
 
 			columnHelper.accessor('user.id', {
 				cell: (info) => (
-					<button
-						className="btn btn-error btn-xs"
-						onClick={() => {
-							handleRemoveCollaborator(info.getValue(), info.row.original.invite);
-						}}
-					>
-						Remove
-					</button>
+					<>
+						<select
+							className="select select-bordered max-w-xs m-2"
+							disabled={info.cell.row.original.role === 'OWNER'}
+							onChange={(e) => handleSelect(info.getValue(), e.target.value as Admin_Type)}
+						>
+							{[
+								{ label: 'Owner', value: 'OWNER' },
+								{ label: 'Super Admin', value: 'SUPER_ADMIN' },
+								{ label: 'Admin', value: 'ADMIN' }
+							].map((role) => (
+								<option
+									key={role.value}
+									value={role.value}
+									selected={info.cell.row.original.role === role.value}
+								>
+									{role.label}
+								</option>
+							))}
+						</select>
+
+						<button
+							className={twJoin(
+								'btn btn-sm m-2',
+								info.cell.row.original.role === 'OWNER' && 'btn-disabled'
+							)}
+							onClick={() => {
+								handleRemoveCollaborator(info.getValue(), info.row.original.invite);
+							}}
+						>
+							Remove
+						</button>
+					</>
 				),
 				enableColumnFilter: true
 			})
@@ -159,16 +219,14 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 
 			<div className="overflow-x-auto max-w-4xl mx-auto">
 				<table className="table ">
-					{/* head */}
 					<thead>
 						<tr>
-							<th>Name</th>
+							<th>Administrator</th>
 
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-						{/* row 1 */}
 						{table.getRowModel().rows.map((row) => (
 							<tr key={row.id}>
 								{row.getVisibleCells().map((cell) => (

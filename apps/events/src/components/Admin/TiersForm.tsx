@@ -49,7 +49,7 @@ const TiersForm: React.FC<Props> = ({ eventId, closeModal }) => {
 			{
 				name: fields.name,
 				price: parseInt(fields.price),
-				...(fields.limit && { limit: parseInt(fields.price) }),
+				...(fields.limit && { limit: parseInt(fields.limit) }),
 				startTime: parseISO(fields.startTime),
 				endTime: parseISO(fields.endTime),
 				eventId: eventId

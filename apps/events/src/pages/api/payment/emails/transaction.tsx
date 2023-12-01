@@ -183,8 +183,9 @@ export const PurchaseEmail = ({
 						</Heading>
 						<Hr style={hr} />
 						<Text style={messageText}>
-									Add your tickets to Apple Wallet by opening the attached .pkpass file(s) on your mobile device.
-								</Text>
+							Add your tickets to Apple Wallet by opening the attached .pkpass file(s) on your
+							mobile device.
+						</Text>
 						{ticketQRCodes.map((qrcode, index) => (
 							<Section key={index}>
 								<Img src={qrcode} alt="QR Code" width="200" height="200" style={logo} />
@@ -242,7 +243,7 @@ export const PurchaseEmail = ({
 							{/* ASU links stuff */}
 							<Row>
 								<Column>
-									<Link href="https://twitter.com/utdallasasu" style={links}>
+									<Link legacyBehavior href="https://twitter.com/utdallasasu" style={links}>
 										<Img
 											src={`${baseUrl}/twitterx-50.png`}
 											width="24"
@@ -253,7 +254,7 @@ export const PurchaseEmail = ({
 								</Column>
 
 								<Column>
-									<Link href="https://www.instagram.com/utdallasasu" style={links}>
+									<Link legacyBehavior href="https://www.instagram.com/utdallasasu" style={links}>
 										<Img
 											src={`${baseUrl}/instagram-32.png`}
 											width="24"
@@ -264,7 +265,7 @@ export const PurchaseEmail = ({
 								</Column>
 
 								<Column>
-									<Link href="https://www.tiktok.com/@utdallasasu" style={links}>
+									<Link legacyBehavior href="https://www.tiktok.com/@utdallasasu" style={links}>
 										<Img
 											width="24"
 											height="24"

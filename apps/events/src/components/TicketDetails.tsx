@@ -2,7 +2,7 @@ import { Dialog, Tab, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import type { Ticket, Tier, Event } from '@prisma/client';
 import QRCode from 'qrcode';
-import Image from 'next/future/image';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import VanillaTilt from 'vanilla-tilt';
 import { env } from '@/env/client.mjs';

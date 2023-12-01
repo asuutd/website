@@ -1,7 +1,6 @@
 import { Tab } from '@headlessui/react';
 import type { Event } from '@prisma/client';
 import Head from 'next/head';
-import Image from 'next/future/image';
 import { NextPage } from 'next/types';
 import React, { useState } from 'react';
 import Modal from '../../../components/Modal';
@@ -71,11 +70,12 @@ const Events: NextPage = () => {
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
 				<div className="justify-between flex items-center">
 					<h1 className="text-4xl font-bold">Events</h1>
-					<Link className="" href="/scan">
-						<p className="btn btn-sm">Scan Ticket</p>
-					</Link>
+
 					{events.data && (
 						<div className="join">
+							<Link legacyBehavior className="" href="/scan">
+								<p className="btn btn-sm join-item ">Scan Ticket</p>
+							</Link>
 							<button className="btn  btn-sm join-item" onClick={() => handlePaymentClick()}>
 								Payments
 							</button>
@@ -178,8 +178,11 @@ export default Events;
 
 const EventCard = ({ event }: { event: ReturnedEvent }) => {
 	return (
-		<div className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto" key={event.id}>
-			<figure className="px-10 pt-10">
+		<div
+			className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto border-2 border-base-300"
+			key={event.id}
+		>
+			<figure className="px-6 pt-6">
 				<ImageWithFallback
 					src={event.ticketImage ?? ''}
 					alt="Image"
@@ -196,7 +199,7 @@ const EventCard = ({ event }: { event: ReturnedEvent }) => {
 				</div>
 			</div>
 			<div className="card-actions justify-end">
-				<Link href={`/admin/events/${event.id}`} shallow={true}>
+				<Link legacyBehavior href={`/admin/events/${event.id}`} shallow={true}>
 					<a className="btn btn-primary rounded-tr-none rounded-bl-none">Details</a>
 				</Link>
 			</div>

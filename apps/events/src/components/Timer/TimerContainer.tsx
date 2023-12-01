@@ -72,13 +72,13 @@ export const TimerContainer = ({ days, hours, minutes, seconds, urgent, classNam
 			<div
 				className={`gap-4 rounded-xl py-2 px-6 mt-2 flex items-center  justify-between ${className}`}
 			>
-				<NumberBox num={days} unit="Days" flip={daysFlip} urgent />
+				<NumberBox num={days} unit="Days" flip={daysFlip} urgent={urgent} />
 				<span className="  text-3xl font-normal  inline-block  ">:</span>
-				<NumberBox num={hours} unit="Hours" flip={hoursFlip} urgent />
+				<NumberBox num={hours} unit="Hours" flip={hoursFlip} urgent={urgent} />
 				<span className=" text-3xl font-normal  inline-block  ">:</span>
-				<NumberBox num={minutes} unit="Minutes" flip={minutesFlip} urgent />
+				<NumberBox num={minutes} unit="Minutes" flip={minutesFlip} urgent={urgent} />
 				<span className="  text-3xl font-normal  inline-block">:</span>
-				<NumberBox num={seconds} unit="Seconds" flip={secondsFlip} urgent />
+				<NumberBox num={seconds} unit="Seconds" flip={secondsFlip} urgent={urgent} />
 			</div>
 		</div>
 	);

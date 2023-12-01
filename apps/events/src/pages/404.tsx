@@ -13,7 +13,7 @@ const ErrorPage = () => {
 				<p className="text-center font-semibold text-primary">
 					We are a small team of developers. Please don&apos;t make it harder
 				</p>
-				<Link href="/">
+				<Link legacyBehavior href="/">
 					<a className="underline text-center">Go home</a>
 				</Link>
 			</div>

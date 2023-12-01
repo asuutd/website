@@ -55,34 +55,26 @@ export default function Example() {
 					className="mt-3 z-[30] p-2 gap-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
 				>
 					<li>
-						<Link href="/tickets">
-							<a
-								className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200`}
-							>
+						<Link legacyBehavior href="/tickets">
+							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
 								Tickets
-							</a>
+							</p>
 						</Link>
 					</li>
 					<li>
-						<button
-							className={`hover:bg-base-200 group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
-						>
-							<Link href="/register">
-								<div className="justify-between gap-0">Organise an event</div>
-							</Link>
-						</button>
+						<Link legacyBehavior href="/register">
+							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
+								Organize an Event
+							</p>
+						</Link>
 					</li>
 
 					<li>
-						<button
-							className={`hover:bg-base-200 group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
-						>
-							<Link href="/admin/events" className="flex ">
-								<div className="justify-between gap-2">
-									Dashboard <span className="ml-1 badge badge-neutral">New</span>
-								</div>
-							</Link>
-						</button>
+						<Link legacyBehavior href="/admin/events">
+							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
+								Dashboard
+							</p>
+						</Link>
 					</li>
 					<li>
 						<button

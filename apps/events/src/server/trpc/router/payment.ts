@@ -20,7 +20,7 @@ export const paymentRouter = t.router({
 						quantity: z.number()
 					})
 				),
-				codeId: z.string().optional(),
+				codeId: z.string().toUpperCase().optional(),
 				refCodeId: z.string().optional(),
 				email: z.string().optional()
 			})
@@ -113,7 +113,7 @@ export const paymentRouter = t.router({
 				input.codeId
 					? ctx.prisma.code.findFirst({
 							where: {
-								code: input.codeId,
+								code: input.codeId.toUpperCase(),
 								tierId: {
 									in: input.tiers.map((tier) => tier.tierId)
 								}

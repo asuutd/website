@@ -48,7 +48,7 @@ const Invite: NextPage<{
 					<h2 className="text-secondary text-7xl text-center">
 						You are now an Admin for {acceptRouter.data?.event.name}
 					</h2>
-					<Link href={`/admin/events/${acceptRouter.data?.event.id}`}>
+					<Link legacyBehavior href={`/admin/events/${acceptRouter.data?.event.id}`}>
 						<a className="underline text-center">Admin Dashboard</a>
 					</Link>
 				</div>

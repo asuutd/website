@@ -20,12 +20,10 @@ const LoginPage = () => {
 				<title>Login</title>
 			</Head>
 			<div className="flex flex-col justify-center min-h-[66vh] gap-3 items-center">
-				<h2 className="text-center text-5xl font-bold text-primary">
-Sign In
-				</h2>
+				<h2 className="text-center text-5xl font-bold text-primary">Sign In</h2>
 				<LoginForm providers={providers} />
 
-				<Link href="/">
+				<Link legacyBehavior href="/">
 					<a className="underline text-center">Go home</a>
 				</Link>
 			</div>

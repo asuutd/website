@@ -135,7 +135,8 @@ export const eventRouter = t.router({
 							: {}),
 						EventAdmin: {
 							create: {
-								userId: ctx.session.user.id
+								userId: ctx.session.user.id,
+								role: 'OWNER'
 							}
 						},
 						fee_holder: input.feeBearer

@@ -15,7 +15,7 @@ export const codeRouter = t.router({
 			//const userId = ctx.session.user.id;
 			const code = await ctx.prisma.code.findFirst({
 				where: {
-					code: input.code
+					code: input.code.toUpperCase()
 				},
 				include: {
 					tier: true,

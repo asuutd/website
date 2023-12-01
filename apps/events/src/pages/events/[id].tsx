@@ -19,6 +19,7 @@ import { env } from '../../env/client.mjs';
 import Image from 'next/image';
 import Display from '@/components/Map/Display';
 import parse from 'html-react-parser';
+import { twJoin } from 'tailwind-merge';
 
 type Ticket = {
 	tier: Tier;
@@ -330,7 +331,10 @@ const TierCard = ({
 	}, [tier]);
 	return (
 		<div
-			className={` card max-w-md bg-base-100 shadow-xl my-4 ${soldOut ? 'grayscale' : ''}`}
+			className={twJoin(
+				'card max-w-md bg-base-100 shadow-lg my-4  border-base-300 border-2',
+				soldOut && 'grayscale'
+			)}
 			key={tier.id}
 		>
 			<div className="card-body">

@@ -65,16 +65,15 @@ export const superAdminProcedure = authedProcedure
 				Tier: true
 			}
 		});
-		if (
-			event.organizerId === ctx.session.user.id ||
-			event.EventAdmin.find(
-				(admin) => admin.userId === ctx.session.user.id && admin.role === 'SUPER_ADMIN'
-			)
-		) {
+		const admin = event.EventAdmin.find(
+			(admin) => admin.role === 'SUPER_ADMIN' || admin.role === 'OWNER'
+		);
+		if (event.organizerId === ctx.session.user.id || admin) {
 			return next({
 				ctx: {
 					...ctx,
-					event
+					event,
+					admin
 				}
 			});
 		} else {

@@ -4,51 +4,50 @@ import { OnResultFunction } from 'react-qr-reader';
 import dynamic from 'next/dynamic';
 import { trpc } from '@/utils/trpc';
 import { NextSeo } from 'next-seo';
+import useQueryReducer from '@/utils/hooks/useQueryReducer';
+import { ZodSchema, z } from 'zod';
+
+const zodSchema = z.object({
+	count: z.number()
+});
+type State = z.infer<typeof zodSchema>;
+
+type Action = { type: 'increment' } | { type: 'decrement' };
+
+function reducer(state: State, action: Action) {
+	console.log(action);
+	switch (action.type) {
+		case 'increment':
+			return { ...state, count: state.count + 1 };
+		case 'decrement':
+			return { ...state, count: state.count - 1 };
+		default:
+			return state;
+	}
+}
 
 export default function Test() {
-	const [text, setText] = React.useState<string | null>(null);
-	const validateMut = trpc.ticket.validateTicket.useMutation();
-	const resetTime = 3000;
+	const [parsedState, dispatch] = useQueryReducer<Action, typeof zodSchema>(
+		reducer,
+		{
+			count: 0
+		},
+		'count',
+		zodSchema
+	);
 
-	const onNewScanResult: OnResultFunction = (result, error) => {
-		if (!!result) {
-			const url = new URL(result?.getText());
-			const ticketId = url.searchParams.get('id');
-			const eventId = url.searchParams.get('eventId');
-			if (ticketId && eventId) {
-				validateMut.mutate(
-					{
-						eventId,
-						ticketId
-					},
-					{
-						onSuccess: () => {
-							setText('Checked In');
-						},
-						onError: ({ message }) => {
-							setText(message);
-						}
-					}
-				);
-			}
-		}
-	};
-
+	const [client, setClient] = React.useState(false);
 	useEffect(() => {
-		const timeoutId = setTimeout(() => {
-			// Reset the state after 3 seconds
-			setText(null);
-		}, resetTime);
-
-		return () => {
-			// Clear the timeout if the component unmounts or if the state changes
-			clearTimeout(timeoutId);
-		};
-	}, [text]);
+		setClient(true);
+	}, []);
 
 	return (
 		<>
-			<NextSeo nofollow={true} />
+			{client && (
+				<button className="btn" onClick={() => dispatch({ type: 'increment' })}>
+					STATE {parsedState?.count}
+				</button>
+			)}
 		</>
 	);
 }
