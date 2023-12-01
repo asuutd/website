@@ -1,6 +1,5 @@
 import { env } from '@/env/client.mjs';
 import { AddressAutofill, useAddressAutofillCore, useSearchBoxCore } from '@mapbox/search-js-react';
-import { AddressAutofillProps } from '@mapbox/search-js-react/dist/components/AddressAutofill';
 import React, { useEffect, useRef, useState } from 'react';
 import { Controller, ControllerRenderProps } from 'react-hook-form';
 import { v4 } from 'uuid';

@@ -47,11 +47,7 @@ export const LoginLinkEmail = ({
 						<Text style={text}>Hi 👋,</Text>
 
 						<Text style={text}>
-							Welcome back to{' '}
-							<Link legacyBehavior href={baseUrl}>
-								Kazala
-							</Link>
-							. Use the button below to sign in.
+							Welcome back to <Link href={baseUrl}>Kazala</Link>. Use the button below to sign in.
 						</Text>
 
 						<Section style={{ alignItems: 'center', textAlign: 'center' }}>
@@ -61,7 +57,7 @@ export const LoginLinkEmail = ({
 						</Section>
 						<Text style={text}>
 							Alternatively, copy and paste this URL into your browser:{' '}
-							<Link legacyBehavior href={login_link} style={anchor}>
+							<Link href={login_link} style={anchor}>
 								{login_link}
 							</Link>
 						</Text>

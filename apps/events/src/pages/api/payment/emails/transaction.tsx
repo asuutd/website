@@ -243,7 +243,7 @@ export const PurchaseEmail = ({
 							{/* ASU links stuff */}
 							<Row>
 								<Column>
-									<Link legacyBehavior href="https://twitter.com/utdallasasu" style={links}>
+									<Link href="https://twitter.com/utdallasasu" style={links}>
 										<Img
 											src={`${baseUrl}/twitterx-50.png`}
 											width="24"
@@ -254,7 +254,7 @@ export const PurchaseEmail = ({
 								</Column>
 
 								<Column>
-									<Link legacyBehavior href="https://www.instagram.com/utdallasasu" style={links}>
+									<Link href="https://www.instagram.com/utdallasasu" style={links}>
 										<Img
 											src={`${baseUrl}/instagram-32.png`}
 											width="24"
@@ -265,7 +265,7 @@ export const PurchaseEmail = ({
 								</Column>
 
 								<Column>
-									<Link legacyBehavior href="https://www.tiktok.com/@utdallasasu" style={links}>
+									<Link href="https://www.tiktok.com/@utdallasasu" style={links}>
 										<Img
 											width="24"
 											height="24"
