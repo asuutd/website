@@ -4,11 +4,11 @@ import { AddressAutofillProps } from '@mapbox/search-js-react/dist/components/Ad
 import React, { useEffect, useRef, useState } from 'react';
 import { Controller, ControllerRenderProps } from 'react-hook-form';
 import { v4 } from 'uuid';
-import type { EventFormInput } from './EventForm';
-type Props = ControllerRenderProps<EventFormInput, 'location'> & {
-	className: string;
-};
-const MapBox: React.FC<Props> = ({ onChange, value, className }) => {
+
+/**
+ * @param {import('react-hook-form').ControllerRenderProps<EventFormInput, 'location'> & {className: string}} props
+ */
+const MapBox = ({ onChange, value, className }) => {
 	return (
 		<form>
 			<AddressAutofill
@@ -42,3 +42,7 @@ const MapBox: React.FC<Props> = ({ onChange, value, className }) => {
 };
 
 export default MapBox;
+
+const Comp = () => {
+	return <></>;
+};
