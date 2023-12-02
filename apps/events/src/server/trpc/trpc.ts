@@ -68,7 +68,8 @@ export const superAdminProcedure = authedProcedure
 		const admin = event.EventAdmin.find(
 			(admin) => admin.role === 'SUPER_ADMIN' || admin.role === 'OWNER'
 		);
-		if (event.organizerId === ctx.session.user.id || admin) {
+		console.log(admin);
+		if (event.organizerId === ctx.session.user.id || admin?.userId === ctx.session.user.id) {
 			return next({
 				ctx: {
 					...ctx,
