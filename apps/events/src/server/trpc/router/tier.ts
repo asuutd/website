@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { authedProcedure, t } from '../trpc';
+import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 
 export const tierRouter = t.router({
@@ -22,46 +22,28 @@ export const tierRouter = t.router({
 			return tier;
 		}),
 
-	getTiersAdmin: authedProcedure
+	getTiersAdmin: superAdminProcedure
 		.input(
 			z.object({
 				eventId: z.string()
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const event = await ctx.prisma.event.findFirstOrThrow({
+			const tier = await ctx.prisma.tier.findMany({
 				where: {
-					id: input.eventId
+					eventId: input.eventId
 				},
 				include: {
-					EventAdmin: true,
-					Tier: true
-				}
-			});
-			if (
-				event.organizerId === ctx.session.user.id ||
-				event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
-			) {
-				const tier = await ctx.prisma.tier.findMany({
-					where: {
-						eventId: input.eventId
-					},
-					include: {
-						event: true,
-						_count: {
-							select: {
-								Ticket: true
-							}
+					event: true,
+					_count: {
+						select: {
+							Ticket: true
 						}
 					}
-				});
+				}
+			});
 
-				return tier;
-			} else {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
-			}
+			return tier;
 		}),
 	editTier: authedProcedure
 		.input(
