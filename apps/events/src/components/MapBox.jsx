@@ -5,6 +5,8 @@ import { Controller, ControllerRenderProps } from 'react-hook-form';
 import { v4 } from 'uuid';
 
 /**
+ *
+ * @typedef {import('./EventForm').EventFormInput} EventFormInput
  * @param {import('react-hook-form').ControllerRenderProps<EventFormInput, 'location'> & {className: string}} props
  */
 const MapBox = ({ onChange, value, className }) => {
