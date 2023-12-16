@@ -1,13 +1,17 @@
-import { Prisma } from '@prisma/client';
-import { StripeError } from '@stripe/stripe-js';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { request } from 'node:http';
 import { buffer } from 'node:stream/consumers';
 import Stripe from 'stripe';
 import { env } from '../../../env/server.mjs';
-import { getServerAuthSession } from '../../../server/common/get-server-auth-session.js';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
+import Transaction from './emails/transaction';
+import { Resend } from 'resend';
+import { uploadImage } from '@/utils/r2';
+import QRCode from 'qrcode';
+import { v4 as uuidv4 } from 'uuid';
+import { createApplePass } from '@/lib/wallets';
+
+const resend = new Resend(env.RESEND_API_KEY);
 
 export const config = {
 	api: {
@@ -39,11 +43,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					const tiers = JSON.parse(metadata.tiers ?? '{}');
 					const dataArray: string[] = [];
 					const userId = metadata.userId;
+
+					const eventName = metadata.eventName;
+					const eventId = metadata.eventId;
+					const userEmail = metadata.userEmail;
+					const userName = metadata.userName;
+					const eventPhoto = metadata.eventPhoto;
 					const user_ticket_ids = metadata.ticketIds && JSON.parse(metadata.ticketIds);
 					console.log(user_ticket_ids);
 
 					//Update the payment intent data
-					await prisma.ticket.updateMany({
+
+					const ticket = await prisma.ticket.updateMany({
 						where: {
 							id: {
 								in: user_ticket_ids
@@ -53,6 +64,86 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 							paymentIntent: paymentIntentData.id
 						}
 					});
+
+					// // Send the email to the buyer
+					// const emailTemplate = createEmailTemplate('URL_TO_PURCHASE_DETAILS'); // Replace with the actual URL
+					// resend.sendEmail({
+					// 	from: 'onboarding@resend',
+					// 	to: 'buyer-email@example.com', // Replace with the buyer's email
+					// 	subject: 'Purchase Successful',
+					// 	html: emailTemplate,
+					// });
+					
+					try {
+						if (userEmail && userName && eventName && eventPhoto && eventId) {
+							const qr_code_links = await Promise.all(
+								user_ticket_ids.map(async (ticketId: string) => {
+									const result = await uploadImage({
+										bucket: env.QRCODE_BUCKET,
+										key: `${ticketId}`,
+										body: await QRCode.toBuffer(
+											`${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticketId}&eventId=${eventId}`,
+											{
+												width: 400,
+												margin: 1,
+												color: {
+													dark: '#490419',
+													light: '#FEE8E1'
+												}
+											}
+										),
+										contentType: 'image/png'
+									});
+									console.log(result);
+									return `https://${env.QRCODE_BUCKET}.kazala.co/${ticketId}`;
+								})
+							);
+
+							const ticketData = await prisma.ticket.findMany({
+								where: {
+									id: {in: user_ticket_ids}
+								},
+								include: {
+									user: true,
+									event: {
+										include: {
+											location: true,
+											organizer: {
+												include: { user: true }
+											}
+										}
+									},
+									tier: true
+								}
+							});
+		
+							const passes = await Promise.all(ticketData.map(async (ticket) => await createApplePass(ticket, ticket.event, ticket.tier)))
+
+							const data = await resend.sendEmail({
+								from: 'Kazala Tickets <ticket@mails.kazala.co>',
+								to: userEmail, // Replace with the buyer's email
+								subject: `Your Tickets for ${eventName} are in!`,
+								react: Transaction({
+									user_name: userName,
+									event_name: eventName,
+									event_photo: eventPhoto,
+									order_date: new Date().toLocaleDateString(),
+									tiers: tiers,
+									ticketQRCodes: qr_code_links
+								}),
+								headers: {
+									'X-Entity-Ref-ID': uuidv4()
+								},
+								attachments: passes.map(({pass, filename}) => ({
+									filename,
+									content: pass
+								}))
+							});
+						}
+					} catch (error) {
+						console.error(error);
+					}
+
 					res.status(200).json({ received: true });
 					break;
 				case 'checkout.session.expired':
@@ -69,22 +160,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					});
 					res.status(200).send('Noice');
 					break;
-				//Fix up refunds. Should differentiate between
+				//For now, Do nothing to their ticket.
+				//FUTURE: Add conditions for refund. To enable manual refund in admin dashboard
 				case 'charge.refunded':
 					const chargeData = event.data.object as Stripe.Charge;
-					console.log(chargeData.metadata.ticketIds);
+					console.log(chargeData.metadata.ticketId);
 
 					if (chargeData.refunds) {
 						const ticketIds = chargeData.refunds.data.map((data) => data.metadata?.ticketId);
-						const result = await prisma.ticket.update({
-							where: {
-								id: ticketIds[0]
-							},
-							data: {
-								tierId: null
-							}
-						});
-						res.status(200).json({ received: true, result: result, tickets: ticketIds[0] });
+
+						res.status(200).json({ received: true, tickets: ticketIds[0] });
 					} else {
 						res.status(200).json({
 							received: true,

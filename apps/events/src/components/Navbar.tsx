@@ -38,8 +38,8 @@ const Navbar = () => {
 	return (
 		<div className="navbar">
 			<div className="flex-1">
-				<Link className="btn btn-ghost normal-case text-xl" href="/">
-					<button className="flex items-end">
+				<Link legacyBehavior href="/">
+					<button className=" normal-case text-xl flex items-end gap-0">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="185"
@@ -66,7 +66,7 @@ const Navbar = () => {
 								stroke="white"
 							/>
 						</svg>
-						<a className="flex items-center gap-1  font-bold text-2xl">azala</a>
+						<p className="flex items-center gap-1  font-bold text-2xl">azala</p>
 					</button>
 				</Link>
 			</div>

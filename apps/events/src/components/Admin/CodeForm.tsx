@@ -22,8 +22,6 @@ type Props = {
 
 const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 	const root = useRef(null);
-	const [startDate, setStartDate] = useState<Date>(new Date());
-	const { data: session } = useSession();
 
 	const mutation = trpc.code.createCode.useMutation();
 
@@ -32,7 +30,9 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 			amount: z.string(),
 			tierId: z.string(),
 			percentage: z.boolean(),
-			price: z.string()
+			limit: z.string().default('1'),
+			price: z.string(),
+			notes: z.string()
 		})
 		.refine(
 			({ price, percentage, tierId }) =>
@@ -55,12 +55,17 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 	const watch = watchFunc(['percentage', 'tierId']);
 
 	const onSubmit = (fields: FormInput) => {
+		const eventId = tiers?.find((tier) => tier.id === fields.tierId)?.eventId
+		if (!eventId) throw new Error('No event id found')
 		mutation.mutate(
 			{
 				type: fields.percentage ? 'percent' : 'flat',
 				num_codes: parseInt(fields.amount),
 				value: parseFloat(fields.price) * (fields.percentage ? 0.01 : 1), //Wrong wording
-				tierId: fields.tierId
+				limit: parseInt(fields.limit) || 1,
+				tierId: fields.tierId,
+				notes: fields.notes,
+				eventId
 			},
 			{
 				onSuccess: () => {
@@ -121,6 +126,32 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 								/>
 								{errors.amount && (
 									<span className="text-error">{errors.amount.message?.toString()}</span>
+								)}
+							</div>
+
+							<div className="form-control">
+								<label htmlFor="amount">Limit per Code</label>
+								<input
+									id="amount"
+									type="number"
+									min={1}
+									className="input input-bordered w-32"
+									{...register('limit')}
+								/>
+								{errors.limit && (
+									<span className="text-error">{errors.limit.message?.toString()}</span>
+								)}
+							</div>
+							<div className="form-control">
+								<label htmlFor="notes">Notes</label>
+								<input
+									id="amount"
+									type="string"
+									className="input input-bordered"
+									{...register('notes')}
+								/>
+								{errors.notes && (
+									<span className="text-error">{errors.notes.message?.toString()}</span>
 								)}
 							</div>
 

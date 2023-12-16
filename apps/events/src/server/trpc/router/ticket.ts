@@ -1,4 +1,4 @@
-import { authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
@@ -266,79 +266,131 @@ export const ticketRouter = t.router({
 		});
 	}),
 
-	getTicketsAdmin: authedProcedure
+	getTicketsAdmin: superAdminProcedure
 		.input(
 			z.object({
-				limit: z.number().min(1).max(100).nullish(),
-				cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
-				eventId: z.string()
+				limit: z.number().min(1).nullish(),
+				cursor: z.string().nullish(),
+				filter: z
+					.object({
+						tiers: z.array(z.string()).optional(),
+						userEmail: z.string().optional(),
+						code: z.string().optional(),
+						refCode: z.string().optional()
+					})
+					.optional(),
+				orderBy: z
+					.object({
+						createdAt: z.enum(['asc', 'desc']).default('asc'),
+						checkedInAt: z.enum(['asc, desc'])
+					})
+					.optional()
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const event = await ctx.prisma.event.findFirst({
-				where: {
-					AND: [
-						{
-							OR: [
-								{ organizerId: ctx.session.user.id },
-								{
-									EventAdmin: {
-										some: {
-											userId: ctx.session.user.id
-										}
-									}
-								}
-							]
-						},
-						{
-							id: input.eventId
-						}
-					]
-				}
-			});
-			console.log(event);
-			if (!event) {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
-			}
 			const limit = input.limit ?? 50;
 			const { cursor } = input;
-			const items = await ctx.prisma.ticket.findMany({
-				take: limit + 1, // get an extra item at the end which we'll use as next cursor
-				where: {
-					eventId: input.eventId
-				},
-				include: {
-					user: {
-						select: {
-							image: true,
-							name: true
-						}
-					},
-					tier: {
-						select: {
-							name: true
-						}
-					},
-					event: {
-						select: {
-							start: true
+			console.log(cursor);
+
+			const transaction = await ctx.prisma.$transaction([
+				ctx.prisma.ticket.count({
+					where: {
+						eventId: input.eventId,
+						tierId: {
+							in:
+								(input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
+									? input.filter?.tiers
+									: undefined
+						},
+						user: {
+							email: {
+								contains: input.filter?.userEmail
+							}
+						},
+						code: {
+							code: input.filter?.code
+						},
+						refCode: {
+							code: input.filter?.refCode
 						}
 					}
-				},
-				cursor: cursor ? { id: cursor } : undefined,
-				orderBy: {
-					createdAt: 'asc'
-				}
-			});
+				}),
+				ctx.prisma.ticket.findMany({
+					take: limit + 1, // get an extra item at the end which we'll use as next cursor
+					where: {
+						eventId: input.eventId,
+						tierId: {
+							in:
+								(input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
+									? input.filter?.tiers
+									: undefined
+						},
+						user: {
+							email: {
+								contains: input.filter?.userEmail
+							}
+						},
+						code: {
+							code: input.filter?.code
+						},
+						refCode: {
+							code: input.filter?.refCode
+						}
+					},
+					include: {
+						user: {
+							select: {
+								image: true,
+								name: true,
+								email: true
+							}
+						},
+						tier: {
+							select: {
+								name: true,
+								id: true
+							}
+						},
+						code: {
+							select: {
+								code: true
+							}
+						},
+						event: {
+							select: {
+								start: true
+							}
+						}
+					},
+					cursor: cursor ? { id: cursor } : undefined,
+					orderBy: {
+						createdAt: 'asc'
+					}
+				}),
+				ctx.prisma.tier.findMany({
+					where: {
+						eventId: input.eventId
+					},
+					select: {
+						id: true,
+						name: true
+					}
+				})
+			]);
+
 			let nextCursor: typeof cursor | undefined = undefined;
-			if (items.length > limit) {
-				const nextItem = items.pop();
+			if (transaction[1].length > limit) {
+				const nextItem = transaction[1].pop();
 				nextCursor = nextItem!.id;
 			}
+			console.log('COUNT cnovbcoerncieornvce', transaction[0]);
 			return {
-				items,
+				items: {
+					items: transaction[1],
+					tiers: transaction[2],
+					count: transaction[0],
+					nextCursor //Currently not accessible through React Query APIs
+				},
 				nextCursor
 			};
 		}),

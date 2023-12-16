@@ -2,7 +2,7 @@ import type { Tier, Event } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { GetServerSideProps, NextPage } from 'next/types';
+import { GetServerSideProps, NextPage, InferGetServerSidePropsType } from 'next/types';
 import React, { useEffect, useState } from 'react';
 import Modal from '../../components/Modal';
 import RefCode from '../../components/RefCode';
@@ -20,6 +20,7 @@ import Image from 'next/image';
 import Display from '@/components/Map/Display';
 import parse from 'html-react-parser';
 import { drizzle } from '@/server/db/drizzle';
+import { twJoin } from 'tailwind-merge';
 
 type Ticket = {
 	tier: Tier;
@@ -32,13 +33,7 @@ enum UpOrDown {
 	Desc = 'Descending'
 }
 
-const Event: NextPage<{
-	meta: {
-		id: string;
-		title: string;
-		image: string;
-	} | null;
-}> = (props) => {
+const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (props) => {
 	const router = useRouter();
 	const { data: session, status } = useSession();
 	//const [modalOpen, setModalOpen] = useState(false);
@@ -147,6 +142,10 @@ const Event: NextPage<{
 						{ url: props.meta?.image ?? ':)', width: 480, height: 270, alt: 'Profile Picture' }
 					]
 				}}
+				description={
+					props.meta?.description ??
+					"Join us for an exciting event that promises to be a memorable experience. While the event details are not provided by the organizer, you can expect a day filled with fun, entertainment, and engagement. Stay tuned for updates and surprises as we get closer to the event date. Don't miss out on this fantastic opportunity to connect with like-minded individuals and enjoy a day of excitement. Save the date, and we look forward to sharing more information soon!"
+				}
 			/>
 			<Head>
 				<title>{props.meta?.title ?? event.data?.name ?? 'Event'}</title>
@@ -271,38 +270,22 @@ const Event: NextPage<{
 						) : (
 							<div className="flex flex-col lg:flex-row justify-between w-72 h-40 lg:h-auto animate-pulse gap-8 text-3xl items-center bg-base-200 px-4 py-8 rounded-md shadow-md my-3"></div>
 						)}
-						{status === 'authenticated' ? (
-							<div className="flex justify-between items-end">
-								<button
-									className={`flex btn btn-primary justify-self-center btn-lg ${
-										!checkout && 'btn-disabled'
-									}`}
-									onClick={openModal}
-								>
-									CHECKOUT
-								</button>
-								{event.data?.refQuantity && (
-									<button className="text-xs underline" onClick={openRefModal}>
-										Want a referral code?
-									</button>
-								)}
-							</div>
-						) : status === 'loading' ? (
+
+						<div className="flex justify-between items-end">
 							<button
-								className={`flex max-w-md my-6 mx-2 btn btn-primary justify-self-center btn-lg btn-disabled`}
+								className={`flex btn btn-primary justify-self-center btn-lg ${
+									!checkout && 'btn-disabled'
+								}`}
 								onClick={openModal}
 							>
 								CHECKOUT
 							</button>
-						) : (
-							<label
-								tabIndex={0}
-								className="flex max-w-md my-6 mx-2 btn btn-primary justify-self-center btn-lg"
-								htmlFor="my-modal-4"
-							>
-								CHECKOUT
-							</label>
-						)}
+							{event.data?.refQuantity && (
+								<button className="text-xs underline" onClick={openRefModal}>
+									Want a referral code?
+								</button>
+							)}
+						</div>
 
 						<Modal isOpen={isOpen} closeModal={closeModal}>
 							<TicketSummary
@@ -349,7 +332,10 @@ const TierCard = ({
 	}, [tier]);
 	return (
 		<div
-			className={` card max-w-md bg-base-100 shadow-xl my-4 ${soldOut ? 'grayscale' : ''}`}
+			className={twJoin(
+				'card max-w-md bg-base-100 shadow-lg my-4  border-base-300 border-2',
+				soldOut && 'grayscale'
+			)}
 			key={tier.id}
 		>
 			<div className="card-body">
@@ -403,7 +389,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 				meta: {
 					id: data?.id,
 					title: data?.name,
-					image: data?.image
+					image: data?.image,
+					description: data?.description
 				}
 			}
 		};

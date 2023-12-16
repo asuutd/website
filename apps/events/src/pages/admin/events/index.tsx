@@ -1,15 +1,14 @@
 import { Tab } from '@headlessui/react';
-import type { Ticket, Event, Tier } from '@prisma/client';
+import type { Event } from '@prisma/client';
 import Head from 'next/head';
-import Image from 'next/future/image';
 import { NextPage } from 'next/types';
 import React, { useState } from 'react';
 import Modal from '../../../components/Modal';
-import TicketDetails from '../../../components/TicketDetails';
 import { trpc } from '../../../utils/trpc';
-import Tilt from '../../../components/Tilt';
 import EventForm from '../../../components/EventForm';
 import Link from 'next/link';
+import { format } from 'date-fns';
+import ImageWithFallback from '@/components/Utils/ImageWithFallback';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -45,13 +44,14 @@ const Events: NextPage = () => {
 		onError: (err) => {
 			switch (err?.data?.code) {
 				case 'UNAUTHORIZED':
-					setErrorMsg('You are not authorized to view this page. Please sign in to continue.');
+					setErrorMsg(err?.message);
 					break;
 				default:
-					setErrorMsg('An error occured while fetching your tickets. Please try again later.');
+					setErrorMsg('An error occured while fetching your events. Please try again later.');
 					break;
 			}
-		}
+		},
+		retry: 3
 	});
 	const paymentLink = trpc.payment.createStripeAccountLink.useMutation();
 	const handlePaymentClick = () => {
@@ -70,14 +70,20 @@ const Events: NextPage = () => {
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
 				<div className="justify-between flex items-center">
 					<h1 className="text-4xl font-bold">Events</h1>
-					<div className="join">
-						<button className="btn  btn-sm join-item" onClick={() => handlePaymentClick()}>
-							Payments
-						</button>
-						<button className="btn btn-primary btn-sm join-item" onClick={() => setIsOpen(true)}>
-							+ New
-						</button>
-					</div>
+
+					{events.data && (
+						<div className="join">
+							<Link legacyBehavior className="" href="/scan">
+								<p className="btn btn-sm join-item ">Scan Ticket</p>
+							</Link>
+							<button className="btn  btn-sm join-item" onClick={() => handlePaymentClick()}>
+								Payments
+							</button>
+							<button className="btn btn-primary btn-sm join-item" onClick={() => setIsOpen(true)}>
+								+ New
+							</button>
+						</div>
+					)}
 				</div>
 
 				{events.isLoading && <p>Loading...</p>}
@@ -122,7 +128,7 @@ const Events: NextPage = () => {
 								)}
 							>
 								{upcoming.length === 0 ? (
-									<div className="flex flex-wrap gap-8 bg-white">
+									<div className="flex flex-wrap gap-8 bg-white rounded-md p-2">
 										<p>You have no tickets for upcoming events.</p>
 									</div>
 								) : (
@@ -141,7 +147,7 @@ const Events: NextPage = () => {
 								)}
 							>
 								{past.length === 0 ? (
-									<div className="flex flex-wrap gap-8 bg-white">
+									<div className="flex flex-wrap gap-8 bg-white rounded-md p-2">
 										<p>You have no tickets for past events.</p>
 									</div>
 								) : (
@@ -157,7 +163,12 @@ const Events: NextPage = () => {
 				)}
 			</div>
 			<Modal isOpen={isOpen} closeModal={() => setIsOpen(false)}>
-				<EventForm closeModal={() => setIsOpen(false)} />
+				<EventForm
+					closeModal={() => {
+						setIsOpen(false);
+						events.refetch();
+					}}
+				/>
 			</Modal>
 		</>
 	);
@@ -167,31 +178,30 @@ export default Events;
 
 const EventCard = ({ event }: { event: ReturnedEvent }) => {
 	return (
-		<div className="card card-side bg-base-100 shadow-xl max-w-md my-4 h-80">
-			<figure className="rounded-lg">
-				{event.ticketImage ? (
-					<Image
-						src={event.ticketImage}
-						alt="Movie"
-						height={400}
-						width={300}
-						className="object-contain h-72 w-72 rounded-lg"
-					/>
-				) : (
-					<p className="w-32 h-44 bg-base-200 animate-pulse" />
-				)}
+		<div
+			className="card w-72 sm:w-96 bg-base-100 shadow-xl my-4 mx-auto border-2 border-base-300"
+			key={event.id}
+		>
+			<figure className="px-6 pt-6">
+				<ImageWithFallback
+					src={event.ticketImage ?? ''}
+					alt="Image"
+					className="rounded-xl object-cover aspect-square"
+					width={400}
+					height={400}
+				/>
 			</figure>
-			<div className="card-body">
+			<div className="card-body items-center text-center">
 				<h2 className="card-title">{event.name}</h2>
-				<h2>
-					{' '}
-					<span className="font-semibold">{event._count.tickets}</span> tickets sold.
-				</h2>
-				<div className="card-actions justify-end">
-					<Link href={`/organizer/events/${event.id}`}>
-						<a className="btn btn-primary btn-sm"> Details</a>
-					</Link>
+				<div className="flex items-center gap-2">
+					<img src="/clock.svg" alt="" className="w-5 h-5" />
+					<h2>{format(event.start, 'PPP')}</h2>
 				</div>
+			</div>
+			<div className="card-actions justify-end">
+				<Link legacyBehavior href={`/admin/events/${event.id}`} shallow={true}>
+					<a className="btn btn-primary rounded-tr-none rounded-bl-none">Details</a>
+				</Link>
 			</div>
 		</div>
 	);

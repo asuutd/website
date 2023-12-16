@@ -8,6 +8,7 @@ import { tierRouter } from './tier';
 import { eventRouter } from './event';
 import { organizerRouter } from './organizer';
 import { paymentRouter } from './payment';
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 export const appRouter = t.router({
 	example: exampleRouter,
@@ -22,3 +23,6 @@ export const appRouter = t.router({
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
+
+export type RouterInput = inferRouterInputs<AppRouter>;
+export type RouterOutput = inferRouterOutputs<AppRouter>;

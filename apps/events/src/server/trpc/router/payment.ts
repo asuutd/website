@@ -1,14 +1,16 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { t, authedProcedure } from '../trpc';
-import stripe, { calculateApplicationFee } from '@/utils/stripe';
+import stripe from '@/utils/stripe';
+import { calculateApplicationFee } from '@/utils/misc';
 import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
 import cuid from 'cuid';
+import { UndoIcon } from 'lucide-react';
 
 export const paymentRouter = t.router({
-	createCheckoutLink: authedProcedure
+	createCheckoutLink: t.procedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -18,11 +20,39 @@ export const paymentRouter = t.router({
 						quantity: z.number()
 					})
 				),
-				codeId: z.string().optional(),
-				refCodeId: z.string().optional()
+				codeId: z.string().toUpperCase().optional(),
+				refCodeId: z.string().optional(),
+				email: z.string().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+			let user = ctx.session?.user;
+			if (!user) {
+				if (input.email) {
+					const dbUser = await ctx.prisma.user.upsert({
+						where: {
+							email: input.email
+						},
+						create: {
+							email: input.email
+						},
+						update: {}
+					});
+					user = {
+						id: dbUser.id,
+						image: dbUser.image,
+						email: dbUser.email,
+						name: dbUser.name,
+						role: undefined
+					};
+				} else {
+					throw new TRPCError({
+						code: 'BAD_REQUEST',
+						message: 'Email needed for unauthenticated users'
+					});
+				}
+			}
+
 			const [event, code] = await Promise.all([
 				input.eventId
 					? ctx.prisma.event.findFirst({
@@ -70,14 +100,23 @@ export const paymentRouter = t.router({
 									where: {
 										code: input.refCodeId
 									}
+								},
+								_count: {
+									select: {
+										forms: true
+									}
 								}
 							}
 					  })
 					: null,
+				//Work on This Code.
 				input.codeId
 					? ctx.prisma.code.findFirst({
 							where: {
-								code: input.codeId
+								code: input.codeId.toUpperCase(),
+								tierId: {
+									in: input.tiers.map((tier) => tier.tierId)
+								}
 							},
 							include: {
 								_count: {
@@ -87,21 +126,46 @@ export const paymentRouter = t.router({
 					  })
 					: null
 			]);
+			//Make sure code is one-time use
+			const codeTier = input.tiers.find((tier) => tier.tierId === code?.tierId);
+
+			if (codeTier && codeTier.quantity > 1) {
+				throw new TRPCError({
+					message: 'Only one ticket is allowed for this code type',
+					code: 'BAD_REQUEST'
+				});
+			}
+
 			console.log(event);
-			input.tiers.forEach((tier) => {
-				const foundTier = event?.Tier.find((dbTier) => dbTier.id === tier.tierId);
-				if (foundTier) {
-					if (
-						foundTier._count.Ticket + tier.quantity >
-						(foundTier.limit ?? Number.MAX_SAFE_INTEGER)
-					) {
-						throw new TRPCError({
-							code: 'CONFLICT',
-							message: 'The ticket quantity is greater than the limit'
-						});
+			const transformTiers = input.tiers
+				.map((tier) => {
+					const foundTier = event?.Tier.find((dbTier) => dbTier.id === tier.tierId);
+					if (foundTier) {
+						if (
+							foundTier._count.Ticket + tier.quantity >
+							(foundTier.limit ?? Number.MAX_SAFE_INTEGER)
+						) {
+							throw new TRPCError({
+								code: 'CONFLICT',
+								message: 'The ticket quantity is greater than the limit'
+							});
+						}
+						return {
+							tierName: foundTier.name,
+							quantity: tier.quantity,
+							tierId: foundTier.id,
+							tierPrice: foundTier.price
+						};
+					} else {
+						return null;
 					}
-				}
-			});
+				})
+				.filter((tier) => tier !== null) as {
+				tierName: string;
+				quantity: number;
+				tierId: string;
+				tierPrice: number;
+			}[];
 
 			let total = 0;
 			if (event?.Tier && event.organizer?.stripeAccountId) {
@@ -150,15 +214,15 @@ export const paymentRouter = t.router({
 				});
 				console.log(line_items);
 
-				const sameOwner = ctx.session.user.id === input?.refCodeId;
+				const sameOwner = user.id === input?.refCodeId;
 				const dataArray: Prisma.TicketCreateManyInput[] = [];
 
 				for (const tier of input.tiers) {
 					for (let i = 0; i < tier.quantity; ++i) {
-						if (input.eventId && ctx.session.user.id) {
+						if (input.eventId && user.id) {
 							const ticket = {
 								id: cuid(),
-								userId: ctx.session.user.id,
+								userId: user.id,
 								eventId: input.eventId,
 								tierId: tier.tierId,
 								...(code //Make sure to change this. Code should be serched before creating ticket
@@ -181,18 +245,39 @@ export const paymentRouter = t.router({
 					data: dataArray
 				});
 
+				if (event.fee_holder === 'USER') {
+					line_items.push({
+						price_data: {
+							currency: 'usd',
+							product_data: {
+								name: 'Application Fee'
+							},
+							unit_amount: Math.ceil(calculateApplicationFee(total))
+						},
+						quantity: 1
+					});
+				}
+
+				const return_url = new URL(`${env.NEXT_PUBLIC_URL}/tickets`);
+				if (event._count.forms > 0) {
+					return_url.searchParams.append('survey', event.id);
+					if (user.email) {
+						return_url.searchParams.append('email', user.email);
+					}
+				}
+
 				const session = await stripe.checkout.sessions.create({
 					line_items: line_items,
-					...(ctx.session.user?.email ? { customer_email: ctx.session.user.email } : {}),
+					...(user?.email ? { customer_email: user.email } : {}),
 					mode: 'payment',
-					success_url: `${env.NEXT_PUBLIC_URL}/tickets`,
+					success_url: return_url.toString(),
 					cancel_url: `${ctx.headers.origin}/?canceled=true`,
 					metadata: {
 						eventId: input.eventId,
 						tiers: JSON.stringify(input.tiers),
 						codeId: input.codeId ?? '',
-						refCodeId: input.refCodeId ?? '',
-						userId: ctx.session.user.id,
+						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
+						userId: user.id,
 						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 					},
 					payment_intent_data: {
@@ -202,10 +287,16 @@ export const paymentRouter = t.router({
 						},
 						metadata: {
 							eventId: input.eventId,
-							tiers: JSON.stringify(input.tiers),
+							eventName: event.name,
+							eventPhoto: event.ticketImage,
+							...(user.email && {
+								userEmail: user.email,
+								userName: user.name ?? user.email
+							}),
+							tiers: JSON.stringify(transformTiers),
 							codeId: input.codeId ?? '',
-							refCodeId: input.refCodeId ?? '',
-							userId: ctx.session.user.id,
+							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
+							userId: user.id,
 							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 						}
 					},

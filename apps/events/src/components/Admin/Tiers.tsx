@@ -9,6 +9,7 @@ import Modal from '../Modal';
 import TiersForm from './TiersForm';
 import { Tier } from '@prisma/client';
 import { format, formatISO } from 'date-fns';
+import Link from 'next/link';
 
 const Tiers = ({ eventId }: { eventId: string }) => {
 	const tiers = trpc.tier.getTiersAdmin.useQuery({
@@ -38,10 +39,17 @@ const Tiers = ({ eventId }: { eventId: string }) => {
 
 export default Tiers;
 
-const TierCard = ({ tier }: { tier: Tier }) => {
+const TierCard = ({
+	tier
+}: {
+	tier: Tier & {
+		_count: { Ticket: number };
+	};
+}) => {
 	const FormSchema = z.object({
 		name: z.string(),
 		price: z.string(),
+		limit: z.string().optional(),
 		startTime: z.string(),
 		endTime: z.string()
 	});
@@ -56,6 +64,7 @@ const TierCard = ({ tier }: { tier: Tier }) => {
 		defaultValues: {
 			name: tier.name,
 			price: tier.price.toString(),
+			...(tier.limit && { limit: tier.limit.toString() }),
 			startTime: format(tier.start, "yyyy-MM-dd'T'HH:mm"),
 			endTime: format(tier.end, "yyyy-MM-dd'T'HH:mm")
 		}
@@ -69,6 +78,10 @@ const TierCard = ({ tier }: { tier: Tier }) => {
 				tierId: tier.id,
 				name: fields.name,
 				price: parseInt(fields.price),
+				...(fields.limit &&
+					fields.limit !== '' && {
+						limit: parseInt(fields.limit)
+					}),
 				startTime: new Date(fields.startTime),
 				endTime: new Date(fields.endTime)
 			},
@@ -86,6 +99,16 @@ const TierCard = ({ tier }: { tier: Tier }) => {
 				<span>
 					$ <input className="input input-sm input-ghost w-12" {...register('price')} />
 				</span>
+
+				<div className="form-control">
+					<label htmlFor="appt">Limit</label>
+					<input
+						className="input input-sm input-ghost w-12"
+						{...register('limit', {
+							onChange: (e) => console.log(e)
+						})}
+					/>
+				</div>
 
 				<div className="form-control">
 					<label htmlFor="appt">Start Time</label>
@@ -107,8 +130,30 @@ const TierCard = ({ tier }: { tier: Tier }) => {
 					/>
 				</div>
 
+				<Link
+					href={{
+						query: {
+							tab: 'tickets',
+							id: tier.eventId,
+							tableState: JSON.stringify({
+								pagination: { pageIndex: 0, pageSize: 10 },
+								filters: {
+									tiers: [tier.id]
+								}
+							})
+						}
+					}}
+				>
+					Tickets Sold: <span className="underline">{tier._count.Ticket}</span>
+				</Link>
+
 				<div className="card-actions justify-end">
-					<button className={`btn  ${isDirty ? 'btn-primary' : 'btn-disabled'}`}>Update</button>
+					<button
+						disabled={mutation.isLoading}
+						className={`btn ${isDirty ? 'btn-primary' : 'btn-disabled'}`}
+					>
+						{mutation.isLoading ? 'Updating...' : 'Update'}
+					</button>
 				</div>
 			</form>
 		</div>
