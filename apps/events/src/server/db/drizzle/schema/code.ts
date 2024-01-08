@@ -14,7 +14,8 @@ export const code = mysqlTable(
 		tierId: varchar('tierId', { length: 191 }).notNull(),
 		type: varchar('type', { length: 191 }).notNull(),
 		value: double('value').notNull(),
-		limit: int('limit').notNull()
+		limit: int('limit').notNull(),
+		notes: varchar('notes', { length: 191 }).notNull().default('')
 	},
 	(table) => {
 		return {

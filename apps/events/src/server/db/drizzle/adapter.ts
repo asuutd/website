@@ -4,46 +4,58 @@ import { account as accounts } from './schema/account';
 import { user as users } from './schema/user';
 import { verificationToken as verificationTokens } from './schema/vertificationtoken';
 import { session as sessions } from './schema/session';
-import { schema } from './schema';
+import schema from './schema';
 import type { Adapter } from 'next-auth/adapters';
 import type { PlanetScaleDatabase } from 'drizzle-orm/planetscale-serverless';
 
 export function DrizzleAdapter(db: PlanetScaleDatabase<typeof schema>): Adapter {
 	return {
 		async createUser(userData) {
-			await db.insert(users).values({
-				id: createId(),
-				email: userData.email,
-				emailVerified: userData.emailVerified,
-				name: userData.name,
-				image: userData.image
-			});
+			console.log('ATTEMPTING TO CREATE USER');
+			await db
+				.insert(users)
+				.values({
+					id: createId(),
+					email: userData.email,
+					emailVerified: userData.emailVerified,
+					name: userData.name,
+					image: userData.image
+				})
+				.onDuplicateKeyUpdate({ set: userData });
 			const rows = await db.select().from(users).where(eq(users.email, userData.email)).limit(1);
 			const row = rows[0];
 			if (!row) throw new Error('User not found');
 			return row;
 		},
 		async getUser(id) {
+			console.log('ATTEMPTING TO FETCH USER');
 			const rows = await db.select().from(users).where(eq(users.id, id)).limit(1);
 			const row = rows[0];
 			return row ?? null;
 		},
 		async getUserByEmail(email) {
+			console.log('FETCHING BY USER EMAIL');
 			const rows = await db.select().from(users).where(eq(users.email, email)).limit(1);
+			console.log(rows);
 			const row = rows[0];
 			return row ?? null;
 		},
 		async getUserByAccount({ providerAccountId, provider }) {
-			const rows = await db
-				.select()
-				.from(users)
-				.innerJoin(accounts, eq(users.id, accounts.userId))
-				.where(
-					and(eq(accounts.providerAccountId, providerAccountId), eq(accounts.provider, provider))
-				)
-				.limit(1);
-			const row = rows[0];
-			return row?.User ?? null;
+			console.log('GET USER BY ACCOUNT', providerAccountId);
+			let _a;
+			const account = await db.query.account.findFirst({
+				where: and(eq(accounts.providerAccountId, providerAccountId)),
+				with: {
+					user: true
+				}
+			});
+
+			console.log(account);
+
+			return (_a = account === null || account === void 0 ? void 0 : account.user) !== null &&
+				_a !== void 0
+				? _a
+				: null;
 		},
 		async updateUser({ id, ...userData }) {
 			if (!id) throw new Error('User not found');

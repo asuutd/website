@@ -18,6 +18,7 @@ import { Fee_Holder, Prisma } from '@prisma/client';
 import { env } from '@/env/server.mjs';
 import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
 import { splitEvents } from '@/utils/misc';
+import schema from '@/server/db/drizzle/schema';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -40,7 +41,6 @@ export const eventRouter = t.router({
 					}
 				})
 				.from(eventSchema)
-				.where(eq(eventSchema.id, input.eventId))
 				.leftJoin(
 					tier,
 					and(
@@ -53,7 +53,14 @@ export const eventRouter = t.router({
 				.leftJoin(eventLocation, eq(eventSchema.id, eventLocation.id))
 				.leftJoin(organizer, eq(eventSchema.organizerId, organizer.id))
 				.leftJoin(user, eq(organizer.id, user.id))
-				.groupBy(sql`${tier.id}`);
+				.groupBy(sql`${tier.id}`)
+				.where(
+					and(
+						eq(eventSchema.id, input.eventId),
+						lte(schema.tier.start, new Date()),
+						gte(schema.tier.end, new Date())
+					)
+				);
 			const result = dbEvent.reduce<
 				Record<
 					string,

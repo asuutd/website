@@ -2,6 +2,8 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context';
 import superjson from 'superjson';
 import { z } from 'zod';
+import { eq } from 'drizzle-orm';
+import { event as dbEvent } from '@/server/db/drizzle/schema/event';
 
 //Accessible to all requests
 export const t = initTRPC.context<Context>().create({
@@ -29,18 +31,24 @@ export const authedProcedure = t.procedure.use(({ ctx, next }) => {
 export const adminProcedure = authedProcedure
 	.input(z.object({ eventId: z.string() }))
 	.use(async ({ ctx, next, input }) => {
-		const event = await ctx.prisma.event.findFirstOrThrow({
-			where: {
-				id: input.eventId
-			},
-			include: {
-				EventAdmin: true,
-				Tier: true
+		const event = await ctx.drizzle.query.event.findFirst({
+			where: eq(dbEvent.id, input.eventId),
+			with: {
+				admins: true,
+				tiers: true
 			}
 		});
+
+		if (!event) {
+			throw new TRPCError({
+				code: 'NOT_FOUND',
+				message: 'Event not found'
+			});
+		}
+
 		if (
 			event.organizerId === ctx.session.user.id ||
-			event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
+			event.admins.find((admin) => admin.userId === ctx.session.user.id)
 		) {
 			return next({
 				ctx: {
@@ -56,20 +64,28 @@ export const adminProcedure = authedProcedure
 export const superAdminProcedure = authedProcedure
 	.input(z.object({ eventId: z.string() }))
 	.use(async ({ ctx, next, input }) => {
-		const event = await ctx.prisma.event.findFirstOrThrow({
-			where: {
-				id: input.eventId
-			},
-			include: {
-				EventAdmin: true,
-				Tier: true
+		const event = await ctx.drizzle.query.event.findFirst({
+			where: eq(dbEvent.id, input.eventId),
+			with: {
+				admins: true,
+				tiers: true
 			}
 		});
-		const admin = event.EventAdmin.find(
-			(admin) => admin.role === 'SUPER_ADMIN' || admin.role === 'OWNER'
+
+		if (!event) {
+			throw new TRPCError({
+				code: 'NOT_FOUND',
+				message: 'Event not found'
+			});
+		}
+
+		const admin = event.admins.find(
+			(admin) =>
+				admin.userId === ctx.session.user.id &&
+				(admin.role === 'SUPER_ADMIN' || admin.role === 'OWNER')
 		);
 		console.log(admin);
-		if (event.organizerId === ctx.session.user.id || admin?.userId === ctx.session.user.id) {
+		if (event.organizerId === ctx.session.user.id || admin) {
 			return next({
 				ctx: {
 					...ctx,
@@ -86,15 +102,21 @@ export const superAdminProcedure = authedProcedure
 export const organizerProcedure = authedProcedure
 	.input(z.object({ eventId: z.string() }))
 	.use(async ({ ctx, next, input }) => {
-		const event = await ctx.prisma.event.findFirstOrThrow({
-			where: {
-				id: input.eventId
-			},
-			include: {
-				EventAdmin: true,
-				Tier: true
+		const event = await ctx.drizzle.query.event.findFirst({
+			where: eq(dbEvent.id, input.eventId),
+			with: {
+				admins: true,
+				tiers: true
 			}
 		});
+
+		if (!event) {
+			throw new TRPCError({
+				code: 'NOT_FOUND',
+				message: 'Event not found'
+			});
+		}
+
 		if (event.organizerId === ctx.session.user.id) {
 			return next({
 				ctx: {

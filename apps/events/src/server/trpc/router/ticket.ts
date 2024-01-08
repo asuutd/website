@@ -5,10 +5,16 @@ import { Prisma } from '@prisma/client';
 import { env } from '../../../env/server.mjs';
 import { TRPCError } from '@trpc/server';
 import stripe from '../../../utils/stripe';
-import { and, eq, isNotNull, not } from 'drizzle-orm';
+import { and, count, eq, gt, inArray, isNotNull, like, not, sql } from 'drizzle-orm';
 import { event as eventSchema } from '@/server/db/drizzle/schema/event';
-import { ticket } from '@/server/db/drizzle/schema/ticket';
+import { ticket as ticketSchema } from '@/server/db/drizzle/schema/ticket';
 import { organizer } from '@/server/db/drizzle/schema/organizer';
+import { FilterRuleName } from '@aws-sdk/client-s3';
+import { user } from '@/server/db/drizzle/schema/user';
+import { code } from '@/server/db/drizzle/schema/code';
+import { refCode } from '@/server/db/drizzle/schema/refcode';
+import { tier } from '@/server/db/drizzle/schema/tier';
+import { eventAdmin } from '@/server/db/drizzle/schema/eventadmin';
 
 export const ticketRouter = t.router({
 	createTicket: authedProcedure
@@ -258,7 +264,10 @@ export const ticketRouter = t.router({
 
 	getTicket: authedProcedure.query(async ({ ctx }) => {
 		return await ctx.drizzle.query.ticket.findMany({
-			where: and(eq(ticket.userId, ctx.session.user.id), isNotNull(ticket.paymentIntent)),
+			where: and(
+				eq(ticketSchema.userId, ctx.session.user.id),
+				isNotNull(ticketSchema.paymentIntent)
+			),
 			with: {
 				event: true,
 				tier: true
@@ -292,51 +301,98 @@ export const ticketRouter = t.router({
 			const { cursor } = input;
 			console.log(cursor);
 
-			const transaction = await ctx.prisma.$transaction([
-				ctx.prisma.ticket.count({
-					where: {
-						eventId: input.eventId,
-						tierId: {
-							in:
-								(input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
-									? input.filter?.tiers
-									: undefined
-						},
+			const transaction = await Promise.all([
+				ctx.drizzle
+					.select({
+						count: count()
+					})
+					.from(ticketSchema)
+					.leftJoin(user, eq(user.id, ticketSchema.userId))
+					.leftJoin(code, eq(code.id, ticketSchema.codeId))
+					.leftJoin(refCode, eq(refCode.id, ticketSchema.refCodeId))
+
+					.where(
+						and(
+							eq(ticketSchema.eventId, input.eventId),
+							input.filter?.userEmail ? like(user.email, `${input.filter.userEmail}%`) : undefined,
+							input.filter?.tiers && (input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
+								? inArray(ticketSchema.tierId, input.filter.tiers)
+								: undefined,
+
+							input.filter?.code ? eq(code.code, input.filter.code) : undefined,
+							input.filter?.refCode ? eq(refCode.code, input.filter.refCode) : undefined
+						)
+					),
+				ctx.drizzle
+					.select({
+						id: ticketSchema.id,
+						userId: ticketSchema.userId,
+						tierId: ticketSchema.tierId,
+						eventId: ticketSchema.eventId,
+						codeId: ticketSchema.codeId,
+						refCodeId: ticketSchema.refCodeId,
+						checkedInAt: ticketSchema.checkedInAt,
+						createdAt: ticketSchema.createdAt,
+						paymentIntent: ticketSchema.paymentIntent,
 						user: {
-							email: {
-								contains: input.filter?.userEmail
-							}
+							id: user.id,
+							name: user.name,
+							image: user.image,
+							email: user.email
+						},
+						tier: {
+							id: tier.id,
+							name: tier.name
 						},
 						code: {
-							code: input.filter?.code
+							id: code.id,
+							code: code.code
 						},
 						refCode: {
-							code: input.filter?.refCode
+							id: refCode.id,
+							refCode: refCode.code
+						},
+						event: {
+							id: eventSchema.id,
+							start: eventSchema.start
 						}
+					})
+					.from(ticketSchema)
+					.leftJoin(user, eq(user.id, ticketSchema.userId))
+					.leftJoin(code, eq(code.id, ticketSchema.codeId))
+					.leftJoin(refCode, eq(refCode.id, ticketSchema.refCodeId))
+					.leftJoin(tier, eq(tier.id, ticketSchema.tierId))
+					.leftJoin(eventSchema, eq(eventSchema.id, ticketSchema.eventId))
+					.where(
+						and(
+							eq(ticketSchema.eventId, input.eventId),
+							input.filter?.userEmail ? like(user.email, `${input.filter.userEmail}%`) : undefined,
+							input.filter?.tiers && (input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
+								? inArray(ticketSchema.tierId, input.filter.tiers)
+								: undefined,
+
+							input.filter?.code ? eq(code.code, input.filter.code) : undefined,
+							input.filter?.refCode ? eq(refCode.code, input.filter.refCode) : undefined
+						)
+					)
+					.orderBy(ticketSchema.createdAt)
+					.limit(limit + 1),
+				ctx.drizzle.query.tier.findMany({
+					where: eq(tier.eventId, input.eventId),
+					columns: {
+						id: true,
+						name: true
 					}
+				})
+			]);
+
+			/* const transaction2 = await ctx.prisma.$transaction([
+				ctx.prisma.ticketSchema.count({
+					where: filter
 				}),
-				ctx.prisma.ticket.findMany({
+				ctx.prisma.ticketSchema.findMany({
 					take: limit + 1, // get an extra item at the end which we'll use as next cursor
-					where: {
-						eventId: input.eventId,
-						tierId: {
-							in:
-								(input.filter?.tiers?.length ?? Number.MAX_SAFE_INTEGER) > 0
-									? input.filter?.tiers
-									: undefined
-						},
-						user: {
-							email: {
-								contains: input.filter?.userEmail
-							}
-						},
-						code: {
-							code: input.filter?.code
-						},
-						refCode: {
-							code: input.filter?.refCode
-						}
-					},
+					where: filter,
 					include: {
 						user: {
 							select: {
@@ -376,38 +432,25 @@ export const ticketRouter = t.router({
 						name: true
 					}
 				})
-			]);
+			]); */
 
 			let nextCursor: typeof cursor | undefined = undefined;
 			if (transaction[1].length > limit) {
 				const nextItem = transaction[1].pop();
 				nextCursor = nextItem!.id;
 			}
+			console.log(transaction[1]);
 			console.log('COUNT cnovbcoerncieornvce', transaction[0]);
 			return {
 				items: {
 					items: transaction[1],
 					tiers: transaction[2],
-					count: transaction[0],
+					count: transaction[0][0]?.count ?? 0,
 					nextCursor //Currently not accessible through React Query APIs
 				},
 				nextCursor
 			};
 		}),
-	test: authedProcedure.mutation(async ({ input, ctx }) => {
-		await ctx.prisma.code.updateMany({
-			data: {
-				tierId: 'clm57cmaz0001l108k4xsef7y',
-				value: 2
-			},
-			where: {
-				tierId: 'clmh7qxk90000lb08gfi6cchl',
-				code: {
-					in: ['1UFAJD', 'F3STP3', 'P2JGZ0', 'WCO608', 'EVN4PQ', 'BKP5PV']
-				}
-			}
-		});
-	}),
 
 	validateTicket: authedProcedure
 		.input(
@@ -417,11 +460,11 @@ export const ticketRouter = t.router({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const admin = await ctx.prisma.eventAdmin.findFirst({
-				where: {
-					eventId: input.eventId,
-					userId: ctx.session.user.id
-				}
+			const admin = await ctx.drizzle.query.eventAdmin.findFirst({
+				where: and(
+					eq(eventAdmin.eventId, input.eventId),
+					eq(eventAdmin.userId, ctx.session.user.id)
+				)
 			});
 			if (!admin) {
 				throw new TRPCError({
@@ -429,10 +472,8 @@ export const ticketRouter = t.router({
 					message: `You are not an admin for this event`
 				});
 			}
-			const ticket = await ctx.prisma.ticket.findFirst({
-				where: {
-					id: input.ticketId
-				}
+			const ticket = await ctx.drizzle.query.ticket.findFirst({
+				where: eq(ticketSchema.id, input.ticketId)
 			});
 
 			if (ticket?.checkedInAt !== null) {
@@ -442,14 +483,12 @@ export const ticketRouter = t.router({
 				});
 			}
 
-			return ctx.prisma.ticket.update({
-				where: {
-					id: input.ticketId
-				},
-				data: {
+			return ctx.drizzle
+				.update(ticketSchema)
+				.set({
 					checkedInAt: new Date()
-				}
-			});
+				})
+				.where(eq(ticketSchema.id, input.ticketId));
 		}),
 
 	getTicOrRef: authedProcedure

@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar, primaryKey } from 'drizzle-orm/mysql-core';
+import { mysqlTable, varchar, primaryKey, mysqlEnum } from 'drizzle-orm/mysql-core';
 import { event } from './event';
 import { user } from './user';
 
@@ -11,11 +11,12 @@ export const eventAdmin = mysqlTable(
 			.$defaultFn(() => createId())
 			.primaryKey(),
 		eventId: varchar('eventId', { length: 191 }).notNull(),
-		userId: varchar('userId', { length: 191 }).notNull()
+		userId: varchar('userId', { length: 191 }).notNull(),
+		role: mysqlEnum('role', ['OWNER', 'SUPER_ADMIN', 'ADMIN']).default('ADMIN').notNull()
 	},
 	(table) => {
 		return {
-			eventAdminId: primaryKey(table.id)
+			eventAdminId: primaryKey({ columns: [table.id] })
 		};
 	}
 );

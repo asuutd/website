@@ -3,6 +3,15 @@ import { z } from 'zod';
 import generateCode from '../../../utils/generateCode';
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { alias } from 'drizzle-orm/mysql-core';
+import { refCode as refCodeSchema } from '@/server/db/drizzle/schema/refcode';
+import { ticket } from '@/server/db/drizzle/schema/ticket';
+import { event as eventSchema } from '@/server/db/drizzle/schema/event';
+import { eq } from 'drizzle-orm';
+import { user } from '@/server/db/drizzle/schema/user';
+import _ from 'lodash';
+import { inspect } from 'util';
+import schema from '@/server/db/drizzle/schema';
 
 export const codeRouter = t.router({
 	getCode: t.procedure
@@ -34,7 +43,51 @@ export const codeRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			return await ctx.prisma.code.findMany({
+			type Tier = typeof schema.tier.$inferSelect;
+			type Code = typeof schema.code.$inferSelect;
+
+			const rows = await ctx.drizzle
+				.select()
+				.from(schema.code)
+				.innerJoin(schema.tier, eq(schema.code.tierId, schema.tier.id))
+				.leftJoin(schema.ticket, eq(schema.code.id, schema.ticket.codeId))
+				.where(eq(schema.tier.eventId, input.eventId));
+
+			console.log(rows);
+
+			const result = rows.reduce<
+				Record<
+					string,
+					Code & {
+						tier: Tier;
+						_count: {
+							tickets: number;
+						};
+					}
+				>
+			>((acc, row) => {
+				const code = row.Code;
+				if (!acc[code.id]) {
+					acc[code.id] = {
+						...code,
+						tier: row.Tier,
+						_count: {
+							tickets: 0
+						}
+						// Add other properties if needed
+					};
+				} else {
+					const found = acc[code.id];
+					if (found) {
+						found._count.tickets++;
+					}
+					// Add other logic if needed
+				}
+
+				return acc;
+			}, {});
+
+			/* 			const prismaQuery = await ctx.prisma.code.findMany({
 				where: {
 					tier: {
 						eventId: input.eventId
@@ -53,7 +106,9 @@ export const codeRouter = t.router({
 						}
 					}
 				}
-			});
+			}); */
+
+			return Object.values(result);
 		}),
 	getReferralCodesAdmin: superAdminProcedure
 		.input(
@@ -62,14 +117,20 @@ export const codeRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
+			type User = typeof user.$inferSelect;
+			type RefCode = typeof refCodeSchema.$inferSelect;
+			type Ticket = typeof ticket.$inferSelect;
 			const { event } = ctx;
-			if (!event.ref_quantity || event.ref_quantity === 0) {
+			if (!event.refQuantity || event.refQuantity === 0) {
 				throw new TRPCError({
 					code: 'PRECONDITION_FAILED'
 				});
 			}
 
-			return await ctx.prisma.refCode.findMany({
+			const referrer = alias(user, 'referrer');
+			const referred = alias(user, 'referred');
+
+			/* 			const xc = await ctx.prisma.refCode.findMany({
 				where: {
 					eventId: input.eventId,
 					tickets: {
@@ -99,7 +160,32 @@ export const codeRouter = t.router({
 						}
 					}
 				}
+			}); */
+
+			const referrals = await ctx.drizzle.query.refCode.findMany({
+				where: eq(schema.refCode.eventId, input.eventId),
+				with: {
+					user: {
+						columns: {
+							name: true,
+							image: true
+						}
+					},
+					tickets: {
+						with: {
+							user: {
+								columns: {
+									name: true,
+									image: true
+								}
+							}
+						}
+					}
+				}
 			});
+
+			//Filter referral codes that have no usage
+			return referrals.filter((referral) => referral.tickets.length > 0);
 		}),
 	createCode: superAdminProcedure
 		.input(

@@ -1,4 +1,5 @@
-import { Event } from '@prisma/client';
+import { event as eventSchema } from './../server/db/drizzle/schema/event';
+type Event = typeof eventSchema.$inferSelect;
 
 export const calculateApplicationFee = (total: number): number => {
 	const fee = 0.065 * total + 80;

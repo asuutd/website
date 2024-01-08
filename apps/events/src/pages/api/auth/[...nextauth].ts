@@ -23,6 +23,7 @@ export const authOptions: NextAuthOptions = {
 	callbacks: {
 		async session({ session, user }) {
 			console.log(user);
+			//MIGHT BENEFIT FROM CACHING
 			if (session.user) {
 				session.user.id = user.id;
 				const organizer = await drizzle.query.organizer.findFirst({

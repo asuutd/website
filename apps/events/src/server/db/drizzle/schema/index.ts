@@ -12,7 +12,7 @@ import * as tier from './tier';
 import * as user from './user';
 import * as verificationToken from './vertificationtoken';
 
-export const schema = {
+const schema = {
 	...account,
 	...code,
 	...event,
@@ -27,3 +27,5 @@ export const schema = {
 	...user,
 	...verificationToken
 };
+
+export default schema;

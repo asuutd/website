@@ -1,6 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
+import schema from '@/server/db/drizzle/schema';
+import { count, eq, sql } from 'drizzle-orm';
 
 export const tierRouter = t.router({
 	getTiers: t.procedure
@@ -29,6 +31,26 @@ export const tierRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
+			const rows = await ctx.drizzle
+				.select({
+					id: schema.tier.id,
+					price: schema.tier.price,
+					start: schema.tier.start,
+					end: schema.tier.end,
+					eventId: schema.tier.eventId,
+					name: schema.tier.name,
+					limit: schema.tier.limit,
+					event: schema.event,
+					_count: {
+						tickets: count(schema.ticket.id)
+					}
+				})
+				.from(schema.tier)
+				.innerJoin(schema.event, eq(schema.event.id, schema.tier.eventId))
+				.leftJoin(schema.ticket, eq(schema.ticket.tierId, schema.tier.id))
+				.where(eq(schema.tier.eventId, input.eventId))
+				.groupBy(schema.tier.id);
+			console.log(rows);
 			const tier = await ctx.prisma.tier.findMany({
 				where: {
 					eventId: input.eventId
@@ -43,7 +65,7 @@ export const tierRouter = t.router({
 				}
 			});
 
-			return tier;
+			return rows;
 		}),
 	editTier: authedProcedure
 		.input(

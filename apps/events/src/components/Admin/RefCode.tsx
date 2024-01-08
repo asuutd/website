@@ -23,7 +23,7 @@ const RefCode = ({ eventId }: { eventId: string }) => {
 					<tbody>
 						{/* row 1 */}
 						{refCodeQuery.data
-							?.sort((a, b) => b._count.tickets - a._count.tickets)
+							?.sort((a, b) => b.tickets.length - a.tickets.length)
 							.map((code) => (
 								<tr key={code.id}>
 									<td>{code.code}</td>

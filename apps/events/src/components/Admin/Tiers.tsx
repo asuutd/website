@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Modal from '../Modal';
 import TiersForm from './TiersForm';
-import { Tier } from '@prisma/client';
+import { Event, Tier } from '@/server/db/drizzle/schema/types';
 import { format, formatISO } from 'date-fns';
 import Link from 'next/link';
 
@@ -43,7 +43,8 @@ const TierCard = ({
 	tier
 }: {
 	tier: Tier & {
-		_count: { Ticket: number };
+		event: Event;
+		_count: { tickets: number };
 	};
 }) => {
 	const FormSchema = z.object({
@@ -144,7 +145,7 @@ const TierCard = ({
 						}
 					}}
 				>
-					Tickets Sold: <span className="underline">{tier._count.Ticket}</span>
+					Tickets Sold: <span className="underline">{tier._count.tickets}</span>
 				</Link>
 
 				<div className="card-actions justify-end">
