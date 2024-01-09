@@ -12,6 +12,8 @@ import { user } from '@/server/db/drizzle/schema/user';
 import _ from 'lodash';
 import { inspect } from 'util';
 import schema from '@/server/db/drizzle/schema';
+import { code as dbCode } from '@/server/db/drizzle/schema/code';
+import { InsertCode } from '@/server/db/drizzle/schema/types';
 
 export const codeRouter = t.router({
 	getCode: t.procedure
@@ -201,11 +203,9 @@ export const codeRouter = t.router({
 		)
 		.mutation(async ({ input, ctx }) => {
 			//const userId = ctx.session.user.id;
-			const tier = await ctx.prisma.tier.findFirst({
-				where: {
-					id: input.tierId
-				},
-				include: {
+			const tier = await ctx.drizzle.query.tier.findFirst({
+				where: eq(schema.tier.id, input.tierId),
+				with: {
 					event: true
 				}
 			});
@@ -223,7 +223,7 @@ export const codeRouter = t.router({
 					message: 'Discount more than ticket price'
 				});
 			}
-			const codeData: Prisma.CodeCreateManyInput[] = [];
+			const codeData: InsertCode[] = [];
 			for (let i = 0; i < input.num_codes; ++i) {
 				codeData.push({
 					tierId: input.tierId,
@@ -234,9 +234,7 @@ export const codeRouter = t.router({
 					notes: input.notes
 				});
 			}
-			const code = await ctx.prisma.code.createMany({
-				data: codeData
-			});
+			const code = await ctx.drizzle.insert(dbCode).values(codeData);
 		}),
 	createReferalCode: authedProcedure
 		.input(

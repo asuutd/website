@@ -1,6 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { t, authedProcedure } from '../trpc';
+import { eq } from 'drizzle-orm';
+import schema from '@/server/db/drizzle/schema';
 
 export const authRouter = t.router({
 	getSession: t.procedure.query(({ ctx }) => {
@@ -18,11 +20,9 @@ export const authRouter = t.router({
 		)
 		.query(async ({ input, ctx }) => {
 			//Get event details from ticketId
-			const ticket = await ctx.prisma.ticket.findFirst({
-				where: {
-					id: input.ticketId
-				},
-				select: {
+			const ticket = await ctx.drizzle.query.ticket.findFirst({
+				where: eq(schema.ticket.id, input.ticketId),
+				with: {
 					event: true
 				}
 			});
@@ -33,11 +33,9 @@ export const authRouter = t.router({
 					message: 'Ticket does not exist'
 				});
 			}
-			const admin = await ctx.prisma.eventAdmin.findFirst({
-				where: {
-					eventId: ticket.event.id,
-					userId: ctx.session.user.id
-				}
+
+			const admin = await ctx.drizzle.query.eventAdmin.findFirst({
+				where: eq(schema.eventAdmin.eventId, ticket.event.id)
 			});
 
 			if (!admin) {

@@ -2,7 +2,7 @@ import { TRPCClientError } from '@trpc/client';
 import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { InferSelectModel, and, eq, gte, lte, sql } from 'drizzle-orm';
+import { InferSelectModel, and, asc, eq, gte, lte, sql } from 'drizzle-orm';
 import { event as eventSchema } from '../../db/drizzle/schema/event';
 import { user } from '@/server/db/drizzle/schema/user';
 import { tier } from '@/server/db/drizzle/schema/tier';
@@ -176,19 +176,21 @@ export const eventRouter = t.router({
 		}),
 
 	getEventAdmin: superAdminProcedure.query(async ({ input, ctx }) => {
-		const result = await ctx.prisma.event.findFirstOrThrow({
-			where: {
-				id: input.eventId
-			},
-			include: {
+		const result = await ctx.drizzle.query.event.findFirst({
+			where: eq(schema.event.id, input.eventId),
+			with: {
 				location: true,
 				forms: {
-					orderBy: {
-						updatedAt: 'desc'
-					}
+					orderBy: [asc(schema.eventForm.updatedAt)]
 				}
 			}
 		});
+		if (!result) {
+			throw new TRPCError({
+				code: 'NOT_FOUND',
+				message: 'Event not found'
+			});
+		}
 
 		return result;
 	}),
@@ -359,11 +361,9 @@ export const eventRouter = t.router({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			return await ctx.prisma.eventForm.create({
-				data: {
-					eventId: input.eventId,
-					form: input.forms
-				}
+			return await ctx.drizzle.insert(schema.eventForm).values({
+				eventId: input.eventId,
+				form: input.forms
 			});
 		}),
 
@@ -433,17 +433,13 @@ export const eventRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const responses = await ctx.prisma.formResponse.findMany({
-				where: {
-					formId: input.formId
-				},
-				orderBy: {
-					createdAt: 'asc'
-				}
+			const responses = await ctx.drizzle.query.formResponse.findMany({
+				where: eq(schema.formResponse.formId, input.formId),
+				orderBy: [asc(schema.formResponse.createdAt)]
 			});
 
-			return responses.map(({ response }: { response: any }) =>
-				Object.assign({}, ...response.map((key: any) => ({ [key.label]: key.response })))
+			return responses.map(({ response }) =>
+				Object.assign({}, ...response.map((key) => ({ [key.label]: key.response })))
 			);
 		}),
 	createSurveyResponse: t.procedure

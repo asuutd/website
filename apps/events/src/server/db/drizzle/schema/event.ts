@@ -7,6 +7,7 @@ import { refCode } from './refcode';
 import { tier } from './tier';
 import { eventAdmin } from './eventadmin';
 import { eventLocation } from './eventlocation';
+import { eventForm } from './eventform';
 
 export const event = mysqlTable('Event', {
 	id: varchar('id', { length: 128 })
@@ -35,5 +36,6 @@ export const eventRelations = relations(event, ({ one, many }) => ({
 	tickets: many(ticket),
 	refcodes: many(refCode),
 	tiers: many(tier),
-	admins: many(eventAdmin)
+	admins: many(eventAdmin),
+	forms: many(eventForm)
 }));

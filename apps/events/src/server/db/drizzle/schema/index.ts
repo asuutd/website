@@ -1,7 +1,10 @@
+import * as adminInvite from './admininvite';
 import * as account from './account';
 import * as code from './code';
 import * as event from './event';
 import * as eventAdmin from './eventadmin';
+import * as eventForm from './eventform';
+import * as formResponse from './formresponse';
 import * as eventLocation from './eventlocation';
 import * as example from './example';
 import * as organizer from './organizer';
@@ -13,11 +16,14 @@ import * as user from './user';
 import * as verificationToken from './vertificationtoken';
 
 const schema = {
+	...adminInvite,
 	...account,
 	...code,
 	...event,
 	...eventAdmin,
 	...eventLocation,
+	...eventForm,
+	...formResponse,
 	...example,
 	...organizer,
 	...refCode,

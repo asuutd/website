@@ -51,19 +51,6 @@ export const tierRouter = t.router({
 				.where(eq(schema.tier.eventId, input.eventId))
 				.groupBy(schema.tier.id);
 			console.log(rows);
-			const tier = await ctx.prisma.tier.findMany({
-				where: {
-					eventId: input.eventId
-				},
-				include: {
-					event: true,
-					_count: {
-						select: {
-							Ticket: true
-						}
-					}
-				}
-			});
 
 			return rows;
 		}),
