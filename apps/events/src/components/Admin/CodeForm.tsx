@@ -1,7 +1,7 @@
+import { Tier, Event } from '@/server/db/drizzle/schema/types';
 import { trpc } from '@/utils/trpc';
 import { Dialog, Transition } from '@headlessui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Tier, Event } from '@prisma/client';
 import { parseISO } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
@@ -13,7 +13,7 @@ type Props = {
 		| (Tier & {
 				event: Event;
 				_count: {
-					Ticket: number;
+					tickets: number;
 				};
 		  })[]
 		| undefined;
@@ -55,8 +55,8 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 	const watch = watchFunc(['percentage', 'tierId']);
 
 	const onSubmit = (fields: FormInput) => {
-		const eventId = tiers?.find((tier) => tier.id === fields.tierId)?.eventId
-		if (!eventId) throw new Error('No event id found')
+		const eventId = tiers?.find((tier) => tier.id === fields.tierId)?.eventId;
+		if (!eventId) throw new Error('No event id found');
 		mutation.mutate(
 			{
 				type: fields.percentage ? 'percent' : 'flat',
