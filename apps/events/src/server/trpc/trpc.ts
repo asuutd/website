@@ -42,7 +42,41 @@ export const adminProcedure = authedProcedure
 			event.organizerId === ctx.session.user.id ||
 			event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
 		) {
-			return next();
+			return next({
+				ctx: {
+					...ctx,
+					event
+				}
+			});
+		} else {
+			throw new TRPCError({ code: 'UNAUTHORIZED' });
+		}
+	});
+
+export const superAdminProcedure = authedProcedure
+	.input(z.object({ eventId: z.string() }))
+	.use(async ({ ctx, next, input }) => {
+		const event = await ctx.prisma.event.findFirstOrThrow({
+			where: {
+				id: input.eventId
+			},
+			include: {
+				EventAdmin: true,
+				Tier: true
+			}
+		});
+		const admin = event.EventAdmin.find(
+			(admin) => admin.role === 'SUPER_ADMIN' || admin.role === 'OWNER'
+		);
+		console.log(admin);
+		if (event.organizerId === ctx.session.user.id || admin?.userId === ctx.session.user.id) {
+			return next({
+				ctx: {
+					...ctx,
+					event,
+					admin
+				}
+			});
 		} else {
 			throw new TRPCError({ code: 'UNAUTHORIZED' });
 		}
@@ -62,7 +96,12 @@ export const organizerProcedure = authedProcedure
 			}
 		});
 		if (event.organizerId === ctx.session.user.id) {
-			return next();
+			return next({
+				ctx: {
+					...ctx,
+					event
+				}
+			});
 		} else {
 			throw new TRPCError({ code: 'UNAUTHORIZED' });
 		}

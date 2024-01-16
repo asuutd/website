@@ -1,7 +1,7 @@
 import { Dialog, Tab, Transition } from '@headlessui/react';
 import type { Ticket, Event, Tier } from '@prisma/client';
 import Head from 'next/head';
-import Image from 'next/future/image';
+import Image from 'next/image';
 import { NextPage } from 'next/types';
 import React, { Fragment, useEffect, useState } from 'react';
 import Modal from '../../components/Modal';
@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import Parser from '@/components/Admin/Forms/Parser';
 import { transformData } from '@/utils/forms';
 import ModalChild from '@/components/ModalChild';
+import { NextSeo } from 'next-seo';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -24,9 +25,12 @@ type TicketWithEventData = Ticket & {
 
 const Ticket: NextPage = () => {
 	const router = useRouter();
-	const { survey } = router.query;
+	const { survey, email } = router.query;
 	const eventId =
 		typeof survey === 'string' ? survey : survey == undefined ? undefined : survey[0]!;
+
+	const emailString =
+		typeof email === 'string' ? email : email == undefined ? undefined : email[0]!;
 	const [past, setPast] = useState<TicketWithEventData[]>([]);
 	const [upcoming, setUpcoming] = useState<TicketWithEventData[]>([]);
 	const [isOpen, setIsOpen] = useState(false);
@@ -62,7 +66,8 @@ const Ticket: NextPage = () => {
 
 	const surveyQuery = trpc.event.getEventForm.useQuery(
 		{
-			eventId: eventId as string
+			eventId: eventId as string,
+			userEmail: decodeURI(emailString ?? '')
 		},
 		{
 			enabled: typeof eventId === 'string',
@@ -75,6 +80,7 @@ const Ticket: NextPage = () => {
 			staleTime: Infinity
 		}
 	);
+
 	const surveyUpload = trpc.event.createSurveyResponse.useMutation();
 
 	const onSurveySubmit = (fields: Record<string, any>) => {
@@ -84,7 +90,8 @@ const Ticket: NextPage = () => {
 				value: Object.keys(fields).map((key) => ({
 					label: key,
 					response: fields[key]
-				}))
+				})),
+				userEmail: emailString
 			});
 		}
 
@@ -93,9 +100,7 @@ const Ticket: NextPage = () => {
 
 	return (
 		<>
-			<Head>
-				<title>Tickets</title>
-			</Head>
+			<NextSeo title="Tickets" nofollow={true} />
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
 				<h1 className="text-4xl font-bold">Tickets</h1>
 				{ticket.isLoading && <p>Loading...</p>}
@@ -198,11 +203,11 @@ const Ticket: NextPage = () => {
 			</Modal>
 
 			<Modal isOpen={surveyModalOpen} closeModal={() => setSurveyModalOpen(false)}>
-				{surveyQuery.data && (
+				{surveyQuery.data && surveyQuery.data.length > 0 && (
 					<ModalChild>
 						<Parser
 							onSubmit={(fields) => onSurveySubmit(fields)}
-							data={transformData([surveyQuery.data]) ?? []}
+							data={transformData(surveyQuery.data) ?? []}
 						/>
 					</ModalChild>
 				)}

@@ -4,7 +4,6 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["filteredRelationCount", "referentialIntegrity"]
 }
 
 datasource db {
@@ -14,7 +13,7 @@ datasource db {
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  relationMode = "prisma"
 }
 
 model Example {
@@ -53,7 +52,7 @@ model User {
   name          String?
   email         String      @unique
   emailVerified DateTime?
-  image         String?
+  image         String? @default("/email_assets/Missing_avatar.svg")
   accounts      Account[]
   sessions      Session[]
   tickets       Ticket[]
@@ -105,8 +104,9 @@ model Event {
 model EventAdmin {
   id      String @id @default(cuid())
   eventId String
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
   userId  String
+  role    Admin_Type @default(ADMIN)
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([eventId, userId])
 }
@@ -117,6 +117,8 @@ model AdminInvite {
   event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
   email  String
   user    User   @relation(fields: [email], references: [email], onDelete: Cascade)
+
+  @@unique([eventId, email])
 }
 
 model EventLocation {
@@ -174,6 +176,7 @@ model Code {
   limit   Int
   tier    Tier     @relation(fields: [tierId], references: [id], onDelete: Cascade)
   tickets Ticket[]
+  notes String? @default("")
 
   @@unique([code, tierId])
 }
@@ -206,4 +209,10 @@ model RefCode {
 enum Fee_Holder {
   USER
   ORGANIZER
+}
+
+enum Admin_Type {
+  ADMIN
+  SUPER_ADMIN
+  OWNER
 }

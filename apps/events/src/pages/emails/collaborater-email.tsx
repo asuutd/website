@@ -1,4 +1,5 @@
 import { env } from '@/env/server.mjs';
+import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 import {
 	Body,
 	Button,
@@ -33,7 +34,7 @@ const baseUrl = env.NEXT_PUBLIC_URL;
 
 export const CollaboratorInviteEmail = ({
 	receiver_name = 'Invitee',
-	receiver_photo = `${baseUrl}/email_assets/Missing_avatar.svg`,
+	receiver_photo = `${baseUrl}${DEFAULT_PROFILE_IMAGE_PATH}}`,
 	sender_email = 'bukinoshita@example.com',
 	sender_name = 'Inviter',
 	event_name = 'All White Party',
@@ -105,7 +106,7 @@ export const CollaboratorInviteEmail = ({
 
 						<Hr style={hr} />
 						<Text style={text}>
-							This invitation was intended for <span className="text-black">{receiver_name} </span>.
+							This invitation was intended for <span className="text-black">{receiver_name}</span>.
 							If you were not expecting this invitation, you can ignore this email. If you are
 							concerned about your account&apos;s safety, please reply to this email to get in touch
 							with us.

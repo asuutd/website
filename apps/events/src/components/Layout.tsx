@@ -5,36 +5,20 @@ import React, { useEffect, useState } from 'react';
 import Footer from './Footer';
 import LoginForm from './LoginForm';
 import Navbar from './Navbar';
+import { Toaster } from './ui/toaster';
 
 export default function Layout({ children }: { children?: React.ReactNode }) {
-	const [providers, setProviders] = useState<Record<
-		LiteralUnion<BuiltInProviderType, string>,
-		ClientSafeProvider
-	> | null>(null);
-	useEffect(() => {
-		getProviders().then((providers) => setProviders(providers));
-		console.log(providers);
-	}, []);
 	return (
-		<div className="drawer  p-0 mx-auto m-0">
-			<input id="my-drawer" type="checkbox" className="drawer-toggle" />
-			<div className="drawer-content w-screen">
-				<div className="min-h-screen bg-gradient-radial from-[#EBDCD0] to-base-100 min-w-full">
-					<Head>
-						<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-					</Head>
-					<Navbar />
-					<div className="min-h-full max-w-7xl mx-auto p-4">{children}</div>
+		<div className="  p-0 mx-auto m-0">
+			<div className="min-h-screen bg-base-100 min-w-full">
+				<Head>
+					<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+				</Head>
+				<Navbar />
+				<div className="min-h-full max-w-7xl mx-auto p-4">{children}</div>
 
-					<Footer />
-				</div>
-			</div>
-			<div className="drawer-side w-screen">
-				<label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-				<ul
-					className="menu p-4 w-80 min-h-full bg-base-200 text-base-content"
-					id="sidebar-content"
-				></ul>
+				<Footer />
+				<Toaster />
 			</div>
 		</div>
 	);

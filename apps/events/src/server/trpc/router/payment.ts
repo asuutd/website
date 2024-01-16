@@ -1,7 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { t, authedProcedure } from '../trpc';
-import stripe, { calculateApplicationFee } from '@/utils/stripe';
+import stripe from '@/utils/stripe';
+import { calculateApplicationFee } from '@/utils/misc';
 import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
@@ -19,7 +20,7 @@ export const paymentRouter = t.router({
 						quantity: z.number()
 					})
 				),
-				codeId: z.string().optional(),
+				codeId: z.string().toUpperCase().optional(),
 				refCodeId: z.string().optional(),
 				email: z.string().optional()
 			})
@@ -108,10 +109,14 @@ export const paymentRouter = t.router({
 							}
 					  })
 					: null,
+				//Work on This Code.
 				input.codeId
 					? ctx.prisma.code.findFirst({
 							where: {
-								code: input.codeId
+								code: input.codeId.toUpperCase(),
+								tierId: {
+									in: input.tiers.map((tier) => tier.tierId)
+								}
 							},
 							include: {
 								_count: {
@@ -121,6 +126,15 @@ export const paymentRouter = t.router({
 					  })
 					: null
 			]);
+			//Make sure code is one-time use
+			const codeTier = input.tiers.find((tier) => tier.tierId === code?.tierId);
+
+			if (codeTier && codeTier.quantity > 1) {
+				throw new TRPCError({
+					message: 'Only one ticket is allowed for this code type',
+					code: 'BAD_REQUEST'
+				});
+			}
 
 			console.log(event);
 			const transformTiers = input.tiers
@@ -247,6 +261,9 @@ export const paymentRouter = t.router({
 				const return_url = new URL(`${env.NEXT_PUBLIC_URL}/tickets`);
 				if (event._count.forms > 0) {
 					return_url.searchParams.append('survey', event.id);
+					if (user.email) {
+						return_url.searchParams.append('email', user.email);
+					}
 				}
 
 				const session = await stripe.checkout.sessions.create({
@@ -259,7 +276,7 @@ export const paymentRouter = t.router({
 						eventId: input.eventId,
 						tiers: JSON.stringify(input.tiers),
 						codeId: input.codeId ?? '',
-						refCodeId: input.refCodeId ?? '',
+						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
 						userId: user.id,
 						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 					},
@@ -278,7 +295,7 @@ export const paymentRouter = t.router({
 							}),
 							tiers: JSON.stringify(transformTiers),
 							codeId: input.codeId ?? '',
-							refCodeId: input.refCodeId ?? '',
+							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
 							userId: user.id,
 							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 						}

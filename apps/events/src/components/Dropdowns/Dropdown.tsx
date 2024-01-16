@@ -1,12 +1,9 @@
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment, useRef } from 'react';
 import React, { MouseEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
 	ClientSafeProvider,
 	getProviders,
 	LiteralUnion,
-	signIn,
 	signOut,
 	useSession
 } from 'next-auth/react';
@@ -14,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { env } from '@/env/client.mjs';
+import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 
 export default function Example() {
 	const [providers, setProviders] = useState<Record<
@@ -43,7 +41,7 @@ export default function Example() {
 				<label tabIndex={0} className="">
 					<div className="w-10 hover:scale-110 transition ease-in-out">
 						<Image
-							src={session?.user?.image || '/Missing_avatar.svg'}
+							src={session?.user?.image || DEFAULT_PROFILE_IMAGE_PATH}
 							layout="intrinsic"
 							className="w-10 mask mask-squircle"
 							alt="Profile Pic"
@@ -57,34 +55,26 @@ export default function Example() {
 					className="mt-3 z-[30] p-2 gap-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
 				>
 					<li>
-						<Link href="/tickets">
-							<a
-								className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200`}
-							>
+						<Link legacyBehavior href="/tickets">
+							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
 								Tickets
-							</a>
+							</p>
 						</Link>
 					</li>
 					<li>
-						<button
-							className={`hover:bg-base-200 group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
-						>
-							<Link href="/register">
-								<div className="justify-between gap-0">Organise an event</div>
-							</Link>
-						</button>
+						<Link legacyBehavior href="/register">
+							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
+								Organize an Event
+							</p>
+						</Link>
 					</li>
 
 					<li>
-						<button
-							className={`hover:bg-base-200 group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2`}
-						>
-							<Link href="/admin/events" className="flex ">
-								<div className="justify-between gap-2">
-									Dashboard <span className="badge badge-neutral">New</span>
-								</div>
-							</Link>
-						</button>
+						<Link legacyBehavior href="/admin/events">
+							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
+								Dashboard
+							</p>
+						</Link>
 					</li>
 					<li>
 						<button

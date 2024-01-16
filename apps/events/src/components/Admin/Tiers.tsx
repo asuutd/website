@@ -9,6 +9,7 @@ import Modal from '../Modal';
 import TiersForm from './TiersForm';
 import { Tier } from '@prisma/client';
 import { format, formatISO } from 'date-fns';
+import Link from 'next/link';
 
 const Tiers = ({ eventId }: { eventId: string }) => {
 	const tiers = trpc.tier.getTiersAdmin.useQuery({
@@ -38,7 +39,13 @@ const Tiers = ({ eventId }: { eventId: string }) => {
 
 export default Tiers;
 
-const TierCard = ({ tier }: { tier: Tier }) => {
+const TierCard = ({
+	tier
+}: {
+	tier: Tier & {
+		_count: { Ticket: number };
+	};
+}) => {
 	const FormSchema = z.object({
 		name: z.string(),
 		price: z.string(),
@@ -123,8 +130,30 @@ const TierCard = ({ tier }: { tier: Tier }) => {
 					/>
 				</div>
 
+				<Link
+					href={{
+						query: {
+							tab: 'tickets',
+							id: tier.eventId,
+							tableState: JSON.stringify({
+								pagination: { pageIndex: 0, pageSize: 10 },
+								filters: {
+									tiers: [tier.id]
+								}
+							})
+						}
+					}}
+				>
+					Tickets Sold: <span className="underline">{tier._count.Ticket}</span>
+				</Link>
+
 				<div className="card-actions justify-end">
-					<button className={`btn  ${isDirty ? 'btn-primary' : 'btn-disabled'}`}>Update</button>
+					<button
+						disabled={mutation.isLoading}
+						className={`btn ${isDirty ? 'btn-primary' : 'btn-disabled'}`}
+					>
+						{mutation.isLoading ? 'Updating...' : 'Update'}
+					</button>
 				</div>
 			</form>
 		</div>

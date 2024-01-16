@@ -1,10 +1,11 @@
 import { TRPCClientError } from '@trpc/client';
-import { adminProcedure, authedProcedure, t } from '../trpc';
+import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { Fee_Holder, Prisma } from '@prisma/client';
 import { env } from '@/env/server.mjs';
 import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
+import { splitEvents } from '@/utils/misc';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -59,7 +60,7 @@ export const eventRouter = t.router({
 			return tier;
 		}),
 
-	getEventAdmin: adminProcedure.query(async ({ input, ctx }) => {
+	getEventAdmin: superAdminProcedure.query(async ({ input, ctx }) => {
 		const result = await ctx.prisma.event.findFirstOrThrow({
 			where: {
 				id: input.eventId
@@ -77,13 +78,16 @@ export const eventRouter = t.router({
 		return result;
 	}),
 	getEvents: t.procedure.query(async ({ ctx }) => {
-		return await ctx.prisma.event.findMany({
+		const events = await ctx.prisma.event.findMany({
 			where: {
-				start: {
-					gte: new Date()
+				end: {
+					gt: new Date()
 				}
 			}
 		});
+		console.log(splitEvents);
+
+		return splitEvents(events);
 	}),
 	createEvent: authedProcedure
 		.input(
@@ -131,7 +135,8 @@ export const eventRouter = t.router({
 							: {}),
 						EventAdmin: {
 							create: {
-								userId: ctx.session.user.id
+								userId: ctx.session.user.id,
+								role: 'OWNER'
 							}
 						},
 						fee_holder: input.feeBearer
@@ -144,7 +149,7 @@ export const eventRouter = t.router({
 				});
 			}
 		}),
-	updateEvent: authedProcedure
+	updateEvent: superAdminProcedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -176,14 +181,49 @@ export const eventRouter = t.router({
 					Tier: true
 				}
 			});
-			if (
-				event.organizerId === ctx.session.user.id ||
-				event.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)
-			) {
+
+			const imagesToDelete: string[] = [];
+			if (event.image && event.image !== input.bannerImage) {
+				imagesToDelete.push(event.image);
+			}
+
+			if (event.ticketImage && event.ticketImage !== input.ticketImage) {
+				imagesToDelete.push(event.ticketImage);
+			}
+
+			await ctx.prisma.event.update({
+				where: {
+					id: input.eventId
+				},
+				data: {
+					name: input.name,
+					start: input.startTime,
+					end: input.endTime,
+					image: input.bannerImage,
+					ticketImage: input.ticketImage,
+					fee_holder: input.feeBearer,
+					...(input.location?.coordinates &&
+					input.location?.coordinates[0] &&
+					input.location?.coordinates[1]
+						? {
+								location: {
+									update: {
+										long: input.location.coordinates[0],
+										lat: input.location.coordinates[1],
+										name: input.location.address
+									}
+								}
+						  }
+						: {}),
+					description: input.description
+				}
+			});
+
+			if (imagesToDelete.length > 0) {
 				const response = await fetch('https://api.uploadcare.com/files/storage/', {
 					method: 'DELETE',
 					body: JSON.stringify(
-						[event.image, event.ticketImage]
+						imagesToDelete
 							.filter((input) => typeof input === 'string')
 							.map((input) => input?.split('/')[3])
 					),
@@ -199,41 +239,9 @@ export const eventRouter = t.router({
 						message: 'Previous Image Deletion Failed'
 					});
 				}
-				await ctx.prisma.event.update({
-					where: {
-						id: input.eventId
-					},
-					data: {
-						name: input.name,
-						start: input.startTime,
-						end: input.endTime,
-						image: input.bannerImage,
-						ticketImage: input.ticketImage,
-						organizerId: ctx.session.user.id,
-						fee_holder: input.feeBearer,
-						...(input.location?.coordinates &&
-						input.location?.coordinates[0] &&
-						input.location?.coordinates[1]
-							? {
-									location: {
-										update: {
-											long: input.location.coordinates[0],
-											lat: input.location.coordinates[1],
-											name: input.location.address
-										}
-									}
-							  }
-							: {}),
-						description: input.description
-					}
-				});
-			} else {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED'
-				});
 			}
 		}),
-	upsertEventForm: adminProcedure
+	upsertEventForm: superAdminProcedure
 		.input(
 			z.object({
 				forms: z.array(ZodCustomField)
@@ -249,21 +257,39 @@ export const eventRouter = t.router({
 		}),
 
 	//For User
-	getEventForm: authedProcedure
+	getEventForm: t.procedure
 		.input(
 			z.object({
-				eventId: z.string()
+				eventId: z.string(),
+				userEmail: z.string().optional()
 			})
 		)
 		.query(async ({ input, ctx }) => {
+			if (!input.userEmail && !ctx.session?.user) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'You need to be logged in or have an email'
+				});
+			}
+			console.log(ctx.session?.user?.id, input.userEmail);
 			const userResponse = await ctx.prisma.formResponse.findFirst({
 				where: {
 					form: {
 						eventId: input.eventId
 					},
-					userId: ctx.session.user.id
+					OR: [
+						{
+							userId: ctx.session?.user?.id
+						},
+						{
+							user: {
+								email: input.userEmail
+							}
+						}
+					]
 				}
 			});
+			console.log(userResponse);
 			if (userResponse) {
 				throw new TRPCError({
 					code: 'CONFLICT',
@@ -281,7 +307,7 @@ export const eventRouter = t.router({
 			});
 
 			if (form[0]) {
-				return form[0];
+				return form;
 			} else {
 				throw new TRPCError({
 					code: 'NOT_FOUND'
@@ -289,7 +315,7 @@ export const eventRouter = t.router({
 			}
 		}),
 
-	getResponses: adminProcedure
+	getResponses: superAdminProcedure
 		.input(
 			z.object({
 				formId: z.string()
@@ -309,7 +335,7 @@ export const eventRouter = t.router({
 				Object.assign({}, ...response.map((key: any) => ({ [key.label]: key.response })))
 			);
 		}),
-	createSurveyResponse: authedProcedure
+	createSurveyResponse: t.procedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -318,14 +344,31 @@ export const eventRouter = t.router({
 						label: z.string(),
 						response: z.union([z.string(), z.array(z.string())])
 					})
-				)
+				),
+				userEmail: z.string().email().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+			if (!input.userEmail && !ctx.session?.user) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'You need to be logged in or have an email'
+				});
+			}
+
 			const ticket = await ctx.prisma.ticket.findFirst({
 				where: {
 					eventId: input.eventId,
-					userId: ctx.session.user.id
+					OR: [
+						{
+							userId: ctx.session?.user?.id
+						},
+						{
+							user: {
+								email: input.userEmail
+							}
+						}
+					]
 				},
 				include: {
 					event: {
@@ -345,7 +388,7 @@ export const eventRouter = t.router({
 				await ctx.prisma.formResponse.create({
 					data: {
 						formId: ticket.event.forms[0].id,
-						userId: ctx.session.user.id,
+						userId: ticket.userId,
 						response: input.value
 					}
 				});
@@ -356,7 +399,7 @@ export const eventRouter = t.router({
 				});
 			}
 		}),
-	changeFormVersion: adminProcedure
+	changeFormVersion: superAdminProcedure
 		.input(
 			z.object({
 				direction: z.enum(['forward', 'backwards']),

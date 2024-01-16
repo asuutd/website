@@ -196,7 +196,7 @@
 				{`${msgs.netID_message}`}
 			</p>
 		</div>
-		<h2 class="text-lg text-secondary font-bold">How can we improve?</h2>
+		<h2 class="text-lg text-secondary font-bold">Thoughts on Fall Ball?</h2>
 		<TextArea
 			bind:value={feedback_val}
 			minRows={4}
@@ -205,7 +205,7 @@
 			name="improvements"
 		/>
 
-		<h2 class="text-lg text-secondary font-bold mt-4">Any meeting ideas?</h2>
+		<h2 class="text-lg text-secondary font-bold mt-4">Any suggestions for African Night?</h2>
 		<TextArea
 			bind:value={ideas_val}
 			minRows={4}

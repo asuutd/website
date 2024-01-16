@@ -12,7 +12,14 @@ import { format } from 'date-fns';
 import { twJoin } from 'tailwind-merge';
 import { transformData } from '@/utils/forms';
 import { version } from 'os';
-import { createColumnHelper, useReactTable } from '@tanstack/react-table';
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger
+} from '@/components/ui/sheet';
 import Responses from './Responses';
 
 const Form = ({ forms, eventId }: { forms: EventForm[]; eventId: string }) => {
@@ -98,13 +105,19 @@ const Form = ({ forms, eventId }: { forms: EventForm[]; eventId: string }) => {
 				</div>
 
 				<div className="join flex justify-end my-4">
-					<label
-						className="btn btn-sm btn-secondary join-item"
-						htmlFor="my-drawer"
-						onClick={() => setShowDrawer(true)}
-					>
-						+ NEW ELEMENT
-					</label>
+					<Sheet key={'left'}>
+						<SheetTrigger>
+							<button
+								className="btn btn-sm btn-secondary join-item"
+								onClick={() => setShowDrawer(true)}
+							>
+								+ NEW ELEMENT
+							</button>
+						</SheetTrigger>
+						<SheetContent side={'left'}>
+							<Selector />
+						</SheetContent>
+					</Sheet>
 
 					<button className="btn btn-sm join-item" onClick={() => setShowPreview(!showPreview)}>
 						{!showPreview ? 'SHOW' : 'HIDE'} PREVIEW

@@ -4,11 +4,12 @@ import Stripe from 'stripe';
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
-import Transaction_Email from '../../emails/purchase-email';
+import Transaction from '../../emails/purchase-email';
 import { Resend } from 'resend';
 import { uploadImage } from '@/utils/r2';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
+import { createApplePass } from '@/lib/wallets';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -64,7 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						}
 					});
 
-<<<<<<< Updated upstream
 					// // Send the email to the buyer
 					// const emailTemplate = createEmailTemplate('URL_TO_PURCHASE_DETAILS'); // Replace with the actual URL
 					// resend.sendEmail({
@@ -73,10 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					// 	subject: 'Purchase Successful',
 					// 	html: emailTemplate,
 					// });
-
-=======
 					
->>>>>>> Stashed changes
 					try {
 						if (userEmail && userName && eventName && eventPhoto && eventId) {
 							const qr_code_links = await Promise.all(
@@ -102,11 +99,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								})
 							);
 
+							const ticketData = await prisma.ticket.findMany({
+								where: {
+									id: {in: user_ticket_ids}
+								},
+								include: {
+									user: true,
+									event: {
+										include: {
+											location: true,
+											organizer: {
+												include: { user: true }
+											}
+										}
+									},
+									tier: true
+								}
+							});
+		
+							const passes = await Promise.all(ticketData.map(async (ticket) => await createApplePass(ticket, ticket.event, ticket.tier)))
+
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
 								to: userEmail, // Replace with the buyer's email
 								subject: `Your Tickets for ${eventName} are in!`,
-								react: Transaction_Email({
+								react: Transaction({
 									user_name: userName,
 									event_name: eventName,
 									event_photo: eventPhoto,
@@ -116,7 +133,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								}),
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()
-								}
+								},
+								attachments: passes.map(({pass, filename}) => ({
+									filename,
+									content: pass
+								}))
 							});
 						}
 					} catch (error) {
@@ -139,22 +160,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					});
 					res.status(200).send('Noice');
 					break;
-				//Fix up refunds. Should differentiate between
+				//For now, Do nothing to their ticket.
+				//FUTURE: Add conditions for refund. To enable manual refund in admin dashboard
 				case 'charge.refunded':
 					const chargeData = event.data.object as Stripe.Charge;
 					console.log(chargeData.metadata.ticketId);
 
 					if (chargeData.refunds) {
 						const ticketIds = chargeData.refunds.data.map((data) => data.metadata?.ticketId);
-						const result = await prisma.ticket.update({
-							where: {
-								id: ticketIds[0]
-							},
-							data: {
-								tierId: null
-							}
-						});
-						res.status(200).json({ received: true, result: result, tickets: ticketIds[0] });
+
+						res.status(200).json({ received: true, tickets: ticketIds[0] });
 					} else {
 						res.status(200).json({
 							received: true,
