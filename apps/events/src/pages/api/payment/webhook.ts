@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
-import Transaction from './emails/transaction';
+import Transaction_Email from '../../emails/purchase-email';
 import { Resend } from 'resend';
 import { uploadImage } from '@/utils/r2';
 import QRCode from 'qrcode';
@@ -64,6 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						}
 					});
 
+<<<<<<< Updated upstream
 					// // Send the email to the buyer
 					// const emailTemplate = createEmailTemplate('URL_TO_PURCHASE_DETAILS'); // Replace with the actual URL
 					// resend.sendEmail({
@@ -73,6 +74,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					// 	html: emailTemplate,
 					// });
 
+=======
+					
+>>>>>>> Stashed changes
 					try {
 						if (userEmail && userName && eventName && eventPhoto && eventId) {
 							const qr_code_links = await Promise.all(
@@ -102,7 +106,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
 								to: userEmail, // Replace with the buyer's email
 								subject: `Your Tickets for ${eventName} are in!`,
-								react: Transaction({
+								react: Transaction_Email({
 									user_name: userName,
 									event_name: eventName,
 									event_photo: eventPhoto,

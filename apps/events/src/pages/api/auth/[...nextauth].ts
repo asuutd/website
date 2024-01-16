@@ -6,7 +6,14 @@ import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '../../../server/db/client';
 import { env } from '../../../env/server.mjs';
-import { CustomPrismaAdapter } from '@/utils/adapter';
+import { CustomPrismaAdapter } from '../../../utils/adapter';
+import EmailProvider from "next-auth/providers/email"
+import LoginLinkEmail from '../../emails/login-email';
+import { Resend } from 'resend';
+import { v4 as uuidv4 } from 'uuid';
+import { NextApiRequest, NextApiResponse } from 'next';
+const resend = new Resend(env.RESEND_API_KEY);
+
 
 export const authOptions: NextAuthOptions = {
 	// Include user.id on session

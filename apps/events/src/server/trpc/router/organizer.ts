@@ -4,9 +4,11 @@ import stripe from '../../../utils/stripe';
 import { adminProcedure, authedProcedure, organizerProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import Collaborater from './emails/collaborater';
+import Collaborater_Email from '../../../pages/emails/collaborater-email';
+import Onboarding_Email from '../../../pages/emails/onboarding-email';
 import { Resend } from 'resend';
 const resend = new Resend(env.RESEND_API_KEY);
+
 
 export const organizerRouter = t.router({
 	createOrganizer: authedProcedure.mutation(async ({ input, ctx }) => {
@@ -44,6 +46,20 @@ export const organizerRouter = t.router({
 						stripeAccountId: account.id
 					}
 				});
+
+				try {
+					const data = await resend.sendEmail({
+						from: 'ticket@mails.kazala.co',
+						to:  ctx.session.user.email ?? '',
+						subject: "Welcome to Kazala!",
+						react: Onboarding_Email({
+							user_name: ctx.session.user.name ?? '',
+						})
+					});
+				} catch (error) {
+					console.error(error);
+				}
+
 			}
 		}
 
@@ -123,9 +139,9 @@ export const organizerRouter = t.router({
 					from: 'ticket@mails.kazala.co',
 					to: invite.email, // Replace with the buyer's email
 					subject: `Invite to collaborate on ${invite.event.name}.`,
-					react: Collaborater({
-						receiver_name: invite.user.name ?? 'invitee',
-						receiver_photo: invite.user.image ?? '',
+					react: Collaborater_Email({
+						receiver_name: user?.name ?? 'invitee',
+						receiver_photo: user?.image ?? '',
 						sender_email: ctx.session.user.email ?? '',
 						sender_name: ctx.session.user.name ?? '',
 						event_name: invite.event.name,
@@ -152,6 +168,28 @@ export const organizerRouter = t.router({
 						image: true
 					}
 				}
+			}
+		});
+
+
+		return collaborators.sort((a, b) => {
+			if (a.role === 'OWNER') return -1;
+		if (b.role === 'OWNER') return 1;
+
+			if (a.role === 'SUPER_ADMIN') return -1;
+			if (b.role === 'SUPER_ADMIN') return 1;
+
+			return 0;
+		});
+	}),
+	getInvitedCollaborators: superAdminProcedure.query(async ({ input, ctx }) => {
+		return await ctx.prisma.adminInvite.findMany({
+			where: {
+				eventId: input.eventId
+			},
+			select: {
+				eventId: true,
+				email: true
 			}
 		});
 	}),
