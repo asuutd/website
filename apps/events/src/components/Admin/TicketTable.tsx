@@ -7,13 +7,15 @@ import { twJoin } from 'tailwind-merge';
 import { ArrayElement } from '@/utils/misc';
 import { CSVLink } from 'react-csv';
 import {
+	ColumnSort,
 	FilterFn,
-	PaginationState,
+	SortingState,
 	VisibilityState,
 	createColumnHelper,
 	flexRender,
 	functionalUpdate,
 	getCoreRowModel,
+	getSortedRowModel,
 	useReactTable
 } from '@tanstack/react-table';
 import { createPortal } from 'react-dom';
@@ -26,20 +28,11 @@ import { useRouter } from 'next/router';
 import usePrevious from '@/utils/hooks/usePrevious';
 import { z } from 'zod';
 import useQueryReducer from '@/utils/hooks/useQueryReducer';
+import { Button } from '../ui/button';
+import { ArrowUpDown } from 'lucide-react';
 type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']['items']>;
 
 const columnHelper = createColumnHelper<Ticket>();
-type OldState = {
-	pagination: {
-		pageIndex: number;
-		pageSize: number;
-	};
-	filters: {
-		tiers?: string[];
-		userEmail?: string;
-		code?: string;
-	};
-};
 
 const zodState = z.object({
 	pagination: z.object({
@@ -52,6 +45,12 @@ const zodState = z.object({
 		code: z.string().optional(),
 		refCode: z.string().optional()
 	}),
+	sorting: z.array(
+		z.object({
+			desc: z.boolean(),
+			id: z.union([z.literal('checkedInAt'), z.literal('createdAt')])
+		})
+	),
 	cursor: z
 		.object({
 			cursorId: z.string(),
@@ -66,12 +65,14 @@ const initialState: State = {
 	pagination: { pageIndex: 0, pageSize: 10 },
 	filters: {
 		tiers: []
-	}
+	},
+	sorting: []
 };
 
 type Action =
 	| { type: 'SET_PAGE'; page: number }
 	| { type: 'SET_PAGINATION'; pageIndex: number; pageSize: number }
+	| { type: 'SET_SORTING'; sorting: State['sorting'] }
 	| { type: 'SET_PAGE_SIZE'; pageSize: number }
 	| { type: 'TOGGLE_TIER_FILTER'; tier: string }
 	| { type: 'SET_FILTER'; filters: State['filters'] }
@@ -102,6 +103,11 @@ const reducer = (state: State, action: Action): State => {
 					pageIndex: action.pageIndex,
 					pageSize: action.pageSize
 				}
+			};
+		case 'SET_SORTING':
+			return {
+				...state,
+				sorting: action.sorting
 			};
 		case 'TOGGLE_TIER_FILTER':
 			if (!state.filters.tiers) {
@@ -168,8 +174,8 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 	const router = useRouter();
 	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
 		Code: false,
-		'Purchase Time': false,
-		Email: false
+		createdAt: false,
+		User: false
 	});
 	const columns = React.useMemo(
 		() => [
@@ -189,7 +195,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 							/>
 						</div>
 					</div> */}
-						{info.getValue() ?? info.row.original.user.email}
+						{info.getValue() ?? 'No Name'}
 					</>
 				),
 				id: 'User',
@@ -213,14 +219,28 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 			columnHelper.accessor(
 				(row) => `${row.checkedInAt ? row.checkedInAt.toLocaleString() : 'Not Checked In Yet'}`,
 				{
-					id: 'Check-In Time',
-					header: 'Check-In Time'
+					id: 'checkedInAt',
+					header: ({ column }) => {
+						return (
+							<Button variant="ghost" className="mt-0">
+								Check-In Time
+								<ArrowUpDown className="ml-2 h-4 w-4" />
+							</Button>
+						);
+					}
 				}
 			),
 
 			columnHelper.accessor((row) => `${row.createdAt.toLocaleString()}`, {
-				id: 'Purchase Time',
-				header: 'Purchase Time'
+				id: 'createdAt',
+				header: ({ column }) => {
+					return (
+						<Button variant="ghost" className="mt-0">
+							Purchase Time
+							<ArrowUpDown className="ml-2 h-4 w-4" />
+						</Button>
+					);
+				}
 			}),
 
 			columnHelper.accessor('code.code', {
@@ -253,22 +273,28 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 		[]
 	);
 
-	const [{ pagination, filters, cursor }, dispatch] = useQueryReducer<Action, typeof zodState>(
-		reducer,
-		initialState,
-		'tableState',
-		zodState
-	);
+	const [{ pagination, filters, sorting, cursor }, dispatch] = useQueryReducer<
+		Action,
+		typeof zodState
+	>(reducer, initialState, 'tableState', zodState);
 	const previousPageState = usePrevious<State>({
 		pagination,
-		filters
+		filters,
+		sorting
 	});
 
 	const myQuery = trpc.ticket.getTicketsAdmin.useInfiniteQuery(
 		{
 			limit: pagination.pageSize,
 			eventId: eventId,
-			filter: filters
+			filter: filters,
+			...(sorting[0] !== undefined
+				? {
+						orderBy: {
+							[sorting[0].id]: sorting[0].desc ? 'desc' : 'asc'
+						} as any
+				  }
+				: {})
 		},
 		{
 			getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -326,6 +352,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 			pagination,
 			columnVisibility
 		},
+
 		onColumnVisibilityChange: setColumnVisibility,
 		onPaginationChange: (e) => {
 			if (pagination) {
@@ -340,6 +367,18 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 				}
 			}
 		},
+		onSortingChange: (e) => {
+			const newState = functionalUpdate(e, sorting);
+			console.log(newState, sorting);
+			const onlyNewState = newState[0];
+			if (onlyNewState?.id === 'checkedInAt' || onlyNewState?.id === 'createdAt') {
+				dispatch({
+					type: 'SET_SORTING',
+					sorting: [onlyNewState] as State['sorting']
+				});
+			}
+		},
+		manualSorting: true,
 		manualPagination: true,
 		getCoreRowModel: getCoreRowModel()
 	});
@@ -457,10 +496,19 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 						{table.getHeaderGroups().map((headerGroup) => (
 							<tr key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
-									<th key={header.id} colSpan={header.colSpan}>
-										{header.isPlaceholder
-											? null
-											: flexRender(header.column.columnDef.header, header.getContext())}
+									<th
+										key={header.id}
+										{...(header.column.getCanSort()
+											? { onClick: header.column.getToggleSortingHandler() }
+											: {})}
+									>
+										{flexRender(header.column.columnDef.header, header.getContext())}
+
+										{header.column.getIsSorted() === 'asc' ? (
+											<span> 🔼</span>
+										) : header.column.getIsSorted() === 'desc' ? (
+											<span> 🔽</span>
+										) : null}
 									</th>
 								))}
 							</tr>

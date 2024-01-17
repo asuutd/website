@@ -280,18 +280,23 @@ export const ticketRouter = t.router({
 						refCode: z.string().optional()
 					})
 					.optional(),
+
 				orderBy: z
-					.object({
-						createdAt: z.enum(['asc', 'desc']).default('asc'),
-						checkedInAt: z.enum(['asc, desc'])
-					})
+					.union([
+						z.object({
+							checkedInAt: z.enum(['asc', 'desc'])
+						}),
+						z.object({
+							createdAt: z.enum(['asc', 'desc'])
+						})
+					])
 					.optional()
 			})
 		)
 		.query(async ({ input, ctx }) => {
 			const limit = input.limit ?? 50;
 			const { cursor } = input;
-			console.log(cursor);
+			console.log(input.orderBy);
 
 			const transaction = await ctx.prisma.$transaction([
 				ctx.prisma.ticket.count({
@@ -365,7 +370,7 @@ export const ticketRouter = t.router({
 					},
 					cursor: cursor ? { id: cursor } : undefined,
 					orderBy: {
-						createdAt: 'asc'
+						...input.orderBy
 					}
 				}),
 				ctx.prisma.tier.findMany({
