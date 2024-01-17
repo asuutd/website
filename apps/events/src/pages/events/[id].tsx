@@ -125,7 +125,7 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 				openGraph={{
 					title: `${props?.meta?.title}` ?? 'Event',
 					description: `Event Details of ${props?.meta?.title}`,
-					url: `${env.NEXT_PUBLIC_URL}/seller/${props.meta?.id}`,
+					url: `${env.NEXT_PUBLIC_URL}/event/${props.meta?.id}`,
 					type: 'website',
 					profile: {
 						username: props?.meta?.title
@@ -145,7 +145,7 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 				startDate={props?.meta?.startTime}
 				endDate={props?.meta?.endTime}
 				location={props?.meta?.location}
-				url={`${env.NEXT_PUBLIC_URL}/seller/${props.meta?.id}`}
+				url={`${env.NEXT_PUBLIC_URL}/event/${props.meta?.id}`}
 				description={
 					props.meta?.description ??
 					"Join us for an exciting event that promises to be a memorable experience. While the event details are not provided by the organizer, you can expect a day filled with fun, entertainment, and engagement. Stay tuned for updates and surprises as we get closer to the event date. Don't miss out on this fantastic opportunity to connect with like-minded individuals and enjoy a day of excitement. Save the date, and we look forward to sharing more information soon!"
