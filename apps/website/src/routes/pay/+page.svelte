@@ -18,50 +18,9 @@
 	let processing = false;
 	let error = null;
 
-	onMount(async () => {
-		stripe = await loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-		console.log(stripe);
-	});
 
-	async function handleSubmit(e) {
-		console.log('HMMM');
-		const { error } = await stripe.confirmPayment({
-			elements,
-			confirmParams: {
-				// Make sure to change this to your payment completion page
-				return_url: ''
-			}
-		});
-	}
 
-	async function submit() {
-		// avoid processing duplicates
-		if (processing) return;
 
-		processing = true;
-
-		// confirm payment with stripe
-		const result = await stripe.confirmPayment({
-			elements,
-			redirect: 'if_required',
-			confirmParams: {
-				// Make sure to change this to your payment completion page
-				return_url: `${import.meta.env.VITE_PUBLIC_URL}`
-			}
-		});
-
-		// log results, for debugging
-		console.log({ result });
-
-		if (result.error) {
-			// payment failed, notify user
-			error = result.error;
-			processing = false;
-		} else {
-			// payment succeeded, redirect to "thank you" page
-			goto('/');
-		}
-	}
 </script>
 
 <svelte:head>
@@ -86,7 +45,7 @@
 				class="mt-3 text-base text-gray-500"
 				in:fade|global={{ delay: 1300, duration: 750, easing: circIn }}
 			>
-				For <span>$25</span> for the school year, you can become an ASU Paid member
+				For <span>$20</span> for the school year, you can become an ASU Paid member
 			</p>
 			<!-- End Title -->
 			<div
@@ -144,31 +103,13 @@
 					</a>
 				</div>
 			</div>
-			{#if stripe}
-				<Elements
-					{stripe}
-					clientSecret={data.clientSecret}
-					theme="flat"
-					labels="floating"
-					variables={{ colorPrimary: '#7c4dff' }}
-					rules={{ '.Input': { border: 'solid 1px #0002' } }}
-					bind:elements
-				>
-					<form on:submit|preventDefault={submit}>
-						<PaymentElement />
-
-						<button disabled={processing} class="btn btn-primary">
-							{#if processing}
-								Processing...
-							{:else}
-								Pay
-							{/if}
-						</button>
-					</form>
-				</Elements>
-			{:else}
-				Loading...
-			{/if}
+			<div class="divider">OR</div>
+			<form class="input-group" method="POST" >
+				<input class="input input-bordered  bg-slate-100 w-full" placeholder="Email" name="email" type="email" required/>
+				<button class="btn btn-primary px-6 text-lg" type="submit">PAY</button>
+			</form>
+				
+				
 		</div>
 	</div>
 	<div
