@@ -4,6 +4,8 @@ import { DefaultSeoProps } from 'next-seo';
 //Must only be used on client side
 const config: DefaultSeoProps = {
 	title: 'Kazala',
+	dangerouslySetAllPagesToNoIndex: process.env.NODE_ENV !== 'production',
+	dangerouslySetAllPagesToNoFollow: process.env.NODE_ENV !== 'production',
 	openGraph: {
 		type: 'website',
 		locale: 'en_IE',

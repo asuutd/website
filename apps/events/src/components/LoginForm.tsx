@@ -31,7 +31,12 @@ const LoginForm = ({
 	const handleEmailLogin = useCallback(
 		(e: FormEvent<HTMLFormElement>) => {
 			e.preventDefault();
-			signIn('email', { email, callbackUrl });
+			if (!email) return;
+			const [name, domain] = email.trim().split('@');
+			if (domain === 'gmail.com' || domain === 'googlemail.com') {
+				return signIn('google', { callbackUrl });
+			}
+			return signIn('email', { email, callbackUrl });
 		},
 		[email, callbackUrl]
 	)

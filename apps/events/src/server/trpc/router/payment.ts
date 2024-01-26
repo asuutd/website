@@ -276,7 +276,7 @@ export const paymentRouter = t.router({
 						eventId: input.eventId,
 						tiers: JSON.stringify(input.tiers),
 						codeId: input.codeId ?? '',
-						refCodeId: input.refCodeId ?? '',
+						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
 						userId: user.id,
 						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 					},
@@ -295,7 +295,7 @@ export const paymentRouter = t.router({
 							}),
 							tiers: JSON.stringify(transformTiers),
 							codeId: input.codeId ?? '',
-							refCodeId: input.refCodeId ?? '',
+							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
 							userId: user.id,
 							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
 						}
