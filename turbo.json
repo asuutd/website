@@ -17,6 +17,7 @@
 		"lint": {},
 		"dev": {
 			"dependsOn": ["db:generate"],
+			"dotEnv": [".env.development.local", ".env.development", ".env.local", ".env"],
 			"persistent": true,
 			"cache": false
 		},
@@ -24,31 +25,5 @@
 			"cache": false
 		}
 	},
-	"globalEnv": [
-		"VITE_PUBLIC_SUPABASE_URL",
-		"VITE_PUBLIC_SUPABASE_ANON_KEY",
-		"VITE_DATABASE_URL",
-		"VITE_MAILCHAMP_API_KEY",
-		"VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY",
-		"VITE_PUBLIC_URL",
-		"DB_URL",
-		"AUTH_SECRET",
-		"RESEND_API_KEY",
-		"STRIPE_SECRET_KEY",
-		"CALENDAR_API_KEY",
-		"CALENDAR_ID",
-		"DATABASE_URL",
-		"NEXTAUTH_SECRET",
-		"NEXTAUTH_URL",
-		"NEXT_PUBLIC_URL",
-		"GOOGLE_CLIENT_ID",
-		"GOOGLE_CLIENT_SECRET",
-		"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
-		"NEXT_PUBLIC_UPLOADCARE_PUB_KEY",
-		"WEBHOOK_SECRET",
-		"NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-		"CLERK_SECRET_KEY",
-		"NEXT_PUBLIC_GOOGLE_MAPS_KEY",
-		"NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN"
-	]
+	"globalEnv": [".env"]
 }
