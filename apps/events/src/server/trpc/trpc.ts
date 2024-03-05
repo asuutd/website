@@ -2,8 +2,9 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context';
 import superjson from 'superjson';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 import { event as dbEvent } from '@/server/db/drizzle/schema/event';
+import schema from '../db/drizzle/schema';
 
 //Accessible to all requests
 export const t = initTRPC.context<Context>().create({
@@ -67,10 +68,16 @@ export const superAdminProcedure = authedProcedure
 		const event = await ctx.drizzle.query.event.findFirst({
 			where: eq(dbEvent.id, input.eventId),
 			with: {
-				admins: true,
+				admins: {
+					where: and(
+						eq(schema.eventAdmin.userId, ctx.session.user.id),
+						or(eq(schema.eventAdmin.role, 'OWNER'), eq(schema.eventAdmin.role, 'SUPER_ADMIN'))
+					)
+				},
 				tiers: true
 			}
 		});
+		console.log(event);
 
 		if (!event) {
 			throw new TRPCError({
@@ -78,13 +85,7 @@ export const superAdminProcedure = authedProcedure
 				message: 'Event not found'
 			});
 		}
-
-		const admin = event.admins.find(
-			(admin) =>
-				admin.userId === ctx.session.user.id &&
-				(admin.role === 'SUPER_ADMIN' || admin.role === 'OWNER')
-		);
-		console.log(admin);
+		const admin = event.admins[0];
 		if (event.organizerId === ctx.session.user.id || admin) {
 			return next({
 				ctx: {
