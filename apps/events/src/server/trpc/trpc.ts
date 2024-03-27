@@ -61,7 +61,19 @@ export const superAdminProcedure = authedProcedure
 				id: input.eventId
 			},
 			include: {
-				EventAdmin: true,
+				EventAdmin: {
+					where: {
+						OR: [
+							{
+								role: 'SUPER_ADMIN'
+							},
+							{
+								role: 'OWNER'
+							}
+						],
+						userId: ctx.session.user.id
+					}
+				},
 				Tier: true
 			}
 		});
