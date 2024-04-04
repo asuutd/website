@@ -55,11 +55,11 @@
 
 	<div class="flex overflow-x-auto xl:grid xl:grid-cols-4 snap-x snap-mandatory">
 		{#if !loading}
-			{#each data.events as event}
+			{#each $eventsData as event}
 				<div class="m-2 flex-shrink-0 snap-center" on:blur={() => console.log("Hello I'm pelps")}>
 					<Event
 						{event}
-						disabled={Date.now() > Math.floor(new Date(event?.grayBy).getTime())}
+						disabled={Date.now() > Math.floor(new Date(event?.gray_by).getTime())}
 						{loading}
 					/>
 				</div>
