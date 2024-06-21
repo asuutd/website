@@ -33,9 +33,9 @@
 
 			<div class="mt-3">
 				<p class="text-gray-500">
-					We're an organization associated with the Univeristy of Texas at Dallas
+					We're an organization associated with the University of Texas at Dallas.
 				</p>
-				<p class="text-gray-500">© ASU UTDallas. 2022 . All rights reserved.</p>
+				<p class="text-gray-500">© {new Date().getFullYear()} ASU UT Dallas. All rights reserved.</p>
 			</div>
 
 			<!-- Social Brands -->
