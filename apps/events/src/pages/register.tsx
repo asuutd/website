@@ -25,8 +25,8 @@ const Register = () => {
 		perTicket: number;
 		numTickets: number;
 	}>({
-		numTickets: 0,
-		perTicket: 0
+		numTickets: 120,
+		perTicket: 10
 	});
 
 	const fees = useMemo(() => {

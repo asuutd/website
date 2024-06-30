@@ -17,18 +17,18 @@
 	}
 	const board = [
 		{
-			name: 'Onyedi Ololo',
-			role: 'President'
-		},
-		{
 			name: 'Omolere Aliu',
-			role: 'Vice President',
+			role: 'President',
 			image: '/images/officers/omolere.jpeg'
 		},
 		{
-			name: 'Ayomide Dairo',
+			name: 'AJ Olaoye',
+			role: 'Vice President',
+			image: '/images/officers/aj.jpeg'
+		},
+		{
+			name: 'Miryam Boakye-Nkansah',
 			role: 'Secretary',
-			image: '/images/officers/ayomide.PNG'
 		},
 		{
 			name: 'Ellen Elnour',
@@ -36,48 +36,34 @@
 			image: '/images/officers/ellen.jpeg'
 		},
 		{
-			name: 'Loluwa Olu-Osinowo',
-			role: 'Public Relations'
+			name: 'Ayomide Dairo',
+			role: 'Head Events Coordinator',
+			image: '/images/officers/ayomide.PNG'
 		},
 		{
-			name: 'Dena Yemane',
-			role: 'Event Coordinator',
-			image: '/images/officers/dena.jpeg'
+			name: 'Oisebe Nunda',
+			role: 'Sports Chair'
 		},
 		{
-			name: 'Quincy Kemany',
-			role: 'Event Coordinator (Student Experience)',
-			image: '/images/officers/quincy.jpeg'
-		},
-		{
-			name: 'Toluwanimi Ololade',
-			role: 'Event Coordinator (Budget Specialist)',
-			image: '/images/officers/tolu.jpeg'
-		},
-		{
-			name: 'Inioluwa Adenekan',
-			role: 'Commitee Chair',
-			image: '/images/officers/inioluwa.jpeg'
-		},
-		{
-			name: 'Maxwell Quaye',
-			role: 'Membership Commitee Co-Chair',
-			image: '/images/officers/maxwell.jpeg'
-		},
-		{
-			name: 'AJ Olaoye',
-			role: 'Sports Co-Chair',
-			image: '/images/officers/aj.jpeg'
-		},
-		{
-			name: 'Irving Baysah',
-			role: 'Sports Co-Chair',
-			image: '/images/officers/irving.jpeg'
-		},
-		{
-			name: 'Pelumi Adegoke',
+			name: 'Jason Antwi-Appah',
 			role: 'Technical Director',
-			image: '/images/officers/pelumi.jpeg'
+			image: '/images/officers/jason.jpg'
+		},
+		{
+			name: 'Chisom Akpunku',
+			role: 'Assistant Event Coordinator'
+		},
+		{
+			name: 'Isioma Emordi',
+			role: 'Public Relations Officer'
+		},
+		{
+			name: 'Monica Erewa-Meggison',
+			role: 'Content Creator'
+		},
+		{
+			name: 'Temilade Olabode',
+			role: 'Assistant Event Coordinator'
 		}
 	];
 

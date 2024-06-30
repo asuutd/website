@@ -1,12 +1,13 @@
-import { events } from '../../drizzle/schema';
-import { db } from '../lib/db';
+// import { events } from '../../drizzle/schema';
+// import { db } from '../lib/db';
 import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ params, platform }) => {
 	try {
-		const dbEvents = await db.select().from(events).orderBy(events.importance).limit(4);
+		// TODO: Replace this with events from Jonze
+		// const dbEvents = await db.select().from(events).orderBy(events.importance).limit(4);
 
 		return {
-			events: dbEvents
+			events: []
 		};
 	} catch (err) {
 		return {
