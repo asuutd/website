@@ -9,6 +9,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Members } from './collections/Members'
 import { Families } from './collections/Families'
+import { getMembers } from './jonze'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,4 +33,14 @@ export default buildConfig({
   plugins: [
     // storage-adapter-placeholder
   ],
+  endpoints: [
+    {
+      path: '/api/sync-members',
+      method: 'post',
+      handler: async () => {
+        const members = await getMembers()
+        return Response.json(members)
+      }
+    }
+  ]
 })
