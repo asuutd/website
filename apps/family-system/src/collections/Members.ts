@@ -1,10 +1,16 @@
 import type { CollectionConfig } from 'payload'
+import { SyncJonzeMembers } from '@/components/SyncJonzeMembers'
 
 export const Members: CollectionConfig = {
     slug: 'members',
     admin: {
         useAsTitle: 'jonze_name',
         description: 'Member data is automatically synced from Jonze and can\'t be updated here. If you need to manually sync, click the button below.',
+        components: {
+            beforeListTable: [
+                SyncJonzeMembers
+            ]
+        }
     },
     access: {
         create: () => false,
