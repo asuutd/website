@@ -9,7 +9,7 @@ export const serverSchema = z.object({
 	DATABASE_URI: z.string().url(),
 	PAYLOAD_SECRET: z.string(),
 	JONZE_API_KEY: z.string(),
-	USE_JONZE_DEV: z.boolean(),
+	USE_JONZE_DEV: z.string().optional(),
 });
 
 /**
