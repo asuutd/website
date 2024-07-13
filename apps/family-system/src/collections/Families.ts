@@ -24,6 +24,7 @@ export const Families: CollectionConfig = {
   slug: 'families',
   admin: {
     useAsTitle: 'family_name',
+    description: 'Use this collection to create new families, update family names, and update the people included within a family.'
   },
   hooks: {
     beforeChange: [

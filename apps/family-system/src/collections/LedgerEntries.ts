@@ -4,6 +4,7 @@ export const LedgerEntries: CollectionConfig = {
     slug: 'ledger_entries',
     admin: {
         useAsTitle: 'description',
+        description: 'Ledger entries for the family system. Use this to award or deduct points from families.'
     },
     labels: {
         singular: 'Ledger Entry',
