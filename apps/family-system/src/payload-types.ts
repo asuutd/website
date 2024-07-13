@@ -82,7 +82,7 @@ export interface Family {
   family_name?: string | null;
   jonze_family_tag?: string | null;
   score?: number | null;
-  members?: (number | null) | Member;
+  members?: (number | Member)[] | null;
   updatedAt: string;
   createdAt: string;
 }
