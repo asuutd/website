@@ -9,6 +9,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Members } from './collections/Members'
 import { Families } from './collections/Families'
+import { LedgerEntries } from './collections/LedgerEntries'
 import { getMember, getMembers } from './jonze'
 
 const filename = fileURLToPath(import.meta.url)
@@ -18,7 +19,7 @@ export default buildConfig({
   admin: {
     user: Users.slug,
   },
-  collections: [Users, Members, Families],
+  collections: [Users, Members, Families, LedgerEntries],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

@@ -10,8 +10,8 @@ type Member = {
     updatedAt: string,
     user: {
         id: string,
-        firstName: string,
-        lastName: string,
+        firstName: string | null,
+        lastName: string | null,
         email: string,
         profilePictureUrl: string,
     },

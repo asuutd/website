@@ -14,6 +14,7 @@ export interface Config {
     users: User;
     members: Member;
     families: Family;
+    ledger_entries: LedgerEntry;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -75,6 +76,19 @@ export interface Family {
   jonze_family_tag: string;
   score?: number | null;
   members?: (number | Member)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ledger_entries".
+ */
+export interface LedgerEntry {
+  id: number;
+  amount: number;
+  description: string;
+  member?: (number | null) | Member;
+  Family: number | Family;
   updatedAt: string;
   createdAt: string;
 }
