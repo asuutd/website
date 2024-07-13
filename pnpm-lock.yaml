@@ -282,6 +282,12 @@ importers:
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
+      drizzle-kit:
+        specifier: 0.20.14-1f2c838
+        version: 0.20.14-1f2c838
+      drizzle-orm:
+        specifier: 0.29.4
+        version: 0.29.4(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/pg@8.11.6)(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-f994737d14-20240522)(types-react@19.0.0-rc.0)
       graphql:
         specifier: ^16.8.1
         version: 16.9.0
@@ -416,9 +422,12 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.4.5
+      drizzle-kit:
+        specifier: 0.20.14-1f2c838
+        version: 0.20.14-1f2c838
       drizzle-orm:
-        specifier: ^0.28.2
-        version: 0.28.6(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/pg@8.11.6)(pg@8.12.0)(postgres@3.4.4)
+        specifier: 0.29.4
+        version: 0.29.4(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/pg@8.11.6)(@types/react@18.0.14)(pg@8.11.3)(postgres@3.4.4)(react@18.2.0)
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -433,7 +442,7 @@ importers:
         version: 4.4.0
       pg:
         specifier: ^8.11.0
-        version: 8.12.0
+        version: 8.11.3
       postgres:
         specifier: ^3.3.5
         version: 3.4.4
@@ -489,9 +498,6 @@ importers:
       autoprefixer:
         specifier: ^10.4.2
         version: 10.4.19(postcss@8.4.39)
-      drizzle-kit:
-        specifier: ^0.19.12
-        version: 0.19.13
       eslint:
         specifier: ^7.32.0
         version: 7.32.0
@@ -889,9 +895,6 @@ packages:
 
   '@drizzle-team/studio@0.0.39':
     resolution: {integrity: sha512-c5Hkm7MmQC2n5qAsKShjQrHoqlfGslB8+qWzsGGZ+2dHMRTNG60UuzalF0h0rvBax5uzPXuGkYLGaQ+TUX3yMw==}
-
-  '@drizzle-team/studio@0.0.5':
-    resolution: {integrity: sha512-ps5qF0tMxWRVu+V5gvCRrQNqlY92aTnIKdq27gm9LZMSdaKYZt6AVvSK1dlUMzs6Rt0Jm80b+eWct6xShBKhIw==}
 
   '@emnapi/runtime@1.2.0':
     resolution: {integrity: sha512-bV21/9LQmcQeCPEg3BDFtvwL6cwiTMksYNWQQ4KOxCZikEGalWtenoZ0wCiukJINlGCIi2KXx01g4FoH/LxpzQ==}
@@ -3368,9 +3371,6 @@ packages:
   ajv@8.14.0:
     resolution: {integrity: sha512-oYs1UUtO97ZO2lJ4bwnWeQW8/zvOIQLGKcvPTsWmvc2SYgBb+upuNS5NxoLaMU4h8Ju3Nbj6Cq8mD2LQoqVKFA==}
 
-  ajv@8.17.1:
-    resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
-
   amazon-cognito-identity-js@6.3.12:
     resolution: {integrity: sha512-s7NKDZgx336cp+oDeUtB2ZzT8jWJp/v2LWuYl+LQtMEODe22RF1IJ4nRiDATp+rp1pTffCZcm44Quw4jx2bqNg==}
 
@@ -4143,75 +4143,9 @@ packages:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==}
     engines: {node: '>=0.4.0'}
 
-  drizzle-kit@0.19.13:
-    resolution: {integrity: sha512-Rba5VW1O2JfJlwVBeZ8Zwt2E2us5oZ08PQBDiVSGlug53TOc8hzXjblZFuF+dnll9/RQEHrkzBmJFgqTvn5Rxg==}
-    hasBin: true
-
   drizzle-kit@0.20.14-1f2c838:
     resolution: {integrity: sha512-Gun36T6RcfwrZAZ+Gk2ZeWJtvUhO002H/SvkY9BNcsACvhsd4OxkkxzrznuZ3Kz5NEdg12k7yvZqNoimPp68aw==}
     hasBin: true
-
-  drizzle-orm@0.28.6:
-    resolution: {integrity: sha512-yBe+F9htrlYER7uXgDJUQsTHFoIrI5yMm5A0bg0GiZ/kY5jNXTWoEy4KQtg35cE27sw1VbgzoMWHAgCckUUUww==}
-    peerDependencies:
-      '@aws-sdk/client-rds-data': '>=3'
-      '@cloudflare/workers-types': '>=3'
-      '@libsql/client': '*'
-      '@neondatabase/serverless': '>=0.1'
-      '@opentelemetry/api': ^1.4.1
-      '@planetscale/database': '>=1'
-      '@types/better-sqlite3': '*'
-      '@types/pg': '*'
-      '@types/sql.js': '*'
-      '@vercel/postgres': '*'
-      better-sqlite3: '>=7'
-      bun-types: '*'
-      knex: '*'
-      kysely: '*'
-      mysql2: '>=2'
-      pg: '>=8'
-      postgres: '>=3'
-      sql.js: '>=1'
-      sqlite3: '>=5'
-    peerDependenciesMeta:
-      '@aws-sdk/client-rds-data':
-        optional: true
-      '@cloudflare/workers-types':
-        optional: true
-      '@libsql/client':
-        optional: true
-      '@neondatabase/serverless':
-        optional: true
-      '@opentelemetry/api':
-        optional: true
-      '@planetscale/database':
-        optional: true
-      '@types/better-sqlite3':
-        optional: true
-      '@types/pg':
-        optional: true
-      '@types/sql.js':
-        optional: true
-      '@vercel/postgres':
-        optional: true
-      better-sqlite3:
-        optional: true
-      bun-types:
-        optional: true
-      knex:
-        optional: true
-      kysely:
-        optional: true
-      mysql2:
-        optional: true
-      pg:
-        optional: true
-      postgres:
-        optional: true
-      sql.js:
-        optional: true
-      sqlite3:
-        optional: true
 
   drizzle-orm@0.29.4:
     resolution: {integrity: sha512-ZnSM8TAxFhzH7p1s3+w3pRE/eKaOeNkH9SKitm717pubDVVcV2I0BCDBPGKV+pe02+wMfw37ntlTcCyo2rA3IA==}
@@ -4649,9 +4583,6 @@ packages:
 
   fast-safe-stringify@2.1.1:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
-
-  fast-uri@3.0.1:
-    resolution: {integrity: sha512-MWipKbbYiYI0UC7cl8m/i/IWTqfC8YXsqjzybjddLsFjStroQzsHXkc73JutMvBiXmOvapk+axIl79ig5t55Bw==}
 
   fast-xml-parser@4.2.5:
     resolution: {integrity: sha512-B9/wizE4WngqQftFPmdaMYlXoJlJOYxGQOanC77fq9k8+Z0v5dDSVh+3glErdIROP//s/jgb7ZuxKfB8nVyo0g==}
@@ -6127,15 +6058,6 @@ packages:
 
   pg@8.11.3:
     resolution: {integrity: sha512-+9iuvG8QfaaUrrph+kpF24cXkH1YOOUeArRNYIxq1viYHZagBxrTno7cecY1Fa44tJeZvaoG+Djpkc3JwehN5g==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      pg-native: '>=3.0.1'
-    peerDependenciesMeta:
-      pg-native:
-        optional: true
-
-  pg@8.12.0:
-    resolution: {integrity: sha512-A+LHUSnwnxrnL/tZ+OLfqR1SxLN3c/pgDztZ47Rpbsd4jUytsTtwQo/TLPRzPJMp/1pbhYVhH9cuSZLAajNfjQ==}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
@@ -8679,8 +8601,6 @@ snapshots:
     dependencies:
       superjson: 2.2.1
 
-  '@drizzle-team/studio@0.0.5': {}
-
   '@emnapi/runtime@1.2.0':
     dependencies:
       tslib: 2.6.3
@@ -9535,7 +9455,7 @@ snapshots:
       '@motionone/easing': 10.18.0
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
-      tslib: 2.4.0
+      tslib: 2.6.3
 
   '@motionone/dom@10.18.0':
     dependencies:
@@ -9544,18 +9464,18 @@ snapshots:
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
       hey-listen: 1.0.8
-      tslib: 2.4.0
+      tslib: 2.6.3
 
   '@motionone/easing@10.18.0':
     dependencies:
       '@motionone/utils': 10.18.0
-      tslib: 2.4.0
+      tslib: 2.6.3
 
   '@motionone/generators@10.18.0':
     dependencies:
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
-      tslib: 2.4.0
+      tslib: 2.6.3
 
   '@motionone/types@10.17.1': {}
 
@@ -9563,7 +9483,7 @@ snapshots:
     dependencies:
       '@motionone/types': 10.17.1
       hey-listen: 1.0.8
-      tslib: 2.4.0
+      tslib: 2.6.3
 
   '@neon-rs/load@0.0.4': {}
 
@@ -11441,13 +11361,6 @@ snapshots:
       require-from-string: 2.0.2
       uri-js: 4.4.1
 
-  ajv@8.17.1:
-    dependencies:
-      fast-deep-equal: 3.1.3
-      fast-uri: 3.0.1
-      json-schema-traverse: 1.0.0
-      require-from-string: 2.0.2
-
   amazon-cognito-identity-js@6.3.12:
     dependencies:
       '@aws-crypto/sha256-js': 1.2.2
@@ -12261,23 +12174,6 @@ snapshots:
     dependencies:
       wordwrap: 1.0.0
 
-  drizzle-kit@0.19.13:
-    dependencies:
-      '@drizzle-team/studio': 0.0.5
-      '@esbuild-kit/esm-loader': 2.6.5
-      camelcase: 7.0.1
-      chalk: 5.3.0
-      commander: 9.5.0
-      esbuild: 0.18.20
-      esbuild-register: 3.5.0(esbuild@0.18.20)
-      glob: 8.1.0
-      hanji: 0.0.5
-      json-diff: 0.9.0
-      minimatch: 7.4.6
-      zod: 3.23.8
-    transitivePeerDependencies:
-      - supports-color
-
   drizzle-kit@0.20.14-1f2c838:
     dependencies:
       '@drizzle-team/studio': 0.0.39
@@ -12297,13 +12193,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.28.6(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/pg@8.11.6)(pg@8.12.0)(postgres@3.4.4):
+  drizzle-orm@0.29.4(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/pg@8.11.6)(@types/react@18.0.14)(pg@8.11.3)(postgres@3.4.4)(react@18.2.0):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20240712.0
       '@libsql/client': 0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@types/pg': 8.11.6
-      pg: 8.12.0
+      '@types/react': 18.0.14
+      pg: 8.11.3
       postgres: 3.4.4
+      react: 18.2.0
 
   drizzle-orm@0.29.4(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/pg@8.11.6)(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-f994737d14-20240522)(types-react@19.0.0-rc.0):
     optionalDependencies:
@@ -12490,13 +12388,6 @@ snapshots:
       es5-ext: 0.10.64
       es6-iterator: 2.0.3
       es6-symbol: 3.1.4
-
-  esbuild-register@3.5.0(esbuild@0.18.20):
-    dependencies:
-      debug: 4.3.5
-      esbuild: 0.18.20
-    transitivePeerDependencies:
-      - supports-color
 
   esbuild-register@3.5.0(esbuild@0.19.12):
     dependencies:
@@ -13014,8 +12905,6 @@ snapshots:
   fast-redact@3.5.0: {}
 
   fast-safe-stringify@2.1.1: {}
-
-  fast-uri@3.0.1: {}
 
   fast-xml-parser@4.2.5:
     dependencies:
@@ -13745,7 +13634,7 @@ snapshots:
     dependencies:
       config-chain: 1.1.13
       editorconfig: 1.0.4
-      glob: 10.3.4
+      glob: 10.4.5
       js-cookie: 3.0.5
       nopt: 7.2.1
 
@@ -14575,10 +14464,6 @@ snapshots:
     dependencies:
       pg: 8.11.3
 
-  pg-pool@3.6.2(pg@8.12.0):
-    dependencies:
-      pg: 8.12.0
-
   pg-protocol@1.6.1: {}
 
   pg-types@2.2.0:
@@ -14605,16 +14490,6 @@ snapshots:
       packet-reader: 1.0.0
       pg-connection-string: 2.6.4
       pg-pool: 3.6.2(pg@8.11.3)
-      pg-protocol: 1.6.1
-      pg-types: 2.2.0
-      pgpass: 1.0.5
-    optionalDependencies:
-      pg-cloudflare: 1.1.1
-
-  pg@8.12.0:
-    dependencies:
-      pg-connection-string: 2.6.4
-      pg-pool: 3.6.2(pg@8.12.0)
       pg-protocol: 1.6.1
       pg-types: 2.2.0
       pgpass: 1.0.5
@@ -15781,7 +15656,7 @@ snapshots:
 
   table@6.8.2:
     dependencies:
-      ajv: 8.17.1
+      ajv: 8.14.0
       lodash.truncate: 4.4.2
       slice-ansi: 4.0.0
       string-width: 4.2.3

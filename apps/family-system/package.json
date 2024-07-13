@@ -20,6 +20,8 @@
     "@payloadcms/plugin-cloud": "beta",
     "@payloadcms/richtext-lexical": "beta",
     "cross-env": "^7.0.3",
+    "drizzle-kit": "0.20.14-1f2c838",
+    "drizzle-orm": "0.29.4",
     "graphql": "^16.8.1",
     "next": "15.0.0-rc.0",
     "payload": "beta",
