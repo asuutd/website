@@ -79,8 +79,8 @@ export interface Member {
  */
 export interface Family {
   id: number;
-  family_name?: string | null;
-  jonze_family_tag?: string | null;
+  family_name: string;
+  jonze_family_tag: string;
   score?: number | null;
   members?: (number | Member)[] | null;
   updatedAt: string;
