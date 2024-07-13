@@ -27,7 +27,7 @@
         "./src/*"
       ],
       "@payload-config": [
-        "./src/payload.config.ts"
+        "src/payload.config.js"
       ]
     },
     "target": "ES2017"
@@ -38,7 +38,7 @@
     "**/*.tsx",
     "**/*.mjs",
     ".next/types/**/*.ts"
-  ],
+, "src/payload.config.ts"  ],
   "exclude": [
     "node_modules"
   ]
