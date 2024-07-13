@@ -15,6 +15,8 @@ export const Members: CollectionConfig = {
             name: 'jonze_member_id',
             type: 'text',
             label: 'Jonze Member ID',
+            required: true,
+            unique: true,
             admin: {
                 readOnly: true,
             },

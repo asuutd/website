@@ -10,6 +10,7 @@ export const Families: CollectionConfig = {
       name: 'family_name',
       type: 'text',
       label: 'Family Name',
+      required: true,
     },
     {
       name: 'jonze_family_tag',
@@ -18,6 +19,8 @@ export const Families: CollectionConfig = {
       admin: {
         readOnly: true,
       },
+      required: true,
+      unique: true,
     },
     {
       name: 'score',
