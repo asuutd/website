@@ -2,23 +2,20 @@ import { LedgerEntry } from '@/payload-types'
 import type { CollectionConfig, CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 import { sql, eq } from 'drizzle-orm'
 
-const UpdateFamilyScore: CollectionAfterChangeHook<LedgerEntry> = async ({doc, req, previousDoc}) => {
-    if (previousDoc) {
-        // previousDoc is null for new documents. We only want to run this hook on new documents.
-        // TODO: handle fully recalculating the family score when updating a ledger entry
-        return
-    }
+const IncrementFamilyScoreOnEntryChange: CollectionAfterChangeHook<LedgerEntry> = async ({doc, req, previousDoc}) => {
     const familyId = typeof doc.Family === 'number' ? doc.Family : doc.Family.id
-
     const table = req.payload.db.tables.families
+
+    const score = !previousDoc ? sql`${table.score} + ${doc.amount}` : sql`${table.score} + ${doc.amount} - ${previousDoc.amount}`
+
     await req.payload.db.drizzle.update(table).set({
-            score: sql`${table.score} + ${doc.amount}`,
+            score,
     // @ts-ignore
     }).where(eq(table.id, familyId))
 
 }
 
-const UpdateFamilyScoreOnDelete: CollectionAfterDeleteHook<LedgerEntry> = async ({doc, req}) => {
+const DecrementFamilyScoreOnEntryDeletion: CollectionAfterDeleteHook<LedgerEntry> = async ({doc, req}) => {
     const familyId = typeof doc.Family === 'number' ? doc.Family : doc.Family.id
 
     const table = req.payload.db.tables.families
@@ -36,10 +33,10 @@ export const LedgerEntries: CollectionConfig = {
     },
     hooks: {
         afterChange: [
-            UpdateFamilyScore,
+            IncrementFamilyScoreOnEntryChange,
         ],
         afterDelete: [
-            UpdateFamilyScoreOnDelete
+            DecrementFamilyScoreOnEntryDeletion
         ],
     },
     labels: {
