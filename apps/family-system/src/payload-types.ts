@@ -12,6 +12,8 @@ export interface Config {
   };
   collections: {
     users: User;
+    members: Member;
+    families: Family;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -50,6 +52,39 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  jonze_member_id?: string | null;
+  jonze_name?: string | null;
+  jonze_tags?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "families".
+ */
+export interface Family {
+  id: number;
+  family_name?: string | null;
+  jonze_family_tag?: string | null;
+  score?: number | null;
+  members?: (number | null) | Member;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
