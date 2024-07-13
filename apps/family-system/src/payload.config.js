@@ -50,7 +50,7 @@ export default buildConfig({
         const encoder = new TextEncoder();
         const stream = new ReadableStream({
             async start(controller) {
-                const sendLog = (data: string) => {
+                const sendLog = (data) => {
                   const date = new Date();
                   const out = `${date.toLocaleTimeString()}: ${data}\n` 
                   const chunkData = encoder.encode(out);
