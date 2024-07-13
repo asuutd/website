@@ -15,10 +15,16 @@ type Member = {
         email: string,
         profilePictureUrl: string,
     },
-    addtionalInfo: {
+    additionalInfo: {
         id: string,
         formId: string,
         response: Record<string, unknown>,
+        createdAt: string,
+        updatedAt: string,
+    },
+    tags: {
+        id: string,
+        names: string[],
         createdAt: string,
         updatedAt: string,
     }
