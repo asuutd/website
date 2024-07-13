@@ -22,7 +22,7 @@ type Member = {
         createdAt: string,
         updatedAt: string,
     },
-    tags: {
+    tags?: {
         id: string,
         names: string[],
         createdAt: string,
