@@ -70,7 +70,7 @@ export default buildConfig({
                   sendLog(`Creating member ${member.id}`)
                   const body = {
                     jonze_member_id: memberData.id,
-                    jonze_name: memberData.user.firstName + ' ' + memberData.user.lastName,
+                    jonze_name: (memberData.user.firstName || ' ' + ' ' + memberData.user.lastName || '').trim(),
                     jonze_tags: memberData.tags?.names ?? [],
                   }
                   await req.payload.db.drizzle.insert(req.payload.db.tables.members).values(body).onConflictDoUpdate({
