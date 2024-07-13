@@ -59,17 +59,9 @@ export interface User {
  */
 export interface Member {
   id: number;
-  jonze_member_id?: string | null;
-  jonze_name?: string | null;
-  jonze_tags?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  jonze_member_id: string;
+  jonze_name: string;
+  jonze_tags?: string[];
   updatedAt: string;
   createdAt: string;
 }

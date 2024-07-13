@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Members: CollectionConfig = {
     slug: 'members',
     admin: {
-        useAsTitle: 'name',
+        useAsTitle: 'jonze_name',
     },
     access: {
         create: () => false,
@@ -25,6 +25,7 @@ export const Members: CollectionConfig = {
             name: 'jonze_name',
             type: 'text',
             label: 'Jonze Name',
+            required: true,
             admin: {
                 readOnly: true,
             },
@@ -36,6 +37,16 @@ export const Members: CollectionConfig = {
             admin: {
                 readOnly: true,
             },
+            jsonSchema: {
+                uri: '',
+                fileMatch: [],
+                schema: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    }
+                },
+            }
         }
     ],
 }
