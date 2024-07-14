@@ -10,12 +10,12 @@ export const LedgerEntries: CollectionConfig = {
     hooks: {
         afterChange: [
             async ({req}) => {
-                await recalculateScores(req)
+                await recalculateScores(req.payload)
             }
         ],
         afterDelete: [
             async ({req}) => {
-                await recalculateScores(req)
+                await recalculateScores(req.payload)
             }
         ],
     },

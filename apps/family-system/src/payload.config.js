@@ -30,7 +30,6 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
-      schema: 'family_system',
     },
   }),
   sharp,
@@ -112,7 +111,7 @@ export default buildConfig({
           })
         }
         
-        await recalculateScores(req)
+        await recalculateScores(req.payload)
 
         return new Response(null, {
           status: 200
