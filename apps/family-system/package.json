@@ -1,18 +1,20 @@
 {
   "name": "@asu/family-system",
   "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
   "license": "MIT",
   "type": "module",
   "private": true,
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+    "build:vercel": "pnpm run migrate && pnpm run build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:types": "payload generate:types",
+    "generate:migrations": "payload payload migrate:create",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "migrate": "payload payload migrate"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "beta",
