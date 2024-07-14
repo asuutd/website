@@ -1,29 +1,5 @@
-import { LedgerEntry } from '@/payload-types'
-import type { CollectionConfig, CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
-import { sql, eq } from 'drizzle-orm'
-
-const IncrementFamilyScoreOnEntryChange: CollectionAfterChangeHook<LedgerEntry> = async ({doc, req, previousDoc}) => {
-    const familyId = typeof doc.Family === 'number' ? doc.Family : doc.Family.id
-    const table = req.payload.db.tables.families
-
-    const score = !previousDoc ? sql`${table.score} + ${doc.amount}` : sql`${table.score} + ${doc.amount} - ${previousDoc.amount}`
-
-    await req.payload.db.drizzle.update(table).set({
-            score,
-    // @ts-ignore
-    }).where(eq(table.id, familyId))
-
-}
-
-const DecrementFamilyScoreOnEntryDeletion: CollectionAfterDeleteHook<LedgerEntry> = async ({doc, req}) => {
-    const familyId = typeof doc.Family === 'number' ? doc.Family : doc.Family.id
-
-    const table = req.payload.db.tables.families
-    await req.payload.db.drizzle.update(table).set({
-            score: sql`${table.score} - ${doc.amount}`,
-    // @ts-ignore
-    }).where(eq(table.id, familyId))
-}
+import type { CollectionConfig } from 'payload'
+import { recalculateScores } from '@/utils/scores'
 
 export const LedgerEntries: CollectionConfig = {
     slug: 'ledger_entries',
@@ -33,10 +9,14 @@ export const LedgerEntries: CollectionConfig = {
     },
     hooks: {
         afterChange: [
-            IncrementFamilyScoreOnEntryChange,
+            async ({req}) => {
+                await recalculateScores(req)
+            }
         ],
         afterDelete: [
-            DecrementFamilyScoreOnEntryDeletion
+            async ({req}) => {
+                await recalculateScores(req)
+            }
         ],
     },
     labels: {
@@ -61,6 +41,8 @@ export const LedgerEntries: CollectionConfig = {
             type: 'relationship',
             label: 'Member',
             relationTo: 'members',
+            hasMany: false,
+            required: false,
         },
         {
             name: 'Family',

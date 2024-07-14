@@ -9,8 +9,8 @@ import { Users } from './collections/Users'
 import { Members } from './collections/Members'
 import { Families } from './collections/Families'
 import { LedgerEntries } from './collections/LedgerEntries'
-import { getMember, getMembers } from './jonze'
-import { sum } from 'drizzle-orm'
+import { getMember, getMembers } from './utils/jonze'
+import { recalculateScores } from './utils/scores'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -108,25 +108,8 @@ export default buildConfig({
             },
           })
         }
-        const ledger_entries = req.payload.db.tables.ledger_entries
-
-        const newScores = await req.payload.db.drizzle.select({
-          familyId: ledger_entries.Family, 
-          newScore: sum(ledger_entries.amount).as('new_score')
-        }).from(ledger_entries)
-        .groupBy(ledger_entries.Family)
-
-        for (const { newScore, familyId } of newScores) {
-          await req.payload.update(
-            {
-              collection: 'families',
-              id: familyId,
-              data: {
-                score: newScore ?? 0
-              }
-            }
-          )
-        }
+        
+        await recalculateScores(req)
 
         return new Response(null, {
           status: 200
