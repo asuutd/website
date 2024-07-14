@@ -118,5 +118,8 @@ export default buildConfig({
         })
       }
     }
-  ]
+  ],
+  graphQL: {
+    disable: true
+  }
 })
