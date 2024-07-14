@@ -1,7 +1,8 @@
 import { Family } from '@/payload-types'
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
+import { RefreshFamilyScores } from '@/components/RefreshFamilyScores'
 
-const GenerateTagFromFamilyName: CollectionBeforeChangeHook<Family> = async ({ data, originalDoc }) => {
+const generateTagFromFamilyName: CollectionBeforeChangeHook<Family> = async ({ data, originalDoc }) => {
   // This hook generates tags for new families based on the family name.
   
   if (originalDoc) {
@@ -24,11 +25,16 @@ export const Families: CollectionConfig = {
   slug: 'families',
   admin: {
     useAsTitle: 'family_name',
-    description: 'Use this collection to create new families, update family names, and update the people included within a family.'
+    description: 'Use this collection to create new families, update family names, and update the people included within a family.',
+    components: {
+      beforeListTable: [
+        RefreshFamilyScores
+      ]
+    }
   },
   hooks: {
     beforeChange: [
-      GenerateTagFromFamilyName
+      generateTagFromFamilyName
     ],
     afterChange: [
       // TODO: sync tags back to users, sync member data from jonze

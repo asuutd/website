@@ -1,4 +1,3 @@
-// storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
@@ -11,6 +10,7 @@ import { Members } from './collections/Members'
 import { Families } from './collections/Families'
 import { LedgerEntries } from './collections/LedgerEntries'
 import { getMember, getMembers } from './jonze'
+import { sum } from 'drizzle-orm'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,9 +31,6 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [
-    // storage-adapter-placeholder
-  ],
   endpoints: [
     {
       path: '/sync-jonze-members',
@@ -96,6 +93,43 @@ export default buildConfig({
             'Cache-Control': 'no-cache, no-transform',
             'Connection': 'keep-alive',
           },
+        })
+      }
+    },
+    {
+      method: 'post',
+      path: '/refresh-scores',
+      handler: async (req) => {
+        if (!req.user) {
+          return new Response('Unauthorized', {
+            status: 401,
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+          })
+        }
+        const ledger_entries = req.payload.db.tables.ledger_entries
+
+        const newScores = await req.payload.db.drizzle.select({
+          familyId: ledger_entries.Family, 
+          newScore: sum(ledger_entries.amount).as('new_score')
+        }).from(ledger_entries)
+        .groupBy(ledger_entries.Family)
+
+        for (const { newScore, familyId } of newScores) {
+          await req.payload.update(
+            {
+              collection: 'families',
+              id: familyId,
+              data: {
+                score: newScore ?? 0
+              }
+            }
+          )
+        }
+
+        return new Response(null, {
+          status: 200
         })
       }
     }
