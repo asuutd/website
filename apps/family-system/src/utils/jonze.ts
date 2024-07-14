@@ -1,4 +1,4 @@
-import { env } from '@/env/server'
+import { env } from '@/env/server.mjs'
 
 type Member = {
     id: string,
