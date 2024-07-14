@@ -37,8 +37,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.mjs",
-    ".next/types/**/*.ts"
-, "src/payload.config.ts"  ],
+    "**/*.js",
+    ".next/types/**/*.ts"],
   "exclude": [
     "node_modules"
   ]
