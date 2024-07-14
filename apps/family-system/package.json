@@ -19,6 +19,7 @@
     "@payloadcms/next": "beta",
     "@payloadcms/plugin-cloud": "beta",
     "@payloadcms/richtext-lexical": "beta",
+    "babel-plugin-react-compiler": "0.0.0-experimental-696af53-20240625",
     "cross-env": "^7.0.3",
     "drizzle-kit": "0.20.14-1f2c838",
     "drizzle-orm": "0.29.4",
