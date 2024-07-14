@@ -61,6 +61,7 @@ export const Families: CollectionConfig = {
       name: 'score',
       type: 'number',
       label: 'Score',
+      required: true,
       defaultValue: 0,
       admin: {
         readOnly: true,
