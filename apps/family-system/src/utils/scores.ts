@@ -1,4 +1,4 @@
-import { desc, eq, sum } from 'drizzle-orm'
+import { desc, eq, sql, sum } from 'drizzle-orm'
 import type { BasePayload } from 'payload'
 
 // TODO: use prepared statements - https://orm.drizzle.team/docs/perf-queries#prepared-statement
@@ -26,7 +26,7 @@ export const recalculateScores = async (payload: BasePayload) => {
 
 export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) => {
     // TODO: payload has poor typing with drizzle, need to manually type returned values
-    const {ledger_entries, members, families_rels, families} = payload.db.tables
+    const {ledger_entries, members, families} = payload.db.tables
     
     const {drizzle: db} = payload.db
 
@@ -42,27 +42,39 @@ export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) 
         memberName: members.jonze_name,
         points: points.points,
         memberId: points.memberId,
-        familyId: families_rels.parent,
-    }).from(points).leftJoin(members, eq(members.id, points.memberId)).leftJoin(families_rels, eq(families_rels.membersID, members.id)).orderBy(desc(points.points)).limit(limit))
+        memberTags: members.jonze_tags,
+    }).from(points).leftJoin(members, eq(members.id, points.memberId)))
 
-    const topMembersWithFamilies = await db.with(topMembers).select({
-        memberName: topMembers.memberName,
-        points: topMembers.points,
-        memberId: topMembers.memberId,
-        familyId: topMembers.familyId,
-        familyName: families.family_name
-    }).from(topMembers).leftJoin(families, eq(families.id, topMembers.familyId)).orderBy(desc(topMembers.points))
 
-    return topMembersWithFamilies
+    // TODO: figure out a way to get corresponding family for each top member
+
+    return []
 }
 
 export const getTopFamilies = async (payload: BasePayload, limit = 5) => {
-    const top5Families = await payload.find({
+    const topFamilies = await payload.find({
         collection: 'families',
         page: 1,
         limit,
         sort: '-score'
     })
 
-    return top5Families.docs
+    const {drizzle: db} = payload.db
+    const {members} = payload.db.tables
+
+    const membersInFamilies = await Promise.all(
+        topFamilies.docs.map(async (family) => {
+            const tagAsJson = JSON.stringify(family.jonze_family_tag)
+            return db.select().from(members)
+            .where(sql`${members.jonze_tags} @> ${tagAsJson}::jsonb`)
+        })
+    )
+
+    return topFamilies.docs.map((family, index) => {
+        const membersInFamily = membersInFamilies[index]
+        return {
+            ...family,
+            members: membersInFamily
+        }
+    })
 }

@@ -66,13 +66,6 @@ export const Families: CollectionConfig = {
       admin: {
         readOnly: true,
       },
-    },
-    {
-      name: 'members',
-      type: 'relationship',
-      label: 'Members',
-      relationTo: 'members',
-      hasMany: true,
     }
   ]
 }

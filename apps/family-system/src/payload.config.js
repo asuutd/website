@@ -68,11 +68,12 @@ export default buildConfig({
                     const memberData = await getMember(member.id)
                     sendLog(`Got member ${member.id}`)
 
-                    sendLog(`Creating member ${member.id}`)
+                    sendLog(`Upserting member ${member.id}`)
                     const body = {
                       jonze_member_id: memberData.id,
                       jonze_name: ((memberData.user.firstName ?? ' ') + ' ' + (memberData.user.lastName ?? '')).trim(),
                       jonze_tags: memberData.tags?.names ?? [],
+                      updatedAt: new Date()
                     }
                     await req.payload.db.drizzle.insert(req.payload.db.tables.members).values(body).onConflictDoUpdate({
                       target: req.payload.db.tables.members.jonze_member_id,

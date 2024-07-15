@@ -75,7 +75,6 @@ export interface Family {
   family_name: string;
   jonze_family_tag: string;
   score: number;
-  members?: (number | Member)[] | null;
   updatedAt: string;
   createdAt: string;
 }
