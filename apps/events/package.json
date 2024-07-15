@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"build": "next build",
+		"build": "pnpm run db:generate && next build",
 		"dev": "next dev",
 		"db:generate": "prisma generate",
 		"db:push": "prisma db push",
