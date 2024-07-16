@@ -2,7 +2,7 @@ import { trpc } from '@/utils/trpc';
 import { Dialog, Transition } from '@headlessui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Modal from '../Modal';
@@ -92,13 +92,17 @@ const TierCard = ({
 			}
 		);
 	};
+	const tierPriceLocked = useMemo(() => {
+		return tier._count.Ticket > 0;
+	}, [tier]);
 	return (
 		<div className="card w-72 md:96 bg-base-100 shadow-xl my-4 mx-auto">
 			<form className="card-body" onSubmit={handleSubmit(onSubmit)}>
 				<input className="input card-title input-ghost ml-0" {...register('name')} />
 				<span>
-					$ <input className="input input-sm input-ghost w-12" {...register('price')} />
+					$ <input className="input input-sm input-ghost w-12" {...register('price')} disabled={tierPriceLocked} />
 				</span>
+				{tierPriceLocked && <small>Can&apos;t change price as tickets have been sold on this tier.</small>}
 
 				<div className="form-control">
 					<label htmlFor="appt">Limit</label>
