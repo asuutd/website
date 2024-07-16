@@ -6,7 +6,7 @@ import { z } from 'zod';
  * This way you can ensure the app isn't built with invalid env vars.
  */
 export const serverSchema = z.object({
-	DATABASE_URL: z.string().url(),
+	POSTGRES_URL: z.string().url(),
 	PAYLOAD_SECRET: z.string(),
 	JONZE_API_KEY: z.string(),
 	USE_JONZE_DEV: z.string().optional(),
