@@ -13,6 +13,7 @@ import { Families } from './collections/Families'
 import { LedgerEntries } from './collections/LedgerEntries'
 import { getMember, getMembers } from './utils/jonze'
 import { recalculateScores } from './utils/scores'
+import { env } from './env/server.mjs'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -23,13 +24,13 @@ export default buildConfig({
   },
   collections: [Users, Members, Families, LedgerEntries],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || '',
+      connectionString: env.POSTGRES_URL || '',
     },
   }),
   sharp,
