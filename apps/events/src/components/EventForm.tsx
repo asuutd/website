@@ -60,24 +60,24 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 
 	const onSubmit = async (fields: EventFormInput) => {
 		if (fields.bannerImage[0] && fields.ticketImage[0]) {
-			const [bannerUploadResponse, ticketImageUploadResponse] = await Promise.all([
-				imageUpload(fields.bannerImage[0], { user: session?.user?.id ?? '' }),
-				imageUpload(fields.ticketImage[0], { user: session?.user?.id ?? '' })
-			]);
+			// const [bannerUploadResponse, ticketImageUploadResponse] = await Promise.all([
+			// 	imageUpload(fields.bannerImage[0], { user: session?.user?.id ?? '' }),
+			// 	imageUpload(fields.ticketImage[0], { user: session?.user?.id ?? '' })
+			// ]);
 
-			if (bannerUploadResponse.ok && ticketImageUploadResponse.ok) {
-				const [bannerResult, ticketImageResult] = await Promise.all([
-					bannerUploadResponse.json(),
-					ticketImageUploadResponse.json()
-				]);
-				console.log(bannerResult, ticketImageResult);
+			// if (bannerUploadResponse.ok && ticketImageUploadResponse.ok) {
+				// const [bannerResult, ticketImageResult] = await Promise.all([
+				// 	bannerUploadResponse.json(),
+				// 	ticketImageUploadResponse.json()
+				// ]);
+				// console.log(bannerResult, ticketImageResult);
 				mutation.mutate(
 					{
 						name: fields.name,
 						startTime: parseISO(fields.startTime),
 						endTime: parseISO(fields.endTime),
-						bannerImage: `https://ucarecdn.com/${bannerResult[fields.bannerImage[0].name]}/`,
-						ticketImage: `https://ucarecdn.com/${ticketImageResult[fields.ticketImage[0].name]}/`,
+						bannerImage: `https://ucarecdn.com/3b76baa7-0af7-4949-a8c4-8c54af5a5a70/`,
+						ticketImage: `https://ucarecdn.com/a79e491d-8c9b-4a30-978c-1e5fdc47d55e/`,
 						location: fields.location,
 						feeBearer: fields.feeBearer ? 'USER' : 'ORGANIZER'
 					},
@@ -88,7 +88,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 						}
 					}
 				);
-			}
+			// }
 		}
 	};
 

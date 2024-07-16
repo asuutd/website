@@ -71,6 +71,7 @@ export const getMember = async (id: string) => {
 }
 
 export const addTagsToMember = async (memberId: string, tags: string[]) => {
+    // TODO: used as a server action, need to require auth...
     const body = {
         tags
     }
