@@ -1,3 +1,5 @@
+"use server"
+
 import { env } from '@/env/server.mjs'
 
 type Member = {
@@ -66,4 +68,11 @@ export const getMembers = async () => {
 export const getMember = async (id: string) => {
     const member = await jonzeFetch(`/members/${id}`, 'GET') as Member
     return member
+}
+
+export const addTagsToMember = async (memberId: string, tags: string[]) => {
+    const body = {
+        tags
+    }
+    await jonzeFetch(`/members/${memberId}/tags`, 'PUT', body)
 }
