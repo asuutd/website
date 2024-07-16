@@ -83,11 +83,12 @@ export const getTopFamilies = async (payload: BasePayload, limit = 5) => {
 export const getMembersByFamilyTag = async (payload: BasePayload, tag: string) => {
 	const { members } = payload.db.tables;
 	const { drizzle: db } = payload.db;
-	const tagAsJson = JSON.stringify(tag);
-	console.log(tagAsJson);
+
 	const membersByFamily = await db
 		.select()
 		.from(members)
-		.where(arrayContains(members.jonze_tags, tagAsJson));
+		.where(arrayContains(members.jonze_tags, tag));
+
+	console.log(membersByFamily);
 	return membersByFamily;
 };
