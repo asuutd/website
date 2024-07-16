@@ -12,7 +12,7 @@ import { Members } from './collections/Members'
 import { Families } from './collections/Families'
 import { LedgerEntries } from './collections/LedgerEntries'
 import { getMember, getMembers } from './utils/jonze'
-import { recalculateScores } from './utils/scores'
+import { getMembersByFamilyTag, recalculateScores } from './utils/scores'
 import { env } from './env/server.mjs'
 
 const filename = fileURLToPath(import.meta.url)
@@ -117,6 +117,38 @@ export default buildConfig({
 
         return new Response(null, {
           status: 200
+        })
+      }
+    },
+    {
+      method: 'get',
+      path: '/members-by-family-tag',
+      handler: async (req) => {
+        if (!req.user) {
+          return new Response('Unauthorized', {
+            status: 401,
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+          })
+        }
+        const tag = req.searchParams.get('tag')
+        if (!tag) {
+          return new Response('Missing tag', {
+            status: 400,
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+          })
+        }
+
+        const members = await getMembersByFamilyTag(req.payload, tag)
+
+        return new Response(JSON.stringify(members), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
         })
       }
     }
