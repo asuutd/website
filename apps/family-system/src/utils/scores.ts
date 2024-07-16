@@ -56,14 +56,9 @@ export const getTopFamilies = async (payload: BasePayload, limit = 5) => {
         sort: '-score'
     })
 
-    const {drizzle: db} = payload.db
-    const {members} = payload.db.tables
-
     const membersInFamilies = await Promise.all(
         topFamilies.docs.map(async (family) => {
-            const tagAsJson = JSON.stringify(family.jonze_family_tag)
-            return db.select().from(members)
-            .where(sql`${members.jonze_tags} @> ${tagAsJson}::jsonb`)
+            return getMembersByFamilyTag(payload, family.jonze_family_tag)
         })
     )
 
@@ -75,3 +70,14 @@ export const getTopFamilies = async (payload: BasePayload, limit = 5) => {
         }
     })
 }
+
+export const getMembersByFamilyTag = async (payload: BasePayload, tag: string) => {
+    const {members} = payload.db.tables
+    const {drizzle: db} = payload.db
+    const tagAsJson = JSON.stringify(tag)
+    const membersByFamily = await db.select().from(members).where(
+        sql`${members.jonze_tags} @> ${tagAsJson}::jsonb`
+    )
+    return membersByFamily
+} 
+

@@ -1,6 +1,7 @@
 import { Family } from '@/payload-types'
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { RefreshFamilyScores } from '@/components/RefreshFamilyScores'
+import FamilyMembers from '@/components/FamilyMembers'
 
 const generateTagFromFamilyName: CollectionBeforeChangeHook<Family> = async ({ data, originalDoc }) => {
   // This hook generates tags for new families based on the family name.
@@ -35,9 +36,6 @@ export const Families: CollectionConfig = {
   hooks: {
     beforeChange: [
       generateTagFromFamilyName
-    ],
-    afterChange: [
-      // TODO: sync tags back to users, sync member data from jonze
     ]
   },
   fields: [
@@ -66,6 +64,16 @@ export const Families: CollectionConfig = {
       admin: {
         readOnly: true,
       },
-    }
+    },
+    {
+      name: 'members',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        components: {
+          Field: FamilyMembers,
+        },
+      },
+    },
   ]
 }
