@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { recalculateScores } from '@/utils/scores'
+import { LedgerEntry } from '@/payload-types'
 
 export const LedgerEntries: CollectionConfig = {
     slug: 'ledger_entries',
@@ -9,13 +10,15 @@ export const LedgerEntries: CollectionConfig = {
     },
     hooks: {
         afterChange: [
-            async ({req}) => {
-                await recalculateScores(req.payload)
+            async ({req, doc}) => {
+                const entry = (doc as unknown as LedgerEntry)
+                await recalculateScores(req.payload, [typeof entry.Family === 'number' ? (entry.Family) : entry.Family.id])
             }
         ],
         afterDelete: [
-            async ({req}) => {
-                await recalculateScores(req.payload)
+            async ({req, doc}) => {
+                const entry = (doc as unknown as LedgerEntry)
+                await recalculateScores(req.payload, [typeof entry.Family === 'number' ? (entry.Family) : entry.Family.id])
             }
         ],
     },

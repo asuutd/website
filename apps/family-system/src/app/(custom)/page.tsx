@@ -43,8 +43,8 @@ async function HomePage() {
         <div>
           <h2 className="text-2xl font-bold mb-4">Top Individual Point Earners</h2>
           <div className="space-y-4">
-            {topMembers.map((member, index) => (
-              <MemberCard key={`top-member-${member.memberId}`} memberName={member.memberName} position={index + 1} points={member.points} familyName={member.familyName} />
+            {topMembers.map(({member, family}, index) => (
+              <MemberCard key={`top-member-${member.memberId}`} memberName={member.memberName} position={index + 1} points={Number(member.points)} familyName={family?.family_name ?? 'No family'} />
             ))}
           </div>
         </div>

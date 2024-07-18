@@ -1,30 +1,33 @@
-import { arrayContains, desc, eq, sql, sum } from 'drizzle-orm';
+import type { Family, Member } from '@/payload-types';
+import { arrayContains, desc, eq, sql, sum, inArray } from 'drizzle-orm';
 import type { BasePayload } from 'payload';
 
 // TODO: use prepared statements - https://orm.drizzle.team/docs/perf-queries#prepared-statement
 
-export const recalculateScores = async (payload: BasePayload) => {
+export const recalculateScores = async (payload: BasePayload, familyIds?: number[]) => {
 	const { ledger_entries, families } = payload.db.tables;
 	const { drizzle: db } = payload.db;
 
-	const newScores = db.$with('newScores').as(
-		db
+	const cond = familyIds ? (inArray(ledger_entries.Family, familyIds)) : sql`true`
+
+	const newScoresQuery = await db
 			.select({
 				familyId: ledger_entries.Family,
 				score: sum(ledger_entries.amount).as('score')
 			})
 			.from(ledger_entries)
-			.groupBy(ledger_entries.Family)
-	);
+			.where(cond)
+			.groupBy(ledger_entries.Family);
+	
 
-	// TODO: figure out why this doesn't work... the docs claim that this should work, but it doesn't
-	// const update = await db.with(newScores).update(families).set({
-	//     score: newScores.score
-	// }).where(eq(families.id, newScores.familyId))
+	await Promise.all(newScoresQuery.map(async (newScore) => {
+		db.update(families).set({
+			score: newScore.score
+		}).where(eq(families.id, newScore.familyId));
+	}))
 };
 
 export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) => {
-	// TODO: payload has poor typing with drizzle, need to manually type returned values
 	const { ledger_entries, members, families } = payload.db.tables;
 
 	const { drizzle: db } = payload.db;
@@ -51,10 +54,23 @@ export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) 
 			.from(points)
 			.leftJoin(members, eq(members.id, points.memberId))
 	);
+	
+	const topMembersWithFamilies = await db.with(topMembers).select().from(topMembers).leftJoin(families, arrayContains(topMembers.memberTags, sql`to_jsonb(${families.jonze_family_tag})`)).orderBy(desc(topMembers.points));
 
-	// TODO: figure out a way to get corresponding family for each top member
+	const out = topMembersWithFamilies.map(result=>({
+		member: result.topMembers,
+		family: result.families
+	}) as {
+		member: {
+			memberName: string,
+			points: string,
+			memberId: number,
+			memberTags: string[]
+		},
+		family: Family | null
+	});
 
-	return [];
+	return out;
 };
 
 export const getTopFamilies = async (payload: BasePayload, limit = 5) => {
@@ -89,6 +105,5 @@ export const getMembersByFamilyTag = async (payload: BasePayload, tag: string) =
 		.from(members)
 		.where(arrayContains(members.jonze_tags, tag));
 
-	console.log(membersByFamily);
-	return membersByFamily;
+	return membersByFamily as unknown as Member[];
 };
