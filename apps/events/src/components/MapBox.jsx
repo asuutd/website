@@ -1,4 +1,3 @@
-// @ts-check
 import { env } from '@/env/client.mjs';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import { useEffect, useState } from 'react';
@@ -6,16 +5,17 @@ import { useEffect, useState } from 'react';
 /**
  *
  * @typedef {import('./EventForm').EventFormInput} EventFormInput
- * @param {import('react-hook-form').ControllerRenderProps<EventFormInput, 'location'> & {className: string}} props
+ * @param {import('react-hook-form').ControllerRenderProps<EventFormInput, 'location'> & {className: string, value?: {coordinates: [number, number], address: string}}} props
  */
 const MapBox = ({ onChange, value, className }) => {
-	const [coords, setCoords] = useState(value.coordinates ?? [0, 0]);
+	const [coords, setCoords] = useState(value?.coordinates ?? [0, 0]);
 	useEffect(() => {
 		onChange({
 			...value,
 			coordinates: coords
 		});
 	}, [coords]);
+	if (!value) return null
 	return (
 		<AddressAutofill
 			accessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
