@@ -12,6 +12,7 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 type Event = RouterOutput['event']['getEventAdmin'];
+import {toast} from 'sonner'
 
 const zodFileType = z
 	.any()
@@ -84,7 +85,14 @@ const Details = ({ event }: { event: Event }) => {
 	}, []);
 
 	const onSubmit = async (fields: FormInput) => {
-		console.log(fields);
+		
+	const startTime = parseISO(fields.startTime)
+	const endTime = parseISO(fields.endTime)
+	if (endTime < startTime) {
+    toast.error('End time should be greater than start time')
+    return
+	}
+	console.log(fields);
 		const isBannerURL = isValidHttpUrl(event.image ?? '');
 		const isTicketURL = isValidHttpUrl(event.ticketImage ?? '');
 		if ((fields.bannerImage[0] || isBannerURL) && (fields.ticketImage[0] || isTicketURL)) {
@@ -116,8 +124,8 @@ const Details = ({ event }: { event: Event }) => {
 				{
 					eventId: event.id,
 					name: fields.name,
-					startTime: parseISO(fields.startTime),
-					endTime: parseISO(fields.endTime),
+					startTime,
+					endTime,
 					bannerImage:
 						typeof bannerUploadResponse !== 'string'
 							? `https://ucarecdn.com/${bannerResult[fields.bannerImage[0].name]}/`

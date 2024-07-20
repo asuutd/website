@@ -9,7 +9,7 @@ import { imageUpload } from '@/utils/imageUpload';
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/utils/trpc';
 import dynamic from 'next/dynamic';
-
+import {toast} from 'sonner'
 type Props = {
 	closeModal: () => void;
 };
@@ -61,6 +61,12 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 
 	const onSubmit = async (fields: EventFormInput) => {
 		if (fields.bannerImage[0] && fields.ticketImage[0]) {
+  		const startTime = parseISO(fields.startTime)
+  		const endTime = parseISO(fields.endTime)
+  		if (endTime < startTime) {
+        toast.error('End time should be greater than start time')
+        return
+  		}
 			const [bannerUploadResponse, ticketImageUploadResponse] = await Promise.all([
 				imageUpload(fields.bannerImage[0], { user: session?.user?.id ?? '' }),
 				imageUpload(fields.ticketImage[0], { user: session?.user?.id ?? '' })
@@ -72,11 +78,12 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 					ticketImageUploadResponse.json()
 				]);
 				console.log(bannerResult, ticketImageResult);
+				
 				mutation.mutate(
 					{
 						name: fields.name,
-						startTime: parseISO(fields.startTime),
-						endTime: parseISO(fields.endTime),
+						startTime,
+						endTime,
 						bannerImage: `https://ucarecdn.com/${Object.values(bannerResult)[0]}/`,
 						ticketImage: `https://ucarecdn.com/${Object.values(ticketImageResult)[0]}/`,
             ...(fields.location && fields.location.address ? {location: fields.location} : {}),

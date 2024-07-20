@@ -1,10 +1,9 @@
-import { TRPCClientError } from '@trpc/client';
-import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
+import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { Fee_Holder, Prisma } from '@prisma/client';
+import { Fee_Holder } from '@prisma/client';
 import { env } from '@/env/server.mjs';
-import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
+import { ZodCustomField } from '@/utils/forms';
 import { splitEvents } from '@/utils/misc';
 
 export const eventRouter = t.router({
@@ -108,6 +107,12 @@ export const eventRouter = t.router({
 			})
 		)
 		.mutation(({ input, ctx }) => {
+		  if (input.endTime < input.startTime) {
+				throw new TRPCError({
+				  code: 'BAD_REQUEST',
+					message: 'End time should be greater than start time'
+				})
+			} 
 			if (ctx.session.user.role === 'ORGANIZER') {
 				const newEvent = ctx.prisma.event.create({
 					data: {
@@ -117,7 +122,7 @@ export const eventRouter = t.router({
 						image: input.bannerImage,
 						ticketImage: input.ticketImage,
 						organizerId: ctx.session.user.id,
-						...(input.location?.coordinates
+						...(input.location
 							? {
 									location: {
 										create: {
@@ -164,6 +169,12 @@ export const eventRouter = t.router({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+		  if (input.endTime < input.startTime) {
+				throw new TRPCError({
+				  code: 'BAD_REQUEST',
+					message: 'End time should be greater than start time'
+				})
+			}
 			const event = await ctx.prisma.event.findFirstOrThrow({
 				where: {
 					id: input.eventId
