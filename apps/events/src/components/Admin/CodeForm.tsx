@@ -55,8 +55,8 @@ const CodeForm: React.FC<Props> = ({ tiers, closeModal }) => {
 	const watch = watchFunc(['percentage', 'tierId']);
 
 	const onSubmit = (fields: FormInput) => {
-		const eventId = tiers?.find((tier) => tier.id === fields.tierId)?.eventId
-		if (!eventId) throw new Error('No event id found')
+		const eventId = tiers?.find((tier) => tier.id === fields.tierId)?.eventId;
+		if (!eventId) throw new Error('No event id found');
 		mutation.mutate(
 			{
 				type: fields.percentage ? 'percent' : 'flat',

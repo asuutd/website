@@ -17,10 +17,6 @@
 	let elements: StripeElements;
 	let processing = false;
 	let error = null;
-
-
-
-
 </script>
 
 <svelte:head>
@@ -104,12 +100,16 @@
 				</div>
 			</div>
 			<div class="divider">OR</div>
-			<form class="input-group" method="POST" >
-				<input class="input input-bordered  bg-slate-100 w-full" placeholder="Email" name="email" type="email" required/>
+			<form class="input-group" method="POST">
+				<input
+					class="input input-bordered bg-slate-100 w-full"
+					placeholder="Email"
+					name="email"
+					type="email"
+					required
+				/>
 				<button class="btn btn-primary px-6 text-lg" type="submit">PAY</button>
 			</form>
-				
-				
 		</div>
 	</div>
 	<div

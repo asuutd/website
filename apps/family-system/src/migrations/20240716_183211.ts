@@ -1,12 +1,12 @@
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres';
 
 export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
-await payload.db.drizzle.execute(sql`
- DROP TABLE "families_rels";`)
-};
+	await payload.db.drizzle.execute(sql`
+ DROP TABLE "families_rels";`);
+}
 
 export async function down({ payload, req }: MigrateDownArgs): Promise<void> {
-await payload.db.drizzle.execute(sql`
+	await payload.db.drizzle.execute(sql`
  CREATE TABLE IF NOT EXISTS "families_rels" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"order" integer,
@@ -29,5 +29,5 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
-`)
-};
+`);
+}

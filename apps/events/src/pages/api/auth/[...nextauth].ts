@@ -4,13 +4,12 @@ import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from '../../../server/db/client';
 import { env } from '../../../env/server.mjs';
 import { CustomPrismaAdapter } from '@/utils/adapter';
-import EmailProvider from "next-auth/providers/email"
+import EmailProvider from 'next-auth/providers/email';
 import LoginLinkEmail from '@/server/trpc/router/emails/login';
 import { Resend } from 'resend';
 import { v4 as uuidv4 } from 'uuid';
 import { NextApiRequest, NextApiResponse } from 'next';
 const resend = new Resend(env.RESEND_API_KEY);
-
 
 export const authOptions: NextAuthOptions = {
 	// Include user.id on session
@@ -37,11 +36,11 @@ export const authOptions: NextAuthOptions = {
 	adapter: CustomPrismaAdapter(prisma),
 	theme: {
 		logo: '../../../favicon.png',
-		brandColor: '#4B140A',
+		brandColor: '#4B140A'
 	},
 	pages: {
 		signIn: '/signin',
-		verifyRequest: '/verify-request',
+		verifyRequest: '/verify-request'
 	},
 	providers: [
 		GoogleProvider({
@@ -49,16 +48,13 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: env.GOOGLE_CLIENT_SECRET
 		}),
 		EmailProvider({
-			async sendVerificationRequest({
-				identifier: email,
-				url,
-			  }) {
+			async sendVerificationRequest({ identifier: email, url }) {
 				const data = await resend.sendEmail({
 					from: 'Kazala Tickets <login@mails.kazala.co>',
 					to: email,
 					subject: `Log in to Kazala`,
 					react: LoginLinkEmail({
-						login_link: url,
+						login_link: url
 					}),
 					headers: {
 						'X-Entity-Ref-ID': uuidv4()
@@ -69,12 +65,11 @@ export const authOptions: NextAuthOptions = {
 	]
 };
 
-
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
 	// https://next-auth.js.org/tutorials/avoid-corporate-link-checking-email-provider
-	if (req.method === "HEAD") {
-		return res.status(200).end()
-	 }
+	if (req.method === 'HEAD') {
+		return res.status(200).end();
+	}
 
-	return await NextAuth(req, res, authOptions)
-  }
+	return await NextAuth(req, res, authOptions);
+}

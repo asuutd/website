@@ -9,7 +9,7 @@ import { imageUpload } from '@/utils/imageUpload';
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/utils/trpc';
 import dynamic from 'next/dynamic';
-import {toast} from 'sonner'
+import { toast } from 'sonner';
 type Props = {
 	closeModal: () => void;
 };
@@ -48,25 +48,25 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 		register,
 		handleSubmit,
 		control,
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting }
 	} = useForm<EventFormInput>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-		  location: {
-				  address: '',
-					coordinates: [0, 0]
+			location: {
+				address: '',
+				coordinates: [0, 0]
 			}
 		}
 	});
 
 	const onSubmit = async (fields: EventFormInput) => {
 		if (fields.bannerImage[0] && fields.ticketImage[0]) {
-  		const startTime = parseISO(fields.startTime)
-  		const endTime = parseISO(fields.endTime)
-  		if (endTime < startTime) {
-        toast.error('End time should be greater than start time')
-        return
-  		}
+			const startTime = parseISO(fields.startTime);
+			const endTime = parseISO(fields.endTime);
+			if (endTime < startTime) {
+				toast.error('End time should be greater than start time');
+				return;
+			}
 			const [bannerUploadResponse, ticketImageUploadResponse] = await Promise.all([
 				imageUpload(fields.bannerImage[0], { user: session?.user?.id ?? '' }),
 				imageUpload(fields.ticketImage[0], { user: session?.user?.id ?? '' })
@@ -78,7 +78,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 					ticketImageUploadResponse.json()
 				]);
 				console.log(bannerResult, ticketImageResult);
-				
+
 				mutation.mutate(
 					{
 						name: fields.name,
@@ -86,7 +86,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 						endTime,
 						bannerImage: `https://ucarecdn.com/${Object.values(bannerResult)[0]}/`,
 						ticketImage: `https://ucarecdn.com/${Object.values(ticketImageResult)[0]}/`,
-            ...(fields.location && fields.location.address ? {location: fields.location} : {}),
+						...(fields.location && fields.location.address ? { location: fields.location } : {}),
 						feeBearer: fields.feeBearer ? 'USER' : 'ORGANIZER'
 					},
 					{
@@ -110,9 +110,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 			leaveFrom="opacity-100 scale-100"
 			leaveTo="opacity-0 scale-95"
 		>
-			<Dialog.Panel
-				className="w-[320px] transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all"
-			>
+			<Dialog.Panel className="w-[320px] transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all">
 				<div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
 					<form className="card-body" onSubmit={handleSubmit(onSubmit)}>
 						<h2 className="card-title">Event Form</h2>

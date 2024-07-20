@@ -8,23 +8,26 @@ export const recalculateScores = async (payload: BasePayload, familyIds?: number
 	const { ledger_entries, families } = payload.db.tables;
 	const { drizzle: db } = payload.db;
 
-	const cond = familyIds ? (inArray(ledger_entries.Family, familyIds)) : sql`true`
+	const cond = familyIds ? inArray(ledger_entries.Family, familyIds) : sql`true`;
 
 	const newScoresQuery = await db
-			.select({
-				familyId: ledger_entries.Family,
-				score: sum(ledger_entries.amount).as('score')
-			})
-			.from(ledger_entries)
-			.where(cond)
-			.groupBy(ledger_entries.Family);
-	
+		.select({
+			familyId: ledger_entries.Family,
+			score: sum(ledger_entries.amount).as('score')
+		})
+		.from(ledger_entries)
+		.where(cond)
+		.groupBy(ledger_entries.Family);
 
-	await Promise.all(newScoresQuery.map(async (newScore) => {
-		db.update(families).set({
-			score: newScore.score
-		}).where(eq(families.id, newScore.familyId));
-	}))
+	await Promise.all(
+		newScoresQuery.map(async (newScore) => {
+			db.update(families)
+				.set({
+					score: newScore.score
+				})
+				.where(eq(families.id, newScore.familyId));
+		})
+	);
 };
 
 export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) => {
@@ -54,21 +57,32 @@ export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) 
 			.from(points)
 			.leftJoin(members, eq(members.id, points.memberId))
 	);
-	
-	const topMembersWithFamilies = await db.with(topMembers).select().from(topMembers).leftJoin(families, arrayContains(topMembers.memberTags, sql`to_jsonb(${families.jonze_family_tag})`)).orderBy(desc(topMembers.points));
 
-	const out = topMembersWithFamilies.map(result=>({
-		member: result.topMembers,
-		family: result.families
-	}) as {
-		member: {
-			memberName: string,
-			points: string,
-			memberId: number,
-			memberTags: string[]
-		},
-		family: Family | null
-	});
+	const topMembersWithFamilies = await db
+		.with(topMembers)
+		.select()
+		.from(topMembers)
+		.leftJoin(
+			families,
+			arrayContains(topMembers.memberTags, sql`to_jsonb(${families.jonze_family_tag})`)
+		)
+		.orderBy(desc(topMembers.points));
+
+	const out = topMembersWithFamilies.map(
+		(result) =>
+			({
+				member: result.topMembers,
+				family: result.families
+			} as {
+				member: {
+					memberName: string;
+					points: string;
+					memberId: number;
+					memberTags: string[];
+				};
+				family: Family | null;
+			})
+	);
 
 	return out;
 };

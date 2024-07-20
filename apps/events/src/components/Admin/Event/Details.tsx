@@ -12,7 +12,7 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 type Event = RouterOutput['event']['getEventAdmin'];
-import {toast} from 'sonner'
+import { toast } from 'sonner';
 
 const zodFileType = z
 	.any()
@@ -34,11 +34,10 @@ const Details = ({ event }: { event: Event }) => {
 		name: z.string(),
 		startTime: z.string(),
 		endTime: z.string(),
-		location: z
-			.object({
-				address: z.string(),
-				coordinates: z.tuple([z.number(), z.number()])
-			}),
+		location: z.object({
+			address: z.string(),
+			coordinates: z.tuple([z.number(), z.number()])
+		}),
 		bannerImage: zodFileType.optional(),
 		ticketImage: zodFileType.optional(),
 		feeBearer: z.boolean(),
@@ -67,11 +66,11 @@ const Details = ({ event }: { event: Event }) => {
 						}
 				  }
 				: {
-					location: {
-						address: '',
-						coordinates: [0, 0]
-					}
-				}),
+						location: {
+							address: '',
+							coordinates: [0, 0]
+						}
+				  }),
 			...(event.description && {
 				description: event.description
 			})
@@ -85,14 +84,13 @@ const Details = ({ event }: { event: Event }) => {
 	}, []);
 
 	const onSubmit = async (fields: FormInput) => {
-		
-	const startTime = parseISO(fields.startTime)
-	const endTime = parseISO(fields.endTime)
-	if (endTime < startTime) {
-    toast.error('End time should be greater than start time')
-    return
-	}
-	console.log(fields);
+		const startTime = parseISO(fields.startTime);
+		const endTime = parseISO(fields.endTime);
+		if (endTime < startTime) {
+			toast.error('End time should be greater than start time');
+			return;
+		}
+		console.log(fields);
 		const isBannerURL = isValidHttpUrl(event.image ?? '');
 		const isTicketURL = isValidHttpUrl(event.ticketImage ?? '');
 		if ((fields.bannerImage[0] || isBannerURL) && (fields.ticketImage[0] || isTicketURL)) {

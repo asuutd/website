@@ -8,6 +8,7 @@
 		"db:generate": "prisma generate",
 		"db:push": "prisma db push",
 		"lint": "next lint",
+		"lint:fix": "next lint --fix",
 		"start": "next start"
 	},
 	"dependencies": {

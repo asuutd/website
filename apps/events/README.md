@@ -28,10 +28,9 @@ To contribute, talk to an ASU officer so the technical director can add you as a
 
 **Server:** tRPC, NextJS, MySQL(PlanetScale)
 
-
 ### Setting up Apple Wallet generation
 
-*Adapted from https://github.com/alexandercerutti/passkit-generator/wiki/Generating-Certificates and https://developer.apple.com/documentation/walletpasses/building_a_pass.*
+_Adapted from https://github.com/alexandercerutti/passkit-generator/wiki/Generating-Certificates and https://developer.apple.com/documentation/walletpasses/building_a_pass._
 
 **Note:** These commands were run successfully on a macOS system but should work correctly under any Unix-based system with the `base64` and `openssl` utilities available. On Windows, it will be **easiest to use Git Bash** (bundled with the [Windows installer for Git](https://git-scm.com/download/win)) as it includes all the necessary utilities.
 
@@ -42,6 +41,7 @@ When following the steps in the above guide, skip any step that mentions downloa
 Set the `APPLE_TICKET_PASS_TYPE_IDENTIFIER` environment variable in `.env` to the pass type identifier (example: `pass.com.mycompany.event`) you set up in the Apple Developer Portal.
 
 #### Last steps: macOS
+
 At this point, you should have these files and passwords created:
 
 - `signerCert.pem`
@@ -54,9 +54,10 @@ At this point, you should have these files and passwords created:
   - Set the `APPLE_PASS_PRIVATE_KEY` environment variable in `.env` to this output.
 - passphrase for `signerKey.pem`
   - Set the `APPLE_PASS_PRIVATE_KEY_PASSPHRASE` environment variable in `.env` to the - passphrase for `signerKey.pem`
-.
+    .
 
 #### Last steps: Other platforms
+
 At this point, you should have these files created:
 
 - `<your-key-name>.key`
@@ -65,4 +66,3 @@ At this point, you should have these files created:
 - `signerCert.pem`
   - Run `base64 -i signerCert.pem -o -`.
   - Set the `APPLE_PASS_CERTIFICATE` environment variable in `.env` to this output.
-

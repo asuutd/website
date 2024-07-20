@@ -99,20 +99,19 @@ export const eventRouter = t.router({
 				location: z
 					.object({
 						address: z.string(),
-						coordinates: z
-							.tuple([z.number(), z.number()])
+						coordinates: z.tuple([z.number(), z.number()])
 					})
 					.optional(),
 				feeBearer: z.nativeEnum(Fee_Holder)
 			})
 		)
 		.mutation(({ input, ctx }) => {
-		  if (input.endTime < input.startTime) {
+			if (input.endTime < input.startTime) {
 				throw new TRPCError({
-				  code: 'BAD_REQUEST',
+					code: 'BAD_REQUEST',
 					message: 'End time should be greater than start time'
-				})
-			} 
+				});
+			}
 			if (ctx.session.user.role === 'ORGANIZER') {
 				const newEvent = ctx.prisma.event.create({
 					data: {
@@ -169,11 +168,11 @@ export const eventRouter = t.router({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-		  if (input.endTime < input.startTime) {
+			if (input.endTime < input.startTime) {
 				throw new TRPCError({
-				  code: 'BAD_REQUEST',
+					code: 'BAD_REQUEST',
 					message: 'End time should be greater than start time'
-				})
+				});
 			}
 			const event = await ctx.prisma.event.findFirstOrThrow({
 				where: {
@@ -205,25 +204,27 @@ export const eventRouter = t.router({
 					image: input.bannerImage,
 					ticketImage: input.ticketImage,
 					fee_holder: input.feeBearer,
-          ...(input.location ? {
-            location: {
-              upsert: {
-                where: {
-                  id: input.eventId
-                },
-                create: {
-                  long: input.location.coordinates[0],
-             			lat: input.location.coordinates[1],
-             			name: input.location.address,
-                },
-                update: {
-                  long: input.location.coordinates[0],
-             			lat: input.location.coordinates[1],
-             			name: input.location.address
-                }
-              }
-            }
-          } : {}),
+					...(input.location
+						? {
+								location: {
+									upsert: {
+										where: {
+											id: input.eventId
+										},
+										create: {
+											long: input.location.coordinates[0],
+											lat: input.location.coordinates[1],
+											name: input.location.address
+										},
+										update: {
+											long: input.location.coordinates[0],
+											lat: input.location.coordinates[1],
+											name: input.location.address
+										}
+									}
+								}
+						  }
+						: {}),
 					description: input.description
 				}
 			});

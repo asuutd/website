@@ -12,7 +12,7 @@
 		"dev": "turbo run dev --parallel",
 		"db:generate": "turbo db:generate",
 		"db:push": "turbo db:push",
-		"format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore",
+		"format": "prettier --write \"**/*.{jsx,js,cjs,mjs,ts,tsx,md,json,svelte}\" --ignore-path .gitignore",
 		"lint": "turbo lint && manypkg check",
 		"lint:fix": "turbo lint:fix && manypkg fix",
 		"type-check": "turbo type-check"

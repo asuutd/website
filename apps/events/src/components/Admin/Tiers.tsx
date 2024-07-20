@@ -100,9 +100,16 @@ const TierCard = ({
 			<form className="card-body" onSubmit={handleSubmit(onSubmit)}>
 				<input className="input card-title input-ghost ml-0" {...register('name')} />
 				<span>
-					$ <input className="input input-sm input-ghost w-12" {...register('price')} disabled={tierPriceLocked} />
+					${' '}
+					<input
+						className="input input-sm input-ghost w-12"
+						{...register('price')}
+						disabled={tierPriceLocked}
+					/>
 				</span>
-				{tierPriceLocked && <small>Can&apos;t change price as tickets have been sold on this tier.</small>}
+				{tierPriceLocked && (
+					<small>Can&apos;t change price as tickets have been sold on this tier.</small>
+				)}
 
 				<div className="form-control">
 					<label htmlFor="appt">Limit</label>

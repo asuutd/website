@@ -179,14 +179,14 @@ export const organizerRouter = t.router({
 		});
 	}),
 	getInvitedCollaborators: superAdminProcedure.query(async ({ input, ctx }) => {
-	  await ctx.prisma.adminInvite.deleteMany({
+		await ctx.prisma.adminInvite.deleteMany({
 			where: {
-			 eventId: input.eventId,
+				eventId: input.eventId,
 				expiresAt: {
-				  lt: new Date()
+					lt: new Date()
 				}
 			}
-		})
+		});
 
 		return await ctx.prisma.adminInvite.findMany({
 			where: {
@@ -326,55 +326,56 @@ export const organizerRouter = t.router({
 			});
 			if (!result || !result.user) {
 				throw new TRPCError({
-				  code: 'NOT_FOUND'
-				})
+					code: 'NOT_FOUND'
+				});
 			}
 			if (result.expiresAt < new Date()) {
-			 try {
-		    await ctx.prisma.adminInvite.delete({
+				try {
+					await ctx.prisma.adminInvite.delete({
+						where: {
+							token: result.token
+						}
+					});
+				} catch (e) {
+					console.log(e);
+				} finally {
+					throw new TRPCError({
+						code: 'BAD_REQUEST',
+						message: 'Invite expired.'
+					});
+				}
+			}
+			if (result.email !== ctx.session.user.email) {
+				throw new TRPCError({
+					code: 'FORBIDDEN',
+					message: 'Email on invite is not the user who is currently logged in'
+				});
+			}
+			if (result.event.EventAdmin.length !== 0) {
+				await ctx.prisma.adminInvite.delete({
 					where: {
 						token: result.token
 					}
 				});
-				} catch (e) {
-				  console.log(e)
-				} finally {
 				throw new TRPCError({
-			    code: 'BAD_REQUEST',
-					message: 'Invite expired.'
-				})}
-			}
-			if (result.email !== ctx.session.user.email) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-					message: 'Email on invite is not the user who is currently logged in'
-				})
-			}
-			if (result.event.EventAdmin.length !== 0) {
-        await ctx.prisma.adminInvite.delete({
-      				where: {
-     					token: result.token
-      				}
-     			});
-					throw new TRPCError({
-					 code: 'BAD_REQUEST',
-						message: 'User is already an admin on this event.'
-					})
+					code: 'BAD_REQUEST',
+					message: 'User is already an admin on this event.'
+				});
 			}
 
 			await ctx.prisma.$transaction([
-  			ctx.prisma.eventAdmin.create({
-  				data: {
-  					eventId: result.eventId,
-  					userId: result.user.id
-  				}
-  			}),
-  			ctx.prisma.adminInvite.delete({
-  				where: {
-  					token: result.token
-  				}
-  			})
-			])
+				ctx.prisma.eventAdmin.create({
+					data: {
+						eventId: result.eventId,
+						userId: result.user.id
+					}
+				}),
+				ctx.prisma.adminInvite.delete({
+					where: {
+						token: result.token
+					}
+				})
+			]);
 
 			return {
 				status: 'successful',
@@ -383,6 +384,5 @@ export const organizerRouter = t.router({
 					name: result.event.name
 				}
 			};
-			
 		})
 });

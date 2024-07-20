@@ -28,7 +28,7 @@ interface CollaboratorInviteEmailProps {
 	sender_email?: string;
 	event_image?: string;
 	invite_link?: string;
-  expiry_date?: Date;
+	expiry_date?: Date;
 }
 
 const baseUrl = env.NEXT_PUBLIC_URL;
@@ -104,7 +104,7 @@ export const CollaboratorInviteEmail = ({
 								{invite_link}
 							</Link>
 						</Text>
-            <Text style={text}>Your invitation expires on {expiry_date.toLocaleDateString()}.</Text>
+						<Text style={text}>Your invitation expires on {expiry_date.toLocaleDateString()}.</Text>
 						<Text style={text}>Enjoy the Event!</Text>
 
 						<Hr style={hr} />
