@@ -120,7 +120,7 @@ model EventLocation {
   id      String @id @default(cuid())
   long    Float
   lat     Float
-  name    String?
+  name    String
   event   Event  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 

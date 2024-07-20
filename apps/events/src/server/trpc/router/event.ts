@@ -99,11 +99,9 @@ export const eventRouter = t.router({
 				ticketImage: z.string().url(),
 				location: z
 					.object({
-						address: z.string().optional(),
+						address: z.string(),
 						coordinates: z
-							.array(z.number())
-							.optional()
-							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
+							.tuple([z.number(), z.number()])
 					})
 					.optional(),
 				feeBearer: z.nativeEnum(Fee_Holder)
@@ -119,10 +117,7 @@ export const eventRouter = t.router({
 						image: input.bannerImage,
 						ticketImage: input.ticketImage,
 						organizerId: ctx.session.user.id,
-						//RE-READ
-						...(input.location?.coordinates &&
-						input.location?.coordinates[0] &&
-						input.location?.coordinates[1]
+						...(input.location?.coordinates
 							? {
 									location: {
 										create: {
@@ -160,11 +155,8 @@ export const eventRouter = t.router({
 				ticketImage: z.string().url(),
 				location: z
 					.object({
-						address: z.string().optional(),
-						coordinates: z
-							.array(z.number())
-							.optional()
-							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
+						address: z.string(),
+						coordinates: z.tuple([z.number(), z.number()])
 					})
 					.optional(),
 				description: z.string().optional(),
@@ -202,19 +194,25 @@ export const eventRouter = t.router({
 					image: input.bannerImage,
 					ticketImage: input.ticketImage,
 					fee_holder: input.feeBearer,
-					...(input.location?.coordinates &&
-					input.location?.coordinates[0] &&
-					input.location?.coordinates[1]
-						? {
-								location: {
-									update: {
-										long: input.location.coordinates[0],
-										lat: input.location.coordinates[1],
-										name: input.location.address
-									}
-								}
-						  }
-						: {}),
+          ...(input.location ? {
+            location: {
+              upsert: {
+                where: {
+                  id: input.eventId
+                },
+                create: {
+                  long: input.location.coordinates[0],
+             			lat: input.location.coordinates[1],
+             			name: input.location.address,
+                },
+                update: {
+                  long: input.location.coordinates[0],
+             			lat: input.location.coordinates[1],
+             			name: input.location.address
+                }
+              }
+            }
+          } : {}),
 					description: input.description
 				}
 			});

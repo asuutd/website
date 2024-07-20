@@ -35,10 +35,9 @@ const Details = ({ event }: { event: Event }) => {
 		endTime: z.string(),
 		location: z
 			.object({
-				address: z.string().optional(),
-				coordinates: z.array(z.number()).optional()
-			})
-			.optional(),
+				address: z.string(),
+				coordinates: z.tuple([z.number(), z.number()])
+			}),
 		bannerImage: zodFileType.optional(),
 		ticketImage: zodFileType.optional(),
 		feeBearer: z.boolean(),
@@ -59,14 +58,19 @@ const Details = ({ event }: { event: Event }) => {
 			startTime: format(event.start, "yyyy-MM-dd'T'HH:mm"),
 			endTime: format(event.end, "yyyy-MM-dd'T'HH:mm"),
 			feeBearer: event.fee_holder === 'USER' ? true : false,
-			...(event.location?.name
+			...(event.location
 				? {
 						location: {
-							address: event.location.name,
+							address: event.location.name ?? '',
 							coordinates: [event.location.lat, event.location.long]
 						}
 				  }
-				: {}),
+				: {
+					location: {
+						address: '',
+						coordinates: [0, 0]
+					}
+				}),
 			...(event.description && {
 				description: event.description
 			})

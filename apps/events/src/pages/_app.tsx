@@ -12,6 +12,7 @@ import Layout from '../components/Layout';
 import SEOConfig from '../utils/nextseo-config';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
+import { Toaster } from 'sonner';
 
 const MyApp: AppType<{ session: Session | null }> = ({
 	Component,
@@ -22,6 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 			<DefaultSeo {...SEOConfig} />
 			<SessionProvider session={session}>
 				<Layout>
+					<Toaster richColors />
 					<Component {...pageProps} />
 				</Layout>
 				<ReactQueryDevtools initialIsOpen={false} />
