@@ -73,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					// 	subject: 'Purchase Successful',
 					// 	html: emailTemplate,
 					// });
-					
+
 					try {
 						if (userEmail && userName && eventName && eventPhoto && eventId) {
 							const qr_code_links = await Promise.all(
@@ -101,7 +101,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 							const ticketData = await prisma.ticket.findMany({
 								where: {
-									id: {in: user_ticket_ids}
+									id: { in: user_ticket_ids }
 								},
 								include: {
 									user: true,
@@ -116,8 +116,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									tier: true
 								}
 							});
-		
-							const passes = await Promise.all(ticketData.map(async (ticket) => await createApplePass(ticket, ticket.event, ticket.tier)))
+
+							const passes = await Promise.all(
+								ticketData.map(
+									async (ticket) => await createApplePass(ticket, ticket.event, ticket.tier)
+								)
+							);
 
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
@@ -134,7 +138,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()
 								},
-								attachments: passes.map(({pass, filename}) => ({
+								attachments: passes.map(({ pass, filename }) => ({
 									filename,
 									content: pass
 								}))

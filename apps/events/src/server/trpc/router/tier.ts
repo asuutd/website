@@ -85,6 +85,23 @@ export const tierRouter = t.router({
 				});
 			}
 
+			const changingPrice = input.price !== tier.price;
+
+			if (changingPrice) {
+				const ticket = await ctx.prisma.ticket.findFirst({
+					where: {
+						tierId: tier.id
+					}
+				});
+
+				if (ticket) {
+					throw new TRPCError({
+						code: 'BAD_REQUEST',
+						message: "Can't change tier price as tickets have been sold on this tier."
+					});
+				}
+			}
+
 			if (
 				tier.event?.organizerId === ctx.session.user.id ||
 				tier.event?.EventAdmin.find((admin) => admin.userId === ctx.session.user.id)

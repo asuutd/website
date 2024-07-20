@@ -1,10 +1,9 @@
-import { TRPCClientError } from '@trpc/client';
-import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
+import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { Fee_Holder, Prisma } from '@prisma/client';
+import { Fee_Holder } from '@prisma/client';
 import { env } from '@/env/server.mjs';
-import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
+import { ZodCustomField } from '@/utils/forms';
 import { splitEvents } from '@/utils/misc';
 
 export const eventRouter = t.router({
@@ -99,17 +98,20 @@ export const eventRouter = t.router({
 				ticketImage: z.string().url(),
 				location: z
 					.object({
-						address: z.string().optional(),
-						coordinates: z
-							.array(z.number())
-							.optional()
-							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
+						address: z.string(),
+						coordinates: z.tuple([z.number(), z.number()])
 					})
 					.optional(),
 				feeBearer: z.nativeEnum(Fee_Holder)
 			})
 		)
 		.mutation(({ input, ctx }) => {
+			if (input.endTime < input.startTime) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'End time should be greater than start time'
+				});
+			}
 			if (ctx.session.user.role === 'ORGANIZER') {
 				const newEvent = ctx.prisma.event.create({
 					data: {
@@ -119,10 +121,7 @@ export const eventRouter = t.router({
 						image: input.bannerImage,
 						ticketImage: input.ticketImage,
 						organizerId: ctx.session.user.id,
-						//RE-READ
-						...(input.location?.coordinates &&
-						input.location?.coordinates[0] &&
-						input.location?.coordinates[1]
+						...(input.location
 							? {
 									location: {
 										create: {
@@ -160,11 +159,8 @@ export const eventRouter = t.router({
 				ticketImage: z.string().url(),
 				location: z
 					.object({
-						address: z.string().optional(),
-						coordinates: z
-							.array(z.number())
-							.optional()
-							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
+						address: z.string(),
+						coordinates: z.tuple([z.number(), z.number()])
 					})
 					.optional(),
 				description: z.string().optional(),
@@ -172,6 +168,12 @@ export const eventRouter = t.router({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+			if (input.endTime < input.startTime) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'End time should be greater than start time'
+				});
+			}
 			const event = await ctx.prisma.event.findFirstOrThrow({
 				where: {
 					id: input.eventId
@@ -202,15 +204,23 @@ export const eventRouter = t.router({
 					image: input.bannerImage,
 					ticketImage: input.ticketImage,
 					fee_holder: input.feeBearer,
-					...(input.location?.coordinates &&
-					input.location?.coordinates[0] &&
-					input.location?.coordinates[1]
+					...(input.location
 						? {
 								location: {
-									update: {
-										long: input.location.coordinates[0],
-										lat: input.location.coordinates[1],
-										name: input.location.address
+									upsert: {
+										where: {
+											id: input.eventId
+										},
+										create: {
+											long: input.location.coordinates[0],
+											lat: input.location.coordinates[1],
+											name: input.location.address
+										},
+										update: {
+											long: input.location.coordinates[0],
+											lat: input.location.coordinates[1],
+											name: input.location.address
+										}
 									}
 								}
 						  }

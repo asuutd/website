@@ -28,7 +28,7 @@
 		},
 		{
 			name: 'Miryam Boakye-Nkansah',
-			role: 'Secretary',
+			role: 'Secretary'
 		},
 		{
 			name: 'Ellen Elnour',

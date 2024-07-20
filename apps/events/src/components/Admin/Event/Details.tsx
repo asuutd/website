@@ -12,6 +12,7 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 type Event = RouterOutput['event']['getEventAdmin'];
+import { toast } from 'sonner';
 
 const zodFileType = z
 	.any()
@@ -33,12 +34,10 @@ const Details = ({ event }: { event: Event }) => {
 		name: z.string(),
 		startTime: z.string(),
 		endTime: z.string(),
-		location: z
-			.object({
-				address: z.string().optional(),
-				coordinates: z.array(z.number()).optional()
-			})
-			.optional(),
+		location: z.object({
+			address: z.string(),
+			coordinates: z.tuple([z.number(), z.number()])
+		}),
 		bannerImage: zodFileType.optional(),
 		ticketImage: zodFileType.optional(),
 		feeBearer: z.boolean(),
@@ -59,14 +58,19 @@ const Details = ({ event }: { event: Event }) => {
 			startTime: format(event.start, "yyyy-MM-dd'T'HH:mm"),
 			endTime: format(event.end, "yyyy-MM-dd'T'HH:mm"),
 			feeBearer: event.fee_holder === 'USER' ? true : false,
-			...(event.location?.name
+			...(event.location
 				? {
 						location: {
-							address: event.location.name,
+							address: event.location.name ?? '',
 							coordinates: [event.location.lat, event.location.long]
 						}
 				  }
-				: {}),
+				: {
+						location: {
+							address: '',
+							coordinates: [0, 0]
+						}
+				  }),
 			...(event.description && {
 				description: event.description
 			})
@@ -80,6 +84,12 @@ const Details = ({ event }: { event: Event }) => {
 	}, []);
 
 	const onSubmit = async (fields: FormInput) => {
+		const startTime = parseISO(fields.startTime);
+		const endTime = parseISO(fields.endTime);
+		if (endTime < startTime) {
+			toast.error('End time should be greater than start time');
+			return;
+		}
 		console.log(fields);
 		const isBannerURL = isValidHttpUrl(event.image ?? '');
 		const isTicketURL = isValidHttpUrl(event.ticketImage ?? '');
@@ -112,8 +122,8 @@ const Details = ({ event }: { event: Event }) => {
 				{
 					eventId: event.id,
 					name: fields.name,
-					startTime: parseISO(fields.startTime),
-					endTime: parseISO(fields.endTime),
+					startTime,
+					endTime,
 					bannerImage:
 						typeof bannerUploadResponse !== 'string'
 							? `https://ucarecdn.com/${bannerResult[fields.bannerImage[0].name]}/`

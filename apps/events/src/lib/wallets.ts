@@ -48,7 +48,7 @@ export const createApplePass = async (
 		barcodes: [barcode],
 		appLaunchURL: `${env.NEXT_PUBLIC_URL}/tickets`,
 		// more than 15 chars leads to overlapping text
-		logoText: event?.organizer?.user.name?.slice(0,15).trim() || 'Kazala',
+		logoText: event?.organizer?.user.name?.slice(0, 15).trim() || 'Kazala',
 		teamIdentifier: env.APPLE_TEAM_ID,
 		passTypeIdentifier: env.APPLE_TICKET_PASS_TYPE_IDENTIFIER
 	});
@@ -151,11 +151,12 @@ export const createApplePass = async (
 		pass.images.add('icon', organizerImage);
 	}
 
-	const tierDisplayText = tier ? `| ${tier.name} | ` : ''
-	
-	return {pass: await pass.asBuffer(), filename: `${event.name} ${tierDisplayText}ID${ticket.id}.pkpass`};
+	const tierDisplayText = tier ? `| ${tier.name} | ` : '';
 
-
+	return {
+		pass: await pass.asBuffer(),
+		filename: `${event.name} ${tierDisplayText}ID${ticket.id}.pkpass`
+	};
 };
 
 const getImageAsPngBuffer = async (url: string, key: string, resize?: { w: number; h: number }) => {

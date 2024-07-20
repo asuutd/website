@@ -4,7 +4,7 @@
 
 <div class="mx-auto">
 	{#each sponsors as sponsor}
-		<div class="p-4  mx-auto">
+		<div class="p-4 mx-auto">
 			<a href={sponsor.link}>
 				<img
 					src={sponsor.imgurl}
