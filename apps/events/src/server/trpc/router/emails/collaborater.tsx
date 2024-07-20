@@ -28,6 +28,7 @@ interface CollaboratorInviteEmailProps {
 	sender_email?: string;
 	event_image?: string;
 	invite_link?: string;
+  expiry_date?: Date;
 }
 
 const baseUrl = env.NEXT_PUBLIC_URL;
@@ -39,7 +40,8 @@ export const CollaboratorInviteEmail = ({
 	sender_name = 'Inviter',
 	event_name = 'All White Party',
 	event_image = `${baseUrl}/vercel-team.png`,
-	invite_link = 'https://vercel.com/teams/invite/foo'
+	invite_link = 'https://vercel.com/teams/invite/foo',
+	expiry_date = new Date()
 }: CollaboratorInviteEmailProps) => {
 	const previewText = `Join ${sender_name} in hosting the ${event_name} on Kazala!`;
 	return (
@@ -102,6 +104,7 @@ export const CollaboratorInviteEmail = ({
 								{invite_link}
 							</Link>
 						</Text>
+            <Text style={text}>Your invitation expires on {expiry_date.toLocaleDateString()}.</Text>
 						<Text style={text}>Enjoy the Event!</Text>
 
 						<Hr style={hr} />

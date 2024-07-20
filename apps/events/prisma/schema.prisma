@@ -110,9 +110,9 @@ model AdminInvite {
   token   String @id @default(uuid())
   eventId String
   event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
-  email  String
-  user    User   @relation(fields: [email], references: [email], onDelete: Cascade)
-
+  email  String?
+  user    User?   @relation(fields: [email], references: [email], onDelete: Cascade)
+  expiresAt DateTime @default(dbgenerated("NOW() + interval '72h'"))
   @@unique([eventId, email])
 }
 
