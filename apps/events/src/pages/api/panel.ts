@@ -10,7 +10,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse) {
     }
     res.status(200).send(
         renderTrpcPanel(appRouter, {
-            url: env.NEXTAUTH_URL + "/api/trpc",
+            url: env.NEXT_PUBLIC_URL + "/api/trpc",
             transformer: "superjson",
         })
     );
