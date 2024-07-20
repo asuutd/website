@@ -6,6 +6,11 @@ import { writeFile, mkdir, readFile } from 'fs/promises';
 import sharp from 'sharp';
 import { env } from '@/env/server.mjs';
 import type { BarcodeDescriptor } from '@walletpass/pass-js/dist/interfaces';
+import { GoogleAuth } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
+
+const ticketQRContent = (ticket: Ticket) => `${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`
+const eventPage = (event: Event) => `${env.NEXT_PUBLIC_URL}/events/${event.id}`
 
 export const createApplePass = async (
 	ticket: Ticket & {
@@ -30,7 +35,7 @@ export const createApplePass = async (
 	template.setCertificate(cert, env.APPLE_PASS_CERTIFICATE_PASSWORD);
 
 	const barcode: BarcodeDescriptor = {
-		message: `${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`,
+		message: ticketQRContent(ticket),
 		format: constants.barcodeFormat.QR,
 		messageEncoding: 'iso-8859-1'
 	};
@@ -189,3 +194,161 @@ const getImageAsPngBuffer = async (url: string, key: string, resize?: { w: numbe
 
 	return png;
 };
+
+const googleCredentialString = Buffer.from(env.GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64, 'base64').toString("utf8");
+const googleCredentials = JSON.parse(googleCredentialString)
+const googleHttpClient = new GoogleAuth({
+  credentials: googleCredentials,
+  scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
+});
+
+// TODO: create pass classes for each event
+// TODO: update pass class on event edit
+// TODO: address typing issues
+export async function createGooglePassClass(event: Event & {
+		organizer:
+			| (Organizer & {
+					user: User;
+			  })
+			| null;
+		location: EventLocation | null;
+	}) {
+  const id = `${env.GOOGLE_WALLET_ISSUER}_${event.id}`
+  const issuerName = event?.organizer?.user.name?.trim() || 'Kazala'
+  
+  const classObject = {
+    id,
+    issuerName,
+    allowMultipleUsersPerObject: false,
+    eventId: event.id,
+    eventName: {
+      defaultValue: {
+        language: "en-US",
+        value: event.name
+      }
+    },
+    dateTime: {
+      start: event.start.toISOString(),
+      end: event.end.toISOString()
+    },
+    hexBackgroundColor: "#EEEFF2",
+    heroImage: {
+      sourceUri: {
+        uri: event.image
+      },
+      contentDescription: {
+        defaultValue: {
+          language: "en-US",
+          value: event.description
+        }
+      }
+    },
+    multipleDevicesAndHoldersAllowedStatus: "ONE_USER_ALL_DEVICES",
+    reviewStatus: "APPROVED",
+    homepageUri: {
+      uri: 'https://kazala.co'
+    },
+    linksModuleData: [
+      {
+        uri: eventPage(event),
+        description: 'Event page'
+      }
+    ]
+  }
+  
+  if (event.organizer) {
+    classObject["logo"] =  {
+      sourceUri: {
+        uri: event.organizer.user.image
+      },
+      contentDescription: {
+        defaultValue: {
+          language: "en-US",
+          value: `${event.organizer.user.name} logo`
+        }
+      }
+    }
+  }
+  
+  
+  if (event.location) {
+    classObject['venue'] = {
+      "name": {
+        "defaultValue": {
+          "language": "en-US",
+          "value": event.location.name
+        }
+      },
+      "address": {
+        "defaultValue": {
+          "language": "en-US",
+          "value": event.location.name
+        }
+      }
+    }
+    classObject['locations'] = [
+      {
+        longitude: event.location.long,
+        latitude: event.location.lat
+      }
+    ]
+  }
+  
+  const response = await googleHttpClient.request({
+    url: 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass',
+    method: 'POST',
+    data: classObject
+  });
+  
+  return id
+}
+
+// TODO: generate pass object on ticket creation, persist with ticket in db
+export function createGooglePassObject(ticket: Ticket & { user: User }, classId: string, tier: Tier | null) {
+  const passObject = {
+    id: `${env.GOOGLE_WALLET_ISSUER}.${ticket.id}`,
+    classId,
+    state: "ACTIVE",
+    header: {
+      defaultValue: {
+        language: 'en',
+        value: ticket.user.name
+      }
+    },
+    passConstraints: {
+      screenshotEligibility: "INELIGIBLE"
+    },
+    ticketHolderName: ticket.user.name,
+    ticketNumber: ticket.id,
+    barcode: {
+      type: 'QR_CODE',
+      value: ticketQRContent(ticket)
+    },
+    
+  };
+
+  if (tier) {
+    passObject['ticketType'] = {
+      'defaultValue': {
+        'language': 'en',
+        'value': tier.name
+      }
+    }
+  }
+  const claims = {
+    iss: googleCredentials.client_email,
+    aud: 'google',
+    origins: [],
+    typ: 'savetowallet',
+    payload: {
+      genericObjects: [
+        passObject
+      ]
+    }
+  };
+
+  const token = jwt.sign(claims, googleCredentials.private_key, { algorithm: 'RS256' });
+  return token
+}
+
+export const googlePassJwtToSaveUrl = (token: string) => `https://pay.google.com/gp/v/save/${token}`

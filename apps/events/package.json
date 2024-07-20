@@ -47,9 +47,11 @@
 		"date-fns": "^2.30.0",
 		"formik": "^2.4.6",
 		"framer-motion": "^7.10.3",
+		"google-auth-library": "^9.11.0",
 		"html-react-parser": "^4.2.10",
 		"html5-qrcode": "^2.3.8",
 		"isbot": "^3.8.0",
+		"jsonwebtoken": "^9.0.2",
 		"lodash": "^4.17.21",
 		"lucide-react": "^0.260.0",
 		"next": "^14.2.5",
@@ -83,6 +85,7 @@
 		"zustand": "^4.5.4"
 	},
 	"devDependencies": {
+		"@types/jsonwebtoken": "^9.0.6",
 		"@types/lodash": "^4.17.6",
 		"@types/node": "18.0.0",
 		"@types/qrcode": "^1.5.5",
