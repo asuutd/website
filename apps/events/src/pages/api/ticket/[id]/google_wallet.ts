@@ -2,10 +2,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/server/db/client';
 import { getServerAuthSession } from '@/server/common/get-server-auth-session';
 import { createGooglePassObject, googlePassJwtToSaveUrl, googlePassClass, createOrUpdateGooglePassClass } from '@/lib/wallets';
+import { env } from '@/env/server.mjs';
 
 const createGooglePassRoute = async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getServerAuthSession({ req, res });
-	if (!session || !session.user) return res.status(403).send({ err: 'Not authorized' });
+	if (!session || !session.user) {
+		const redirectDestination = new URL(env.NEXT_PUBLIC_URL + '/signin')
+		redirectDestination.searchParams.set("callbackUrl", req.url as string)
+		res.redirect(redirectDestination.toString())
+		return
+	}
 
 	const id = req.query.id as string;
 	const ticket = await prisma.ticket.findUnique({
