@@ -85,6 +85,7 @@ model Event {
   description  String? @db.Text
   ref_quantity Int?
   organizerId  String?
+  google_pass_class_created Boolean @default(false)
   fee_holder   Fee_Holder?
   tickets      Ticket[]
   RefCode      RefCode[]

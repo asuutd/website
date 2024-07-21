@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 
 const ticketQRContent = (ticket: Ticket) => `${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`
 const eventPage = (event: Event) => `${env.NEXT_PUBLIC_URL}/events/${event.id}`
+const googlePassClass = (event: Event) => `${env.GOOGLE_WALLET_ISSUER}_${event.id}`
 
 export const createApplePass = async (
 	ticket: Ticket & {
@@ -202,18 +203,16 @@ const googleHttpClient = new GoogleAuth({
   scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
 });
 
-// TODO: create pass classes for each event
-// TODO: update pass class on event edit
 // TODO: address typing issues
-export async function createGooglePassClass(event: Event & {
+export async function createOrUpdateGooglePassClass(event: Event & {
 		organizer:
 			| (Organizer & {
 					user: User;
 			  })
 			| null;
 		location: EventLocation | null;
-	}) {
-  const id = `${env.GOOGLE_WALLET_ISSUER}_${event.id}`
+	}, update = false) {
+  const id = googlePassClass(event)
   const issuerName = event?.organizer?.user.name?.trim() || 'Kazala'
   
   const classObject = {
@@ -293,10 +292,11 @@ export async function createGooglePassClass(event: Event & {
       }
     ]
   }
+
   
   const response = await googleHttpClient.request({
-    url: 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass',
-    method: 'POST',
+    url: 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass' + (update ? `/${id}` : ''),
+    method: update ? 'PUT' : 'POST',
     data: classObject
   });
   
