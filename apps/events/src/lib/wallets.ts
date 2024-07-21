@@ -203,7 +203,6 @@ const googleHttpClient = new GoogleAuth({
   scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
 });
 
-// TODO: address typing issues
 export async function createOrUpdateGooglePassClass(event: Event & {
 		organizer:
 			| (Organizer & {
@@ -215,7 +214,7 @@ export async function createOrUpdateGooglePassClass(event: Event & {
   const id = googlePassClass(event)
   const issuerName = event?.organizer?.user.name?.trim() || 'Kazala'
   
-  const classObject = {
+  const classObject: Record<string, any> = {
     id,
     issuerName,
     cardTitle: issuerName,
@@ -274,16 +273,16 @@ export async function createOrUpdateGooglePassClass(event: Event & {
   
   if (event.location) {
     classObject['venue'] = {
-      "name": {
-        "defaultValue": {
-          "language": "en-US",
-          "value": event.location.name
+      name: {
+        defaultValue: {
+          language: "en-US",
+          value: event.location.name
         }
       },
-      "address": {
-        "defaultValue": {
-          "language": "en-US",
-          "value": event.location.name
+      address: {
+        defaultValue: {
+          language: "en-US",
+          value: event.location.name
         }
       }
     }
@@ -306,13 +305,13 @@ export async function createOrUpdateGooglePassClass(event: Event & {
 }
 
 export function createGooglePassObject(ticket: Ticket & { user: User }, classId: string, tier: Tier | null) {
-  const passObject = {
+  const passObject: Record<string, any> = {
     id: `${env.GOOGLE_WALLET_ISSUER}.${ticket.id}`,
     classId,
     state: "ACTIVE",
     header: {
       defaultValue: {
-        language: 'en',
+        language: 'en-US',
         value: ticket.user.name
       }
     },
@@ -326,17 +325,18 @@ export function createGooglePassObject(ticket: Ticket & { user: User }, classId:
       type: 'QR_CODE',
       value: ticketQRContent(ticket)
     },
-    
   };
 
   if (tier) {
-    passObject['ticketType'] = {
-      'defaultValue': {
-        'language': 'en',
-        'value': tier.name
+    passObject['textModulesData'] = [
+      {
+        header: 'Tier',
+        body: tier.name,
+        id: 'tier'
       }
-    }
+    ]    
   }
+  
   const claims = {
     iss: googleCredentials.client_email,
     aud: 'google',
