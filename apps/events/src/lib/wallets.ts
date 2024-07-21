@@ -233,7 +233,7 @@ export async function createOrUpdateGooglePassClass(event: Event & {
     },
     heroImage: {
       sourceUri: {
-        uri: event.image
+        uri: event.ticketImage
       },
       contentDescription: {
         defaultValue: {
@@ -343,7 +343,7 @@ export function createGooglePassObject(ticket: Ticket & { user: User }, classId:
     origins: [],
     typ: 'savetowallet',
     payload: {
-      genericObjects: [
+      eventTicketObjects: [
         passObject
       ]
     }
