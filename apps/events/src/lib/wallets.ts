@@ -11,7 +11,7 @@ import jwt from 'jsonwebtoken';
 
 const ticketQRContent = (ticket: Ticket) => `${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`
 const eventPage = (event: Event) => `${env.NEXT_PUBLIC_URL}/events/${event.id}`
-const googlePassClass = (event: Event) => `${env.GOOGLE_WALLET_ISSUER}_${event.id}`
+export const googlePassClass = (event: Event) => `${env.GOOGLE_WALLET_ISSUER}.${event.id}`
 
 export const createApplePass = async (
 	ticket: Ticket & {
@@ -218,6 +218,7 @@ export async function createOrUpdateGooglePassClass(event: Event & {
   const classObject = {
     id,
     issuerName,
+    cardTitle: issuerName,
     allowMultipleUsersPerObject: false,
     eventId: event.id,
     eventName: {
@@ -230,7 +231,6 @@ export async function createOrUpdateGooglePassClass(event: Event & {
       start: event.start.toISOString(),
       end: event.end.toISOString()
     },
-    hexBackgroundColor: "#EEEFF2",
     heroImage: {
       sourceUri: {
         uri: event.image
@@ -243,16 +243,18 @@ export async function createOrUpdateGooglePassClass(event: Event & {
       }
     },
     multipleDevicesAndHoldersAllowedStatus: "ONE_USER_ALL_DEVICES",
-    reviewStatus: "APPROVED",
+    reviewStatus: "UNDER_REVIEW",
     homepageUri: {
       uri: 'https://kazala.co'
     },
-    linksModuleData: [
-      {
-        uri: eventPage(event),
-        description: 'Event page'
-      }
-    ]
+    linksModuleData: {
+      uris: [
+        {
+          uri: eventPage(event),
+          description: 'Event page'
+        }
+      ]
+    }
   }
   
   if (event.organizer) {
@@ -303,7 +305,6 @@ export async function createOrUpdateGooglePassClass(event: Event & {
   return id
 }
 
-// TODO: generate pass object on ticket creation, persist with ticket in db
 export function createGooglePassObject(ticket: Ticket & { user: User }, classId: string, tier: Tier | null) {
   const passObject = {
     id: `${env.GOOGLE_WALLET_ISSUER}.${ticket.id}`,
@@ -315,6 +316,7 @@ export function createGooglePassObject(ticket: Ticket & { user: User }, classId:
         value: ticket.user.name
       }
     },
+    cardTitle: ticket.user.name,
     passConstraints: {
       screenshotEligibility: "INELIGIBLE"
     },
