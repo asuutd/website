@@ -28,7 +28,8 @@
 		},
 		{
 			name: 'Miryam Boakye-Nkansah',
-			role: 'Secretary'
+			role: 'Secretary',
+			image: '/images/officers/miryam.jpeg'
 		},
 		{
 			name: 'Ellen Elnour',
@@ -42,7 +43,8 @@
 		},
 		{
 			name: 'Oisebe Nunda',
-			role: 'Sports Chair'
+			role: 'Sports Chair',
+			image: '/images/officers/oisebe.jpeg'
 		},
 		{
 			name: 'Jason Antwi-Appah',
@@ -51,19 +53,23 @@
 		},
 		{
 			name: 'Chisom Akpunku',
-			role: 'Assistant Event Coordinator'
+			role: 'Assistant Event Coordinator',
+			image: '/images/officers/chisom.jpg'
 		},
 		{
 			name: 'Isioma Emordi',
-			role: 'Public Relations Officer'
+			role: 'Public Relations Officer',
+			image: '/images/officers/isi.jpeg'
 		},
 		{
 			name: 'Monica Erewa-Meggison',
-			role: 'Content Creator'
+			role: 'Content Creator',
+			image: '/images/officers/monica.jpeg'
 		},
 		{
 			name: 'Temilade Olabode',
-			role: 'Assistant Event Coordinator'
+			role: 'Assistant Event Coordinator',
+			image: '/images/officers/temi.jpg'
 		}
 	];
 
