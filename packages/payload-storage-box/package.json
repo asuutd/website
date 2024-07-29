@@ -1,0 +1,24 @@
+{
+  "name": "@asu/payload-storage-box",
+  "version": "1.0.0",
+  "description": "Payload CMS 3.0 cloud storage adapter for Box. Implementation heavily inspired by https://github.com/payloadcms/payload/tree/beta/packages/storage-uploadthing",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@payloadcms/plugin-cloud-storage": "beta"
+  },
+  "devDependencies": {
+    "payload": "beta"
+  },
+  "peerDependencies": {
+    "payload": "beta"
+  }
+}
