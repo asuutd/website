@@ -8,7 +8,6 @@
       "resolveJsonModule": true,
       "moduleDetection": "force",
       "isolatedModules": true,
-      "moduleResolution": "Bundler",
       "verbatimModuleSyntax": true,
   
       /* Strictness */

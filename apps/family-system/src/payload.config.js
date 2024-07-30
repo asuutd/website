@@ -16,9 +16,12 @@ import { getMember, getMembers } from './utils/jonze';
 import { getMembersByFamilyTag, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
+import { boxStoragePlugin } from "@asu/payload-storage-box";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+import { BoxCcgAuth, CcgConfig } from 'box-typescript-sdk-gen/lib/box/ccgAuth.generated.js';
+
 
 export default buildConfig({
 	admin: {
@@ -201,5 +204,24 @@ export default buildConfig({
 	],
 	graphQL: {
 		disable: true
-	}
+	},
+	plugins: [
+		boxStoragePlugin({
+			enabled: true,
+			collections: {
+				[Media.slug]: true
+			},
+			options: {
+				auth: new BoxCcgAuth({ 
+					config: new CcgConfig({
+						// userId: env.BOX_CCG_AUTH_USER_ID,
+						clientId: env.BOX_CCG_AUTH_CLIENT_ID,
+						clientSecret: env.BOX_CCG_AUTH_CLIENT_SECRET,
+						enterpriseId: env.BOX_ENTERPRISE_ID
+					}) 
+				}),
+				folderId: env.BOX_FOLDER_ID
+			}
+		})
+	]
 });

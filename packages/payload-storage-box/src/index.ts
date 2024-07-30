@@ -8,7 +8,7 @@ import type {
 import { APIError, type Config, type Field, type Plugin, type Where } from 'payload';
 import { BoxClient } from 'box-typescript-sdk-gen';
 import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage';
-import { getKeyFromFilename } from './utilities';
+import { getKeyFromFilename } from './utilities.js';
 
 export type BoxStorageOptions = {
 	/**

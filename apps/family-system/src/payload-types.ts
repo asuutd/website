@@ -105,6 +105,7 @@ export interface LedgerEntry {
 export interface Media {
   id: number;
   alt?: string | null;
+  _file_id?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -118,6 +119,7 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
+      _file_id?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -126,6 +128,7 @@ export interface Media {
       filename?: string | null;
     };
     card?: {
+      _file_id?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -134,6 +137,7 @@ export interface Media {
       filename?: string | null;
     };
     tablet?: {
+      _file_id?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
