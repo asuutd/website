@@ -13,7 +13,8 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {
-    "@payloadcms/plugin-cloud-storage": "beta"
+    "@payloadcms/plugin-cloud-storage": "beta",
+    "box-typescript-sdk-gen": "^1.3.0"
   },
   "devDependencies": {
     "payload": "beta"
