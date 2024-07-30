@@ -11,6 +11,7 @@ import { Users } from './collections/Users';
 import { Members } from './collections/Members';
 import { Families } from './collections/Families';
 import { LedgerEntries } from './collections/LedgerEntries';
+import { Media } from './collections/Media';
 import { getMember, getMembers } from './utils/jonze';
 import { getMembersByFamilyTag, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
@@ -23,15 +24,15 @@ export default buildConfig({
 	admin: {
 		user: Users.slug
 	},
-	collections: [Users, Members, Families, LedgerEntries],
+	collections: [Users, Members, Families, LedgerEntries, Media],
 	editor: lexicalEditor(),
-	secret: env.PAYLOAD_SECRET || '',
+	secret: env.PAYLOAD_SECRET,
 	typescript: {
 		outputFile: path.resolve(dirname, 'payload-types.ts')
 	},
 	db: postgresAdapter({
 		pool: {
-			connectionString: env.POSTGRES_URL || ''
+			connectionString: env.POSTGRES_URL
 		}
 	}),
 	sharp,
