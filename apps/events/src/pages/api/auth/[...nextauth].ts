@@ -5,7 +5,7 @@ import { prisma } from '../../../server/db/client';
 import { env } from '../../../env/server.mjs';
 import { CustomPrismaAdapter } from '@/utils/adapter';
 import EmailProvider from 'next-auth/providers/email';
-import LoginLinkEmail from '@/server/trpc/router/emails/login';
+import LoginLinkEmail from '@/lib/emails/login';
 import { Resend } from 'resend';
 import { v4 as uuidv4 } from 'uuid';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -54,7 +54,8 @@ export const authOptions: NextAuthOptions = {
 					to: email,
 					subject: `Log in to Kazala`,
 					react: LoginLinkEmail({
-						login_link: url
+						login_link: url,
+						baseUrl: env.NEXT_PUBLIC_URL
 					}),
 					headers: {
 						'X-Entity-Ref-ID': uuidv4()

@@ -1,11 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/server/db/client';
 import { getServerAuthSession } from '@/server/common/get-server-auth-session';
-import { createApplePass } from '@/lib/wallets';
-import { constants } from '@walletpass/pass-js';
+import { createGooglePassObject, googlePassJwtToSaveUrl, googlePassClass, createOrUpdateGooglePassClass } from '@/lib/wallets';
 import { env } from '@/env/server.mjs';
 
-const createApplePassRoute = async (req: NextApiRequest, res: NextApiResponse) => {
+const createGooglePassRoute = async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getServerAuthSession({ req, res });
 	if (!session || !session.user) {
 		const redirectDestination = new URL(env.NEXT_PUBLIC_URL + '/signin')
@@ -40,11 +39,22 @@ const createApplePassRoute = async (req: NextApiRequest, res: NextApiResponse) =
 	if (ticket.userId !== session.user.id) {
 	 return res.redirect(env.NEXT_PUBLIC_URL + '/tickets')
 	}
-
-	const { pass, filename } = await createApplePass(ticket, ticket.event, ticket.tier);
-	res.setHeader('Content-Disposition', `attachment; filename=${encodeURIComponent(filename)}`);
-	res.setHeader('Content-Type', constants.PASS_MIME_TYPE);
-	res.status(200).send(pass);
+	
+	if (!ticket.event.google_pass_class_created) {
+	  await createOrUpdateGooglePassClass(ticket.event)
+		await prisma.event.update({
+      where: {
+        id: ticket.event.id
+      },
+      data: {
+        google_pass_class_created: true
+      }
+    })
+	}
+	
+	const jwt = createGooglePassObject(ticket, googlePassClass(ticket.event), ticket.tier)
+	const url = googlePassJwtToSaveUrl(jwt)
+	return res.redirect(url)
 };
 
-export default createApplePassRoute;
+export default createGooglePassRoute;

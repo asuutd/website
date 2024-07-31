@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
-import Transaction from './emails/transaction';
+import Transaction from '@/lib/emails/transaction';
 import { Resend } from 'resend';
 import { uploadImage } from '@/utils/r2';
 import QRCode from 'qrcode';
@@ -95,7 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 										contentType: 'image/png'
 									});
 									console.log(result);
-									return `https://${env.QRCODE_BUCKET}.kazala.co/${ticketId}`;
+									return {codeImg: `https://${env.QRCODE_BUCKET}.kazala.co/${ticketId}`, googleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/google_wallet`, appleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/apple_wallet`};
 								})
 							);
 
@@ -117,12 +117,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 								}
 							});
 
-							const passes = await Promise.all(
-								ticketData.map(
-									async (ticket) => await createApplePass(ticket, ticket.event, ticket.tier)
-								)
-							);
-
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
 								to: userEmail, // Replace with the buyer's email
@@ -133,15 +127,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									event_photo: eventPhoto,
 									order_date: new Date().toLocaleDateString(),
 									tiers: tiers,
-									ticketQRCodes: qr_code_links
+									tickets: qr_code_links,
+									baseUrl: env.NEXT_PUBLIC_URL
 								}),
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()
-								},
-								attachments: passes.map(({ pass, filename }) => ({
-									filename,
-									content: pass
-								}))
+								}
 							});
 						}
 					} catch (error) {
