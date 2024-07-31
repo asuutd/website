@@ -234,12 +234,6 @@ export async function createOrUpdateGooglePassClass(event: Event & {
       sourceUri: {
         uri: event.ticketImage
       },
-      contentDescription: {
-        defaultValue: {
-          language: "en-US",
-          value: event.description
-        }
-      }
     },
     multipleDevicesAndHoldersAllowedStatus: "ONE_USER_ALL_DEVICES",
     reviewStatus: "UNDER_REVIEW",

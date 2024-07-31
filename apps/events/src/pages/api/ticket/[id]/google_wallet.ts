@@ -32,8 +32,12 @@ const createGooglePassRoute = async (req: NextApiRequest, res: NextApiResponse) 
 		}
 	});
 
-	if (!ticket || ticket.userId !== session.user.id || !ticket.event) {
+	if (!ticket || !ticket.event) {
 		return res.status(404).send({ err: 'Not found' });
+	}
+	
+	if (ticket.userId !== session.user.id) {
+	 return res.redirect(env.NEXT_PUBLIC_URL + '/tickets')
 	}
 	
 	if (!ticket.event.google_pass_class_created) {

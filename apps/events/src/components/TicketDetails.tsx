@@ -106,7 +106,8 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 										alt=""
 									></Image>
 								)}
-
+								
+								<p className="text-center text-xs text-gray-500">To add your tickets to Apple Wallet, open this page on your iPhone, iPod touch or Mac.</p>
 								<a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/apple_wallet`}>
 									<button type="button">
 										<Image src={AppleWallet} alt="Add to Apple Wallet" width={192} />
