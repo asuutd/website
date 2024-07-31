@@ -1,4 +1,3 @@
-import { env } from '@/env/server.mjs';
 import {
 	Body,
 	Button,
@@ -16,12 +15,12 @@ import * as React from 'react';
 
 interface LoginLinkEmailProps {
 	login_link: string;
+	baseUrl: string
 }
 
-const baseUrl = env.NEXT_PUBLIC_URL;
-
 export const LoginLinkEmail = ({
-	login_link = 'https://vercel.com/teams/invite/foo'
+	login_link = 'https://vercel.com/teams/invite/foo',
+	baseUrl = 'https://kazala.co',
 }: LoginLinkEmailProps) => {
 	const previewText = `Log in to Kazala`;
 	return (
@@ -51,7 +50,7 @@ export const LoginLinkEmail = ({
 						</Text>
 
 						<Section style={{ alignItems: 'center', textAlign: 'center' }}>
-							<Button pX={10} pY={12} style={button} href={login_link}>
+							<Button style={{...button, padding: '10px 12px'}} href={login_link}>
 								Login
 							</Button>
 						</Section>

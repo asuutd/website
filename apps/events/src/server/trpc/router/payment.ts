@@ -7,7 +7,6 @@ import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
 import cuid from 'cuid';
-import { UndoIcon } from 'lucide-react';
 
 export const paymentRouter = t.router({
 	createCheckoutLink: t.procedure

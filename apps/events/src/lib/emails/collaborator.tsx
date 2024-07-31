@@ -1,4 +1,3 @@
-import { env } from '@/env/server.mjs';
 import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 import {
 	Body,
@@ -29,19 +28,19 @@ interface CollaboratorInviteEmailProps {
 	event_image?: string;
 	invite_link?: string;
 	expiry_date?: Date;
+	baseUrl: string
 }
-
-const baseUrl = env.NEXT_PUBLIC_URL;
 
 export const CollaboratorInviteEmail = ({
 	receiver_name = 'Invitee',
-	receiver_photo = `${baseUrl}${DEFAULT_PROFILE_IMAGE_PATH}}`,
+	receiver_photo = `https://kazala.co${DEFAULT_PROFILE_IMAGE_PATH}`,
 	sender_email = 'bukinoshita@example.com',
 	sender_name = 'Inviter',
 	event_name = 'All White Party',
-	event_image = `${baseUrl}/vercel-team.png`,
+	event_image = `https://kazala.co/BGImages/big.jpeg`,
 	invite_link = 'https://vercel.com/teams/invite/foo',
-	expiry_date = new Date()
+	expiry_date = new Date(),
+	baseUrl = 'https://kazala.co'
 }: CollaboratorInviteEmailProps) => {
 	const previewText = `Join ${sender_name} in hosting the ${event_name} on Kazala!`;
 	return (
@@ -94,7 +93,7 @@ export const CollaboratorInviteEmail = ({
 							</Row>
 						</Section>
 						<Section style={{ alignItems: 'center', textAlign: 'center' }}>
-							<Button pX={20} pY={12} style={button} href={invite_link}>
+							<Button style={{...button, padding: '20px 12px'}} href={invite_link}>
 								Join the team
 							</Button>
 						</Section>
