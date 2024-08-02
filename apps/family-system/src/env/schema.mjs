@@ -14,7 +14,8 @@ export const serverSchema = z.object({
 	BOX_CCG_AUTH_USER_ID: z.string(),
 	BOX_CCG_AUTH_CLIENT_ID: z.string(),
 	BOX_CCG_AUTH_CLIENT_SECRET: z.string(),
-	BOX_ENTERPRISE_ID: z.string()
+	BOX_ENTERPRISE_ID: z.string(),
+	RESEND_API_KEY: z.string()
 });
 
 /**

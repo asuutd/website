@@ -23,11 +23,18 @@ const dirname = path.dirname(filename);
 import { BoxCcgAuth, CcgConfig } from 'box-typescript-sdk-gen/lib/box/ccgAuth.generated.js';
 
 
+import {resendAdapter} from '@payloadcms/email-resend'
+
 export default buildConfig({
 	admin: {
 		user: Users.slug
 	},
 	collections: [Users, Members, Families, LedgerEntries, Media],
+	email: resendAdapter({
+	  apiKey: env.RESEND_API_KEY,
+    defaultFromAddress: 'admin@mails.fam.utd-asu.com',
+    defaultFromName: 'UTD African Student Union'
+	}),
 	editor: lexicalEditor(),
 	secret: env.PAYLOAD_SECRET,
 	typescript: {
