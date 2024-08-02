@@ -10,11 +10,11 @@ import sharp from 'sharp';
 import { Users } from './collections/Users';
 import { Members } from './collections/Members';
 import { Families } from './collections/Families';
-import { LedgerEntries } from './collections/LedgerEntries';
+import { createLedgerEntryForEventAttendance, LedgerEntries } from './collections/LedgerEntries';
 import { Media } from './collections/Media';
 import { BoxAccessToken } from '@/collections/BoxAccessToken';
 import { getMember, getMembers } from './utils/jonze';
-import { getMembersByFamilyTag, recalculateScores } from './utils/scores';
+import { defaultFamily, getMembersByFamilyTag, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
 import { resendAdapter } from '@payloadcms/email-resend'
@@ -28,6 +28,22 @@ const dirname = path.dirname(filename);
 const payloadConfig = buildConfig({
 	admin: {
 		user: Users.slug
+	},
+	debug: true,
+	telemetry: true,
+	onInit: async (p) => {
+	 const { totalDocs } = await p.find({
+		  collection: 'families',
+				where: {
+				  id: {equals: defaultFamily.id}
+				},
+		})
+		
+		if (totalDocs == 1) return
+		await p.create({
+		  collection: 'families',
+				data: defaultFamily
+		})
 	},
 	collections: [Users, Members, Families, LedgerEntries, Media],
 	globals: [BoxAccessToken],
@@ -153,7 +169,8 @@ const payloadConfig = buildConfig({
 						}
 					});
 				}
-
+				
+				// TODO: webhook validation
 				const { data, type } = await req.json();
 				console.log(data);
 
@@ -169,8 +186,11 @@ const payloadConfig = buildConfig({
 							.where(eq(req.payload.db.tables['members'].jonze_member_id, data.id));
 
 						break;
+          case 'attendance.marked':
+            await createLedgerEntryForEventAttendance(req.payload, data)
+            break;
 					default:
-						break;
+						req.payload.logger.warn("Received unhandled Jonze webhook type", type)
 				}
 				return new Response(null, {
 					status: 200

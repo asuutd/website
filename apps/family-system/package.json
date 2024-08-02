@@ -22,7 +22,6 @@
 		"@payloadcms/db-postgres": "3.0.0-beta.73",
 		"@payloadcms/email-resend": "3.0.0-beta.73",
 		"@payloadcms/next": "3.0.0-beta.73",
-		"@payloadcms/plugin-cloud": "3.0.0-beta.73",
 		"@payloadcms/richtext-lexical": "3.0.0-beta.73",
 		"@payloadcms/ui": "3.0.0-beta.73",
 		"@radix-ui/react-avatar": "^1.1.0",
@@ -33,8 +32,8 @@
 		"class-variance-authority": "^0.6.1",
 		"clsx": "^2.1.1",
 		"cross-env": "^7.0.3",
-		"drizzle-kit": "0.20.14-1f2c838",
-		"drizzle-orm": "0.29.4",
+		"drizzle-kit": "0.23.1-7816536",
+		"drizzle-orm": "0.32.1",
 		"lucide-react": "^0.260.0",
 		"next": "15.0.0-canary.98",
 		"payload": "3.0.0-beta.73",
@@ -43,7 +42,8 @@
 		"sharp": "0.32.6",
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss-animate": "^1.0.7",
-		"zod": "^3.23.8"
+		"zod": "^3.23.8",
+		"zod-to-json-schema": "^3.23.2"
 	},
 	"devDependencies": {
 		"@types/node": "^20.14.13",

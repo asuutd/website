@@ -97,6 +97,17 @@ export interface LedgerEntry {
   description: string;
   member?: (number | null) | Member;
   Family: number | Family;
+  metadata?: {
+    awardType: 'jonze_attendance_marked';
+    hookPayload: {
+      id: string;
+      memId: string;
+      eventId: string;
+      responseId: string;
+      updatedAt: string;
+      createdAt: string;
+    };
+  };
   updatedAt: string;
   createdAt: string;
 }

@@ -15,10 +15,9 @@ export const BoxAccessToken: GlobalConfig = {
       name: 'access_token',
       required: true,
       defaultValue: null,
-      validate: () => true,
       jsonSchema: {
-				uri: '',
-				fileMatch: [],
+        uri: 'a://b/foo.json', // required
+        fileMatch: ['a://b/foo.json'], // required
 				schema: {
 				  anyOf: [
 						  {	type: 'object' },
