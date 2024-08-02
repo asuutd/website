@@ -11,10 +11,8 @@ export const serverSchema = z.object({
 	JONZE_API_KEY: z.string(),
 	USE_JONZE_DEV: z.string().optional(),
 	BOX_FOLDER_ID: z.string(),
-	BOX_CCG_AUTH_USER_ID: z.string(),
-	BOX_CCG_AUTH_CLIENT_ID: z.string(),
-	BOX_CCG_AUTH_CLIENT_SECRET: z.string(),
-	BOX_ENTERPRISE_ID: z.string(),
+	BOX_OAUTH_CLIENT_ID: z.string(),
+	BOX_OAUTH_CLIENT_SECRET: z.string(),
 	RESEND_API_KEY: z.string()
 });
 

@@ -222,11 +222,11 @@ function boxInternal(options: BoxStorageOptions, incomingConfig: Config): Adapte
 							};
 							if (json.cause?.defect?.error && json.cause.defect.data?.error) {
 								throw new APIError(
-									`Error uploading file with uploadthing: ${json.cause.defect.error} - ${json.cause.defect.data.error}`
+									`Error uploading file with Box: ${json.cause.defect.error} - ${json.cause.defect.data.error}`
 								);
 							}
 						} else {
-							throw new APIError(`Error uploading file with uploadthing: ${error.message}`);
+							throw new APIError(`Error uploading file with Box: ${error.message}`);
 						}
 					}
 				}

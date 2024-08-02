@@ -22,7 +22,9 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  globals: {};
+  globals: {
+    box_access_token: BoxAccessToken;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -105,6 +107,7 @@ export interface LedgerEntry {
 export interface Media {
   id: number;
   alt?: string | null;
+  _file_id?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -118,6 +121,7 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
+      _file_id?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -126,6 +130,7 @@ export interface Media {
       filename?: string | null;
     };
     card?: {
+      _file_id?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -134,6 +139,7 @@ export interface Media {
       filename?: string | null;
     };
     tablet?: {
+      _file_id?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -176,6 +182,24 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "box_access_token".
+ */
+export interface BoxAccessToken {
+  id: number;
+  access_token?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

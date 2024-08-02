@@ -3,7 +3,7 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import path from 'path';
-import { buildConfig } from 'payload';
+import { buildConfig, getPayload } from 'payload';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 
@@ -18,18 +18,79 @@ import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
 import { boxStoragePlugin } from "@asu/payload-storage-box";
 
+import {resendAdapter} from '@payloadcms/email-resend'
+import { BoxAccessToken } from './collections/BoxAccessToken';
+import {
+  BoxOAuth,
+  OAuthConfig,
+} from 'box-typescript-sdk-gen/lib/box/oauth.generated.js';
+
+
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-import { BoxCcgAuth, CcgConfig } from 'box-typescript-sdk-gen/lib/box/ccgAuth.generated.js';
+
+class PayloadBackedInMemoryTokenStorage {
+  constructor() {
+    this.payload = null
+    this.token = null
+  }
+  
+  async store(t) {
+    console.log("Storing", t)
+    this.token = t
+    
+    if (!this.payload) this.payload = await getPayload({ config: payloadConfig })
+    await this.payload.updateGlobal({
+      slug: "box_access_token",
+      data: {
+        access_token: t
+      }
+    })
+    
+    return undefined
+  }
+  
+  async get() {
+    if (this.token) {
+      console.log("Returning", this.token)
+      return this.token
+    }
+    if (!this.payload) this.payload = await getPayload({ config: payloadConfig })
+    
+    const global = await this.payload.findGlobal({
+      slug: "box_access_token"
+    })
+    
+    if (!global || !global.access_token) throw new Error("Missing Box access token in db.")
+    
+    this.token = global.access_token
+    console.log("Got", global)
+    return this.token
+  }
+  
+  async clear() {
+    this.token = null
+    if (!this.payload) this.payload = await getPayload({ config: payloadConfig })
+    
+    await this.payload.updateGlobal({
+      slug: "box_access_token",
+      data: {
+        access_token: null
+      }
+    })
+    console.log("Cleared")
+    
+    return undefined
+  }
+}
 
 
-import {resendAdapter} from '@payloadcms/email-resend'
-
-export default buildConfig({
+const payloadConfig = buildConfig({
 	admin: {
 		user: Users.slug
 	},
 	collections: [Users, Members, Families, LedgerEntries, Media],
+	globals: [BoxAccessToken],
 	email: resendAdapter({
 	  apiKey: env.RESEND_API_KEY,
     defaultFromAddress: 'admin@mails.fam.utd-asu.com',
@@ -219,16 +280,16 @@ export default buildConfig({
 				[Media.slug]: true
 			},
 			options: {
-				auth: new BoxCcgAuth({ 
-					config: new CcgConfig({
-						// userId: env.BOX_CCG_AUTH_USER_ID,
-						clientId: env.BOX_CCG_AUTH_CLIENT_ID,
-						clientSecret: env.BOX_CCG_AUTH_CLIENT_SECRET,
-						enterpriseId: env.BOX_ENTERPRISE_ID
-					}) 
+				auth: new BoxOAuth({
+				  config: new OAuthConfig({
+            clientId: env.BOX_OAUTH_CLIENT_ID,
+            clientSecret: env.BOX_OAUTH_CLIENT_SECRET,
+            tokenStorage: new PayloadBackedInMemoryTokenStorage()
+          })
 				}),
 				folderId: env.BOX_FOLDER_ID
 			}
 		})
 	]
 });
+export default payloadConfig
