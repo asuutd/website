@@ -60,7 +60,8 @@ const payloadConfig = buildConfig({
 	db: postgresAdapter({
 		pool: {
 			connectionString: env.POSTGRES_URL
-		}
+		},
+    schemaName: 'git-' + process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? undefined
 	}),
 	sharp,
 	endpoints: [
