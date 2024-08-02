@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  payload@3.0.0-beta.72:
+  payload@3.0.0-beta.73:
     hash: sgik46mwf26dw7udj2o57hfsse
     path: patches/payload@3.0.0-beta.67.patch
 
@@ -297,23 +297,23 @@ importers:
         specifier: workspace:*
         version: link:../../packages/payload-storage-box
       '@payloadcms/db-postgres':
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
       '@payloadcms/email-resend':
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))
       '@payloadcms/next':
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(bufferutil@4.0.8)(graphql@16.9.0)(monaco-editor@0.38.0)(next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)(typescript@5.5.2)(utf-8-validate@5.0.10)
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(bufferutil@4.0.8)(graphql@16.9.0)(monaco-editor@0.38.0)(next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)(typescript@5.5.2)(utf-8-validate@5.0.10)
       '@payloadcms/plugin-cloud':
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(@aws-sdk/client-sso-oidc@3.616.0(@aws-sdk/client-sts@3.616.0))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(@aws-sdk/client-sso-oidc@3.616.0(@aws-sdk/client-sts@3.616.0))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))
       '@payloadcms/richtext-lexical':
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(pfogp5m56o2pfslu4ffzx7dgt4)
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(z3febn3ym2lshw7uqydocit2j4)
       '@payloadcms/ui':
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(monaco-editor@0.38.0)(next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(monaco-editor@0.38.0)(next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
       '@radix-ui/react-avatar':
         specifier: ^1.1.0
         version: 1.1.0(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react-dom@19.0.0-rc.0)(types-react@19.0.0-rc.0)
@@ -345,11 +345,11 @@ importers:
         specifier: ^0.260.0
         version: 0.260.0(react@19.0.0-rc-3208e73e-20240730)
       next:
-        specifier: 15.0.0-canary.94
-        version: 15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4)
+        specifier: 15.0.0-canary.98
+        version: 15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4)
       payload:
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       react:
         specifier: 19.0.0-rc-3208e73e-20240730
         version: 19.0.0-rc-3208e73e-20240730
@@ -563,15 +563,15 @@ importers:
   packages/payload-storage-box:
     dependencies:
       '@payloadcms/plugin-cloud-storage':
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(@aws-sdk/client-s3@3.616.0)(@aws-sdk/lib-storage@3.616.0(@aws-sdk/client-s3@3.616.0))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3))
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(@aws-sdk/client-s3@3.616.0)(@aws-sdk/lib-storage@3.616.0(@aws-sdk/client-s3@3.616.0))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3))
       box-typescript-sdk-gen:
         specifier: ^1.3.0
         version: 1.3.0
     devDependencies:
       payload:
-        specifier: 3.0.0-beta.72
-        version: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3)
+        specifier: 3.0.0-beta.73
+        version: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3)
 
 packages:
 
@@ -2016,8 +2016,8 @@ packages:
   '@next/env@14.2.5':
     resolution: {integrity: sha512-/zZGkrTOsraVfYjGP8uM0p6r0BDT6xWpkjdVbcz66PJVSpwXX3yNiRycxAuDfBKGWBrZBXRuK/YVlkNgxHGwmA==}
 
-  '@next/env@15.0.0-canary.94':
-    resolution: {integrity: sha512-2DTZcRQKI3njRBARW2cDZfPmdZ/xSYlgcvIfon9eQPQk92H1Cd+wINczRfbRh0Atvub/yGLRcVcLdODFieV7bw==}
+  '@next/env@15.0.0-canary.98':
+    resolution: {integrity: sha512-UGZNkjqTaqAkqsUqOzKT6EYCl0Y3tlqfLePzMcmKYnEqPfZIBPJwwLzNTkxLuCk9eiwOghP/CnfbKHcjxEhu2w==}
 
   '@next/env@15.0.0-rc.0':
     resolution: {integrity: sha512-6W0ndQvHR9sXcqcKeR/inD2UTRCs9+VkSK3lfaGmEuZs7EjwwXMO2BPYjz9oBrtfPL3xuTjtXsHKSsalYQ5l1Q==}
@@ -2040,8 +2040,8 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-arm64@15.0.0-canary.94':
-    resolution: {integrity: sha512-wRZsEz21oZt9JssBoBu9qMJiRHI5caFXXR0Nb0djWmGzyDoj0QaC62c7FbAVeJEJ7Uyvo1hec+63G2+zOcjS3g==}
+  '@next/swc-darwin-arm64@15.0.0-canary.98':
+    resolution: {integrity: sha512-nZ+uYC/YHDTAcuN7ITFT6wEzIN5KA+e9gUllr+g1PJHYIFEXggeRH6RZPoTLlir91ufEsnoRILdlpFZRSSQ+mw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -2058,8 +2058,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@15.0.0-canary.94':
-    resolution: {integrity: sha512-rvj0Cgyb5dTcvkGob3HkEeIVX9mtq8wFfd9nt1u1ra6XhBIe/7mPESNkey/FpxjUPsPsUUcodF5Rbv7PTTmlfA==}
+  '@next/swc-darwin-x64@15.0.0-canary.98':
+    resolution: {integrity: sha512-/pNrN+5C7lHTc0VFQzLMlmYbiTK7Jjkkr39AgXSUk7PAYmNzl0ROkybEhUH6A8J3I8i7cGpzTRn9NJvDLAjLKw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -2076,8 +2076,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-gnu@15.0.0-canary.94':
-    resolution: {integrity: sha512-SzBQbBhGbP+lwkBYCwCIWN5lguJmf2EFrcvxu386IAAGIqpQ54ed3IpRYH6CFJLfrOvG7Pr5e1FpIvjZUDj05w==}
+  '@next/swc-linux-arm64-gnu@15.0.0-canary.98':
+    resolution: {integrity: sha512-7zkou3ID25zbbs71jmyCiiQb7zDBgO9AMmhQobzSc0XYh8v4EwNVzXFzf/NjnHTqjOqsYTrdk8uCTHvCIHSoVA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -2094,8 +2094,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-musl@15.0.0-canary.94':
-    resolution: {integrity: sha512-XwvhSt08K+mUCBdvq4Ts1B7G+mfPMx6m7XRlBQDxFs6WjzrAdiaekx3bZkbbIgVTlzSp2/surzoCY3ofg4su8A==}
+  '@next/swc-linux-arm64-musl@15.0.0-canary.98':
+    resolution: {integrity: sha512-GIDhwd36UqzXiY4XHLmvl/FQfgOC8/QwtD9oP2Upd/OwoijyAEpZuYeFcQcZSEnBN2LOTrJqa5BvewzlXP58mQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -2112,8 +2112,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-gnu@15.0.0-canary.94':
-    resolution: {integrity: sha512-0oqek9kMIGo985GdUKCcOkKIK77i3EOaexbQV0bBmX332ID0NDDqXepZB8y6EJZrg+NjaKWJ0Z3IkDyf5hlMyA==}
+  '@next/swc-linux-x64-gnu@15.0.0-canary.98':
+    resolution: {integrity: sha512-CMrsnBPxt8TUoZyrwzZBvIdiajyANny3nEvMXLi+Hmzb7lyiXPKfIYV9VzTJwT6zFN57YH/s86nsuZ4V2o0+tw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -2130,8 +2130,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-musl@15.0.0-canary.94':
-    resolution: {integrity: sha512-actYIUwfRH4TDj48M5OXLIk+8315TVX6+kukU1iOxyYTRnINgGZFBVeypQHzSW/3s3EIYm2OP7Z6CKHTkHopDw==}
+  '@next/swc-linux-x64-musl@15.0.0-canary.98':
+    resolution: {integrity: sha512-PhSVy0LAiXoTJDrugNpwKwteCIiAxzq6dHoJzrno0h3SPFlkr6OadkQutAXJXm7qR3HdMwlnF3pXVUSge0zCYw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -2148,8 +2148,8 @@ packages:
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-arm64-msvc@15.0.0-canary.94':
-    resolution: {integrity: sha512-wmiBqRwvfS9EM7ikNsCeXvY25q53VIfSPloVUdyRR/7SYZ2R8mMZOb6mEBhr486BAvscaAci1O9HsVCl2SYBCg==}
+  '@next/swc-win32-arm64-msvc@15.0.0-canary.98':
+    resolution: {integrity: sha512-W/4Tl9nMZ0a70y4qWHV1RaIeFUDTaDWZKeQDu7cbH+iVLexIe7ji0uJKHGP0VmIyRwvADSpty/1nGx3fMsyyLw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -2166,8 +2166,8 @@ packages:
     cpu: [ia32]
     os: [win32]
 
-  '@next/swc-win32-ia32-msvc@15.0.0-canary.94':
-    resolution: {integrity: sha512-UccgZxaaJETAHy8qvaw/BIGbUjDyQv8wKKiFKwN6hxZuAzynxmrrJvbqO87WAYwekxUuaEospgdsJOxqmuDjlQ==}
+  '@next/swc-win32-ia32-msvc@15.0.0-canary.98':
+    resolution: {integrity: sha512-c5C8mtTOYEgqyTOKqsjgbR4PQUsSxOsRtLe4UXuLoBAZbK/BnqlZngnzTjpZbfWDdIpjag+bTsYnWXmDcImJVw==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -2184,8 +2184,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@15.0.0-canary.94':
-    resolution: {integrity: sha512-YVijDRmc+QTcy9yhHBqEKkDzSp6kxc0WE4Ao/g79xDF45ccLnMRsgCy9dhifZtrXa3mnEtq/CfcHtwH4K8Fuqg==}
+  '@next/swc-win32-x64-msvc@15.0.0-canary.98':
+    resolution: {integrity: sha512-/CiAo+dN03/L+Loz/PR6/5yGsjRn5ZHVUl7X3iHgRP9n6v2LoDN3REgJi/NNX+xNXThC/s+I5W/EP9HX7R20Qw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -2208,45 +2208,45 @@ packages:
   '@panva/hkdf@1.2.1':
     resolution: {integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==}
 
-  '@payloadcms/db-postgres@3.0.0-beta.72':
-    resolution: {integrity: sha512-taEgqSTGbYeaoLIJ2iBGryCPHTTG1AG6/YpjpJ8c4MYZqiZx9gM5p9/jfX2W83Pef6uyhhiMWoY4zFyTtLWqXw==}
+  '@payloadcms/db-postgres@3.0.0-beta.73':
+    resolution: {integrity: sha512-ShZjYXo/2n0mMlvfTQFF792fw8OXerkuRFsL6DZXLY/cmN4qRci6G5s4t5bmbAro0M8WZ3n609qa31iwqhFG6w==}
     peerDependencies:
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
 
-  '@payloadcms/drizzle@3.0.0-beta.72':
-    resolution: {integrity: sha512-vapnj6H/J82BUEYOjrQhJDQnseZeYGc08krvtMAHCBjRFDvfrWB2ZK1rHEJuG7wyiEAJT6wWhH8oB58nUIAeZg==}
+  '@payloadcms/drizzle@3.0.0-beta.73':
+    resolution: {integrity: sha512-g8nbOW45iYtQVmrA+Ggz249gWWnSwRfIbMVN5UBIAzjLUjOpdWglfu2xw28lwgyBrHsxpv+Qq9YfViNIcnHNOQ==}
     peerDependencies:
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
 
-  '@payloadcms/email-nodemailer@3.0.0-beta.72':
-    resolution: {integrity: sha512-dNULG/jak/xA7rDdqt0DKVfQWZRdt03rzlVdHcOM4TkiV2pBJ5QwbvUMYF4Rw28htLUweKyKpqo5NuHnjr2yWg==}
+  '@payloadcms/email-nodemailer@3.0.0-beta.73':
+    resolution: {integrity: sha512-0TIxaH430pB+r6GhmJPmrxnV2CzdAJdL1MOSLksKyKlieruGW2GitoduhMrIklCIjh0BCCa9U4vSYSqKX9vj9w==}
     engines: {node: ^18.20.2 || >=20.9.0}
     peerDependencies:
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
 
-  '@payloadcms/email-resend@3.0.0-beta.72':
-    resolution: {integrity: sha512-9BlfX/DsWO1NC2MPaGUGErqicuiZomMjWyEYSSSuWghPg7WmCnninItKVTFuYlf5VOAjxzhCAD9Iu3d3H1sODg==}
+  '@payloadcms/email-resend@3.0.0-beta.73':
+    resolution: {integrity: sha512-NSKBGqOraxZkdE0zW6iEdUzYC9NYIyD23DQMQsIlrKw/1QW3JVgdRuGzEjyhxA55fSe3FZT6v0eXnwwZN9JRIA==}
     engines: {node: ^18.20.2 || >=20.9.0}
     peerDependencies:
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
 
-  '@payloadcms/graphql@3.0.0-beta.72':
-    resolution: {integrity: sha512-8oaowZYq8zFmdEHpw1BL38QynpUEyyA6xcCWSn15qv4ZBwVAAPbvrdWlup5vv56BH4zCFNKrobxp88jesTkUCw==}
+  '@payloadcms/graphql@3.0.0-beta.73':
+    resolution: {integrity: sha512-vCqPxcv6802JsF0fWzkgJkgw/FDboPkCw8qEPHl8AzpdB8MwBWB8Y7//SRDiJFs534ME7LWDpkNveN5Kn5OGGw==}
     hasBin: true
     peerDependencies:
       graphql: ^16.8.1
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
 
-  '@payloadcms/next@3.0.0-beta.72':
-    resolution: {integrity: sha512-2qav3mcmbq0AyBViCwzXd8fnBH0AQWqaON9eAgmfl7kDfrKmDp0UVJhNbc0ZGSuvv0t54wgwbGdTJf/j7zGYVg==}
+  '@payloadcms/next@3.0.0-beta.73':
+    resolution: {integrity: sha512-FXPjzDru1rR0/xcbxr074T8WUuYk/440n82Vc37Kh4SeCKrZHSWN+oPGQ6+x8XfOA7PqIZdBrS7/RakAAFyw7g==}
     engines: {node: ^18.20.2 || >=20.9.0}
     peerDependencies:
       graphql: ^16.8.1
       next: ^15.0.0-canary.53
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
 
-  '@payloadcms/plugin-cloud-storage@3.0.0-beta.72':
-    resolution: {integrity: sha512-lCTUh2W0lHgI75fuXo0JQQGvTwSJ//3UnBzqYjEdQOYHJGZPKznegC0iWBL4lGUfKXNaxxaNx+SbEx860vq33w==}
+  '@payloadcms/plugin-cloud-storage@3.0.0-beta.73':
+    resolution: {integrity: sha512-T7XCdGooN6FqzolgXNjueTu45SOSJsVwzz80ASyoWqwM9oyvELfesbJeznyWGuQmxFmE2Ou4YuAwHxKeorlnqA==}
     peerDependencies:
       '@aws-sdk/client-s3': ^3.525.0
       '@aws-sdk/lib-storage': ^3.525.0
@@ -2254,7 +2254,7 @@ packages:
       '@azure/storage-blob': ^12.11.0
       '@google-cloud/storage': ^7.7.0
       '@vercel/blob': ^0.22.3
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
     peerDependenciesMeta:
       '@aws-sdk/client-s3':
         optional: true
@@ -2269,13 +2269,13 @@ packages:
       '@vercel/blob':
         optional: true
 
-  '@payloadcms/plugin-cloud@3.0.0-beta.72':
-    resolution: {integrity: sha512-Zl0C/KLXs0ZQjrGteATu0GNHdDLwCwNJg6avW9CR4gVy/Vc3ua/KjnDZU7MMavt57XpU2ydvfyxKL3pvmTJuCA==}
+  '@payloadcms/plugin-cloud@3.0.0-beta.73':
+    resolution: {integrity: sha512-7KQDxOXWZVbhRUWKKqagQ/yhTQrJ4xvP6yTPheD6YAWGPEk/8YhzQMLLqZGbYLz4YRKLzktj3mrFQhwfRbU7Hg==}
     peerDependencies:
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
 
-  '@payloadcms/richtext-lexical@3.0.0-beta.72':
-    resolution: {integrity: sha512-Bliq1g7tqOR6Hv6kuHMk7DmT5SwMRKLJyEHTW6PBXBnqYCzsjbATdVGtiFIHw+OJixmVzMx7EH2+IK4mYVXTdA==}
+  '@payloadcms/richtext-lexical@3.0.0-beta.73':
+    resolution: {integrity: sha512-cQo7tpcdpRaUFB2KruZ9TbbmZ4paHkBJHxnyl0G4k1Z4kFbRLgvVVV8vfOY/7K1UEXYGd+QNLYsR4lQ0z9fjSQ==}
     engines: {node: ^18.20.2 || >=20.9.0}
     peerDependencies:
       '@faceless-ui/modal': 3.0.0-beta.2
@@ -2290,23 +2290,23 @@ packages:
       '@lexical/selection': 0.16.1
       '@lexical/table': 0.16.1
       '@lexical/utils': 0.16.1
-      '@payloadcms/next': 3.0.0-beta.72
-      '@payloadcms/translations': 3.0.0-beta.72
-      '@payloadcms/ui': 3.0.0-beta.72
+      '@payloadcms/next': 3.0.0-beta.73
+      '@payloadcms/translations': 3.0.0-beta.73
+      '@payloadcms/ui': 3.0.0-beta.73
       lexical: 0.16.1
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
       react: ^19.0.0 || ^19.0.0-rc-6230622a1a-20240610
       react-dom: ^19.0.0 || ^19.0.0-rc-6230622a1a-20240610
 
-  '@payloadcms/translations@3.0.0-beta.72':
-    resolution: {integrity: sha512-P2/+gaHjH+FbPSIgD2lx5fEN+pdief8aSp6eGEaxnOCrR/q/WnZYN/O9IE9tk5Zk2p6UFUB3j2XhXcvzhGASMw==}
+  '@payloadcms/translations@3.0.0-beta.73':
+    resolution: {integrity: sha512-PXGSbUE7PdOjK4NwcJIA/10VFYKVqdgadYay6T2XYJTrq5hghCYumXu17AejX+suSfe75P1tNC+H4hW+TNKK6g==}
 
-  '@payloadcms/ui@3.0.0-beta.72':
-    resolution: {integrity: sha512-wRn5dtm6d6gJN1WVAMnrxnwc3gpYQ63rr0narpo2iQwRSOyo8tX9JK4qiqWlA5JAXLEV1aHN9Qk1tQhTEqOyDw==}
+  '@payloadcms/ui@3.0.0-beta.73':
+    resolution: {integrity: sha512-vZyyqPspuK2cHjAMkn5Spn2O9SCdHs8HuF0xxGmlTyUcHf2xbATQYj/A0nvjP789KfK2xBrBR4SD9ue2Hm0i2w==}
     engines: {node: ^18.20.2 || >=20.9.0}
     peerDependencies:
       next: ^15.0.0-canary.53
-      payload: 3.0.0-beta.72
+      payload: 3.0.0-beta.73
       react: ^19.0.0 || ^19.0.0-rc-6230622a1a-20240610
       react-dom: ^19.0.0 || ^19.0.0-rc-6230622a1a-20240610
 
@@ -6571,8 +6571,8 @@ packages:
       sass:
         optional: true
 
-  next@15.0.0-canary.94:
-    resolution: {integrity: sha512-V3s69Qik3SL/yOfsUYYSLtyBC2dy9WcewTz+UViUA7dVgFDphU6GyPnDANBG/3m9fd54Zms7By01JPGBXOUL2g==}
+  next@15.0.0-canary.98:
+    resolution: {integrity: sha512-ftFB5CkpTqLMs0jRHzj3fcPRivkSuJbt6JOZtTI7Pw1x7t/YztGaQ3hEs0LappKnFxP8SiE3K3mB1j2n+UocUA==}
     engines: {node: '>=18.18.0'}
     hasBin: true
     peerDependencies:
@@ -6841,8 +6841,8 @@ packages:
   path@0.12.7:
     resolution: {integrity: sha512-aXXC6s+1w7otVF9UletFkFcDsJeO7lSZBPUQhtb5O0xJe8LtYhj/GxldoL09bBj9+ZmE2hNoHqQSFMN5fikh4Q==}
 
-  payload@3.0.0-beta.72:
-    resolution: {integrity: sha512-3TRcQO1PEzeGL2OTBXTcN+mYPy9cmBStYIqg9S3ufSW7Yv6NWaEl3/+66YP5Bu3nhu3nuwulOoIYxIv6o4ogIg==}
+  payload@3.0.0-beta.73:
+    resolution: {integrity: sha512-tDNg/7aB7/kN+Pr5YD6v+/ZwRzE/iPRVikY81v0yPywTnWmiyEDfrnQ0odLYhqVc8/2L1VPz/f+E913y4LNeNw==}
     engines: {node: ^18.20.2 || >=20.9.0}
     hasBin: true
     peerDependencies:
@@ -9123,7 +9123,7 @@ snapshots:
       '@smithy/node-config-provider': 3.1.4
       '@smithy/node-http-handler': 3.1.2
       '@smithy/protocol-http': 4.0.3
-      '@smithy/smithy-client': 3.1.7
+      '@smithy/smithy-client': 3.1.9
       '@smithy/types': 3.3.0
       '@smithy/url-parser': 3.0.3
       '@smithy/util-base64': 3.0.0
@@ -10909,7 +10909,7 @@ snapshots:
 
   '@next/env@14.2.5': {}
 
-  '@next/env@15.0.0-canary.94': {}
+  '@next/env@15.0.0-canary.98': {}
 
   '@next/env@15.0.0-rc.0': {}
 
@@ -10927,7 +10927,7 @@ snapshots:
   '@next/swc-darwin-arm64@14.2.5':
     optional: true
 
-  '@next/swc-darwin-arm64@15.0.0-canary.94':
+  '@next/swc-darwin-arm64@15.0.0-canary.98':
     optional: true
 
   '@next/swc-darwin-x64@14.1.4':
@@ -10936,7 +10936,7 @@ snapshots:
   '@next/swc-darwin-x64@14.2.5':
     optional: true
 
-  '@next/swc-darwin-x64@15.0.0-canary.94':
+  '@next/swc-darwin-x64@15.0.0-canary.98':
     optional: true
 
   '@next/swc-linux-arm64-gnu@14.1.4':
@@ -10945,7 +10945,7 @@ snapshots:
   '@next/swc-linux-arm64-gnu@14.2.5':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@15.0.0-canary.94':
+  '@next/swc-linux-arm64-gnu@15.0.0-canary.98':
     optional: true
 
   '@next/swc-linux-arm64-musl@14.1.4':
@@ -10954,7 +10954,7 @@ snapshots:
   '@next/swc-linux-arm64-musl@14.2.5':
     optional: true
 
-  '@next/swc-linux-arm64-musl@15.0.0-canary.94':
+  '@next/swc-linux-arm64-musl@15.0.0-canary.98':
     optional: true
 
   '@next/swc-linux-x64-gnu@14.1.4':
@@ -10963,7 +10963,7 @@ snapshots:
   '@next/swc-linux-x64-gnu@14.2.5':
     optional: true
 
-  '@next/swc-linux-x64-gnu@15.0.0-canary.94':
+  '@next/swc-linux-x64-gnu@15.0.0-canary.98':
     optional: true
 
   '@next/swc-linux-x64-musl@14.1.4':
@@ -10972,7 +10972,7 @@ snapshots:
   '@next/swc-linux-x64-musl@14.2.5':
     optional: true
 
-  '@next/swc-linux-x64-musl@15.0.0-canary.94':
+  '@next/swc-linux-x64-musl@15.0.0-canary.98':
     optional: true
 
   '@next/swc-win32-arm64-msvc@14.1.4':
@@ -10981,7 +10981,7 @@ snapshots:
   '@next/swc-win32-arm64-msvc@14.2.5':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@15.0.0-canary.94':
+  '@next/swc-win32-arm64-msvc@15.0.0-canary.98':
     optional: true
 
   '@next/swc-win32-ia32-msvc@14.1.4':
@@ -10990,7 +10990,7 @@ snapshots:
   '@next/swc-win32-ia32-msvc@14.2.5':
     optional: true
 
-  '@next/swc-win32-ia32-msvc@15.0.0-canary.94':
+  '@next/swc-win32-ia32-msvc@15.0.0-canary.98':
     optional: true
 
   '@next/swc-win32-x64-msvc@14.1.4':
@@ -10999,7 +10999,7 @@ snapshots:
   '@next/swc-win32-x64-msvc@14.2.5':
     optional: true
 
-  '@next/swc-win32-x64-msvc@15.0.0-canary.94':
+  '@next/swc-win32-x64-msvc@15.0.0-canary.98':
     optional: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -11018,13 +11018,13 @@ snapshots:
 
   '@panva/hkdf@1.2.1': {}
 
-  '@payloadcms/db-postgres@3.0.0-beta.72(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)':
+  '@payloadcms/db-postgres@3.0.0-beta.73(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)':
     dependencies:
-      '@payloadcms/drizzle': 3.0.0-beta.72(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
+      '@payloadcms/drizzle': 3.0.0-beta.73(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
       console-table-printer: 2.11.2
       drizzle-kit: 0.23.1-7816536
       drizzle-orm: 0.32.1(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       pg: 8.11.3
       prompts: 2.4.2
       to-snake-case: 1.0.0
@@ -11060,11 +11060,11 @@ snapshots:
       - sqlite3
       - supports-color
 
-  '@payloadcms/drizzle@3.0.0-beta.72(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)':
+  '@payloadcms/drizzle@3.0.0-beta.73(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)':
     dependencies:
       console-table-printer: 2.11.2
       drizzle-orm: 0.32.1(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.17.0)(@types/pg@8.11.6)(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       prompts: 2.4.2
       to-snake-case: 1.0.0
       uuid: 9.0.0
@@ -11098,40 +11098,40 @@ snapshots:
       - sql.js
       - sqlite3
 
-  '@payloadcms/email-nodemailer@3.0.0-beta.72(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))':
+  '@payloadcms/email-nodemailer@3.0.0-beta.73(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))':
     dependencies:
       nodemailer: 6.9.10
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
 
-  '@payloadcms/email-resend@3.0.0-beta.72(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))':
+  '@payloadcms/email-resend@3.0.0-beta.73(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))':
     dependencies:
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
 
-  '@payloadcms/graphql@3.0.0-beta.72(graphql@16.9.0)(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(typescript@5.5.2)':
+  '@payloadcms/graphql@3.0.0-beta.73(graphql@16.9.0)(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(typescript@5.5.2)':
     dependencies:
       graphql: 16.9.0
       graphql-scalars: 1.22.2(graphql@16.9.0)
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       pluralize: 8.0.0
       ts-essentials: 7.0.3(typescript@5.5.2)
     transitivePeerDependencies:
       - typescript
 
-  '@payloadcms/next@3.0.0-beta.72(bufferutil@4.0.8)(graphql@16.9.0)(monaco-editor@0.38.0)(next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)(typescript@5.5.2)(utf-8-validate@5.0.10)':
+  '@payloadcms/next@3.0.0-beta.73(bufferutil@4.0.8)(graphql@16.9.0)(monaco-editor@0.38.0)(next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)(typescript@5.5.2)(utf-8-validate@5.0.10)':
     dependencies:
       '@dnd-kit/core': 6.0.8(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
-      '@payloadcms/graphql': 3.0.0-beta.72(graphql@16.9.0)(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(typescript@5.5.2)
-      '@payloadcms/translations': 3.0.0-beta.72
-      '@payloadcms/ui': 3.0.0-beta.72(monaco-editor@0.38.0)(next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
+      '@payloadcms/graphql': 3.0.0-beta.73(graphql@16.9.0)(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(typescript@5.5.2)
+      '@payloadcms/translations': 3.0.0-beta.73
+      '@payloadcms/ui': 3.0.0-beta.73(monaco-editor@0.38.0)(next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
       busboy: 1.6.0
       file-type: 17.1.6
       graphql: 16.9.0
       graphql-http: 1.22.1(graphql@16.9.0)
       graphql-playground-html: 1.6.30
       http-status: 1.6.2
-      next: 15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4)
+      next: 15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4)
       path-to-regexp: 6.2.2
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       qs-esm: 7.0.2
       react-diff-viewer-continued: 3.2.6(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
       sass: 1.77.4
@@ -11148,25 +11148,25 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@payloadcms/plugin-cloud-storage@3.0.0-beta.72(@aws-sdk/client-s3@3.616.0)(@aws-sdk/lib-storage@3.616.0(@aws-sdk/client-s3@3.616.0))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3))':
+  '@payloadcms/plugin-cloud-storage@3.0.0-beta.73(@aws-sdk/client-s3@3.616.0)(@aws-sdk/lib-storage@3.616.0(@aws-sdk/client-s3@3.616.0))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3))':
     dependencies:
       find-node-modules: 2.1.3
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3)
       range-parser: 1.2.1
     optionalDependencies:
       '@aws-sdk/client-s3': 3.616.0
       '@aws-sdk/lib-storage': 3.616.0(@aws-sdk/client-s3@3.616.0)
 
-  '@payloadcms/plugin-cloud@3.0.0-beta.72(@aws-sdk/client-sso-oidc@3.616.0(@aws-sdk/client-sts@3.616.0))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))':
+  '@payloadcms/plugin-cloud@3.0.0-beta.73(@aws-sdk/client-sso-oidc@3.616.0(@aws-sdk/client-sts@3.616.0))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))':
     dependencies:
       '@aws-sdk/client-cognito-identity': 3.616.0
       '@aws-sdk/client-s3': 3.616.0
       '@aws-sdk/credential-providers': 3.616.0(@aws-sdk/client-sso-oidc@3.616.0(@aws-sdk/client-sts@3.616.0))
       '@aws-sdk/lib-storage': 3.616.0(@aws-sdk/client-s3@3.616.0)
-      '@payloadcms/email-nodemailer': 3.0.0-beta.72(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))
+      '@payloadcms/email-nodemailer': 3.0.0-beta.73(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))
       amazon-cognito-identity-js: 6.3.12
       nodemailer: 6.9.10
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       resend: 0.17.2
     transitivePeerDependencies:
       - '@aws-sdk/client-sso-oidc'
@@ -11174,7 +11174,7 @@ snapshots:
       - debug
       - encoding
 
-  '@payloadcms/richtext-lexical@3.0.0-beta.72(pfogp5m56o2pfslu4ffzx7dgt4)':
+  '@payloadcms/richtext-lexical@3.0.0-beta.73(z3febn3ym2lshw7uqydocit2j4)':
     dependencies:
       '@faceless-ui/modal': 3.0.0-beta.2(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
       '@faceless-ui/scroll-info': 2.0.0-beta.0(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
@@ -11188,24 +11188,24 @@ snapshots:
       '@lexical/selection': 0.16.1
       '@lexical/table': 0.16.1
       '@lexical/utils': 0.16.1
-      '@payloadcms/next': 3.0.0-beta.72(bufferutil@4.0.8)(graphql@16.9.0)(monaco-editor@0.38.0)(next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)(typescript@5.5.2)(utf-8-validate@5.0.10)
-      '@payloadcms/translations': 3.0.0-beta.72
-      '@payloadcms/ui': 3.0.0-beta.72(monaco-editor@0.38.0)(next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
+      '@payloadcms/next': 3.0.0-beta.73(bufferutil@4.0.8)(graphql@16.9.0)(monaco-editor@0.38.0)(next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)(typescript@5.5.2)(utf-8-validate@5.0.10)
+      '@payloadcms/translations': 3.0.0-beta.73
+      '@payloadcms/ui': 3.0.0-beta.73(monaco-editor@0.38.0)(next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)
       '@types/uuid': 10.0.0
       bson-objectid: 2.0.4
       dequal: 2.0.3
       lexical: 0.16.1
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       react: 19.0.0-rc-3208e73e-20240730
       react-dom: 19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730)
       react-error-boundary: 4.0.13(react@19.0.0-rc-3208e73e-20240730)
       uuid: 10.0.0
 
-  '@payloadcms/translations@3.0.0-beta.72':
+  '@payloadcms/translations@3.0.0-beta.73':
     dependencies:
       date-fns: 3.3.1
 
-  '@payloadcms/ui@3.0.0-beta.72(monaco-editor@0.38.0)(next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)':
+  '@payloadcms/ui@3.0.0-beta.73(monaco-editor@0.38.0)(next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4))(payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(types-react@19.0.0-rc.0)':
     dependencies:
       '@dnd-kit/core': 6.0.8(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
       '@dnd-kit/sortable': 7.0.2(@dnd-kit/core@6.0.8(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
@@ -11213,15 +11213,15 @@ snapshots:
       '@faceless-ui/scroll-info': 2.0.0-beta.0(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
       '@faceless-ui/window-info': 3.0.0-beta.0(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
       '@monaco-editor/react': 4.5.1(monaco-editor@0.38.0)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
-      '@payloadcms/translations': 3.0.0-beta.72
+      '@payloadcms/translations': 3.0.0-beta.73
       body-scroll-lock: 4.0.0-beta.0
       bson-objectid: 2.0.4
       date-fns: 3.3.1
       dequal: 2.0.3
       md5: 2.3.0
-      next: 15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4)
+      next: 15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4)
       object-to-formdata: 4.5.1
-      payload: 3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
+      payload: 3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
       qs-esm: 7.0.2
       react: 19.0.0-rc-3208e73e-20240730
       react-animate-height: 2.1.2(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)
@@ -14747,7 +14747,7 @@ snapshots:
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.9.0(eslint@8.57.0)
       eslint-plugin-react: 7.34.4(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
@@ -14801,7 +14801,7 @@ snapshots:
       enhanced-resolve: 5.17.0
       eslint: 8.57.0
       eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.15.0
@@ -14861,7 +14861,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -16592,9 +16592,9 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  next@15.0.0-canary.94(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4):
+  next@15.0.0-canary.98(babel-plugin-react-compiler@0.0.0-experimental-696af53-20240625)(react-dom@19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730))(react@19.0.0-rc-3208e73e-20240730)(sass@1.77.4):
     dependencies:
-      '@next/env': 15.0.0-canary.94
+      '@next/env': 15.0.0-canary.98
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.12
       busboy: 1.6.0
@@ -16605,15 +16605,15 @@ snapshots:
       react-dom: 19.0.0-rc-3208e73e-20240730(react@19.0.0-rc-3208e73e-20240730)
       styled-jsx: 5.1.6(react@19.0.0-rc-3208e73e-20240730)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.0.0-canary.94
-      '@next/swc-darwin-x64': 15.0.0-canary.94
-      '@next/swc-linux-arm64-gnu': 15.0.0-canary.94
-      '@next/swc-linux-arm64-musl': 15.0.0-canary.94
-      '@next/swc-linux-x64-gnu': 15.0.0-canary.94
-      '@next/swc-linux-x64-musl': 15.0.0-canary.94
-      '@next/swc-win32-arm64-msvc': 15.0.0-canary.94
-      '@next/swc-win32-ia32-msvc': 15.0.0-canary.94
-      '@next/swc-win32-x64-msvc': 15.0.0-canary.94
+      '@next/swc-darwin-arm64': 15.0.0-canary.98
+      '@next/swc-darwin-x64': 15.0.0-canary.98
+      '@next/swc-linux-arm64-gnu': 15.0.0-canary.98
+      '@next/swc-linux-arm64-musl': 15.0.0-canary.98
+      '@next/swc-linux-x64-gnu': 15.0.0-canary.98
+      '@next/swc-linux-x64-musl': 15.0.0-canary.98
+      '@next/swc-win32-arm64-msvc': 15.0.0-canary.98
+      '@next/swc-win32-ia32-msvc': 15.0.0-canary.98
+      '@next/swc-win32-x64-msvc': 15.0.0-canary.98
       babel-plugin-react-compiler: 0.0.0-experimental-696af53-20240625
       sass: 1.77.4
       sharp: 0.33.4
@@ -16866,10 +16866,10 @@ snapshots:
       process: 0.11.10
       util: 0.10.4
 
-  payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2):
+  payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2):
     dependencies:
       '@next/env': 15.0.0-rc.0
-      '@payloadcms/translations': 3.0.0-beta.72
+      '@payloadcms/translations': 3.0.0-beta.73
       '@swc-node/core': 1.13.1(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)
       '@swc-node/sourcemap-support': 0.5.0
       ajv: 8.14.0
@@ -16901,10 +16901,10 @@ snapshots:
       - '@swc/types'
       - typescript
 
-  payload@3.0.0-beta.72(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3):
+  payload@3.0.0-beta.73(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.3):
     dependencies:
       '@next/env': 15.0.0-rc.0
-      '@payloadcms/translations': 3.0.0-beta.72
+      '@payloadcms/translations': 3.0.0-beta.73
       '@swc-node/core': 1.13.1(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)
       '@swc-node/sourcemap-support': 0.5.0
       ajv: 8.14.0
