@@ -17,7 +17,7 @@ const pointEarningMethods: PointEarningMethod[] = [
 	},
 	{
 		title: 'Participate in Events',
-		description: 'Earn XX points for checking into events.'
+		description: 'Earn 10 points for checking into events.'
 	}
 ];
 

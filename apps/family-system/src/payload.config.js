@@ -31,8 +31,8 @@ const payloadConfig = buildConfig({
 	},
 	debug: true,
 	telemetry: true,
-	onInit: async (p) => {
-	 const { totalDocs } = await p.find({
+	onInit: async (payload) => {
+	 const { totalDocs } = await payload.find({
 		  collection: 'families',
 				where: {
 				  jonze_family_tag: {equals: defaultFamily.jonze_family_tag}
@@ -40,9 +40,9 @@ const payloadConfig = buildConfig({
 		})
 		
 		if (totalDocs == 1) return
-		await p.create({
-		  collection: 'families',
-				data: defaultFamily
+		await payload.create({
+	    collection: 'families',
+			data: defaultFamily
 		})
 	},
 	collections: [Users, Members, Families, LedgerEntries, Media],
