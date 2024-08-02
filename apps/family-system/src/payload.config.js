@@ -3,7 +3,7 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import path from 'path';
-import { buildConfig, getPayload } from 'payload';
+import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 
@@ -12,78 +12,18 @@ import { Members } from './collections/Members';
 import { Families } from './collections/Families';
 import { LedgerEntries } from './collections/LedgerEntries';
 import { Media } from './collections/Media';
+import { BoxAccessToken } from '@/collections/BoxAccessToken';
 import { getMember, getMembers } from './utils/jonze';
 import { getMembersByFamilyTag, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
+import { resendAdapter } from '@payloadcms/email-resend'
 import { boxStoragePlugin } from "@asu/payload-storage-box";
-
-import {resendAdapter} from '@payloadcms/email-resend'
-import { BoxAccessToken } from './collections/BoxAccessToken';
-import {
-  BoxOAuth,
-  OAuthConfig,
-} from 'box-typescript-sdk-gen/lib/box/oauth.generated.js';
-
+import { tokenStorage } from './utils/box';
+import { BoxOAuth, OAuthConfig } from 'box-typescript-sdk-gen';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-
-class PayloadBackedInMemoryTokenStorage {
-  constructor() {
-    this.payload = null
-    this.token = null
-  }
-  
-  async store(t) {
-    console.log("Storing", t)
-    this.token = t
-    
-    if (!this.payload) this.payload = await getPayload({ config: payloadConfig })
-    await this.payload.updateGlobal({
-      slug: "box_access_token",
-      data: {
-        access_token: t
-      }
-    })
-    
-    return undefined
-  }
-  
-  async get() {
-    if (this.token) {
-      console.log("Returning", this.token)
-      return this.token
-    }
-    if (!this.payload) this.payload = await getPayload({ config: payloadConfig })
-    
-    const global = await this.payload.findGlobal({
-      slug: "box_access_token"
-    })
-    
-    if (!global || !global.access_token) throw new Error("Missing Box access token in db.")
-    
-    this.token = global.access_token
-    console.log("Got", global)
-    return this.token
-  }
-  
-  async clear() {
-    this.token = null
-    if (!this.payload) this.payload = await getPayload({ config: payloadConfig })
-    
-    await this.payload.updateGlobal({
-      slug: "box_access_token",
-      data: {
-        access_token: null
-      }
-    })
-    console.log("Cleared")
-    
-    return undefined
-  }
-}
-
 
 const payloadConfig = buildConfig({
 	admin: {
@@ -284,7 +224,7 @@ const payloadConfig = buildConfig({
 				  config: new OAuthConfig({
             clientId: env.BOX_OAUTH_CLIENT_ID,
             clientSecret: env.BOX_OAUTH_CLIENT_SECRET,
-            tokenStorage: new PayloadBackedInMemoryTokenStorage()
+            tokenStorage,
           })
 				}),
 				folderId: env.BOX_FOLDER_ID

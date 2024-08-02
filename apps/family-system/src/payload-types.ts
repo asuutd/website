@@ -160,15 +160,9 @@ export interface PayloadMigration {
  */
 export interface BoxAccessToken {
   id: number;
-  access_token?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  access_token: {
+    [k: string]: unknown;
+  } | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
