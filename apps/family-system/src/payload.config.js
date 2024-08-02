@@ -35,7 +35,7 @@ const payloadConfig = buildConfig({
 	 const { totalDocs } = await p.find({
 		  collection: 'families',
 				where: {
-				  id: {equals: defaultFamily.id}
+				  jonze_family_tag: {equals: defaultFamily.jonze_family_tag}
 				},
 		})
 		

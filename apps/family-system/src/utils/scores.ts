@@ -4,8 +4,7 @@ import type { BasePayload } from 'payload';
 
 // TODO: use prepared statements - https://orm.drizzle.team/docs/perf-queries#prepared-statement
 
-export const defaultFamily: Family = {
-  id: -1,
+export const defaultFamily: Omit<Family, 'id'> = {
 	family_name: "No family assigned",
 	jonze_family_tag: "__default",
 	score: 0,
@@ -102,11 +101,11 @@ export const getTopFamilies = async (payload: BasePayload, limit = 5) => {
 		page: 1,
 		limit,
 		sort: '-score',
-		where: {
-		id: {
-		  not_equals: defaultFamily.id
-		}
-	}
+  		where: {
+  		jonze_family_tag: {
+  		  not_equals: defaultFamily.jonze_family_tag
+  		}
+  	}
 	});
 
 	const membersInFamilies = await Promise.all(
