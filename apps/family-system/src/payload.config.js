@@ -19,10 +19,17 @@ import { eq } from 'drizzle-orm';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+import {resendAdapter} from '@payloadcms/email-resend'
+
 export default buildConfig({
 	admin: {
 		user: Users.slug
 	},
+	email: resendAdapter({
+	  apiKey: env.RESEND_API_KEY,
+    defaultFromAddress: 'admin@mails.fam.utd-asu.com',
+    defaultFromName: 'ASU Admin'
+	}),
 	collections: [Users, Members, Families, LedgerEntries],
 	editor: lexicalEditor(),
 	secret: env.PAYLOAD_SECRET || '',
