@@ -19,7 +19,8 @@
     "box-typescript-sdk-gen": "^1.3.0"
   },
   "devDependencies": {
-    "payload": "3.0.0-beta.73"
+    "payload": "3.0.0-beta.73",
+    "typescript": "5.5.2"
   },
   "peerDependencies": {
     "box-typescript-sdk-gen": "^1.3.0",
