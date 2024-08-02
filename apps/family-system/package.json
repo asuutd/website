@@ -28,6 +28,7 @@
 		"@radix-ui/react-avatar": "^1.1.0",
 		"@radix-ui/react-icons": "^1.3.0",
 		"babel-plugin-react-compiler": "0.0.0-experimental-696af53-20240625",
+		"blurhash": "^2.0.5",
 		"box-typescript-sdk-gen": "^1.3.0",
 		"class-variance-authority": "^0.6.1",
 		"clsx": "^2.1.1",

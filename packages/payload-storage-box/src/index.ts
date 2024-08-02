@@ -9,6 +9,7 @@ import { APIError, type Config, type Field, type Plugin, type Where } from 'payl
 import { BoxClient } from 'box-typescript-sdk-gen';
 import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage';
 import { getFileIdFromFilename } from './utilities.js';
+import crypto from 'node:crypto'
 
 export type BoxStorageOptions = {
 	/**
@@ -198,7 +199,7 @@ function boxInternal(options: BoxStorageOptions, incomingConfig: Config): Adapte
 						fileContentType: mimeType,
 						attributes: {
 							parent: { id: options.options.folderId },
-							name: filename
+							name: `${data?.id ?? crypto.randomUUID()}-${filename}` 
 						}
 					});
 
