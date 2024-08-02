@@ -1,6 +1,10 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
+  // const {schemaName} = payload.db
+  // console.log({schemaName})
+  
+  // if (schemaName) await payload.db.drizzle.execute(sql.raw(`CREATE SCHEMA "${schemaName}";`))
 await payload.db.drizzle.execute(sql`
  CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
