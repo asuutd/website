@@ -8,7 +8,7 @@ import type {
 import { APIError, type Config, type Field, type Plugin, type Where } from 'payload';
 import { BoxClient } from 'box-typescript-sdk-gen';
 import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage';
-import { getKeyFromFilename } from './utilities.js';
+import { getFileIdFromFilename } from './utilities.js';
 
 export type BoxStorageOptions = {
 	/**
@@ -135,21 +135,22 @@ function boxInternal(options: BoxStorageOptions, incomingConfig: Config): Adapte
 						return new Response(null, { status: 404, statusText: 'Not Found' });
 					}
 
-					const key = getKeyFromFilename(retrievedDoc, filename);
-					if (!key) {
+					const fileId = getFileIdFromFilename(retrievedDoc, filename);
+					if (!fileId) {
 						return new Response(null, { status: 404, statusText: 'Not Found' });
 					}
 
+					await client.auth.refreshToken()
+					
 					const [fileMetadata, fileStream] = await Promise.all([
-						client.files.getFileById(key),
-						client.downloads.downloadFile(key)
+						client.files.getFileById(fileId),
+						client.downloads.downloadFile(fileId)
 					]);
 					const stream = Readable.toWeb(fileStream) as ReadableStream;
-
 					return new Response(stream, {
 						headers: new Headers({
 							'Content-Length': String(fileMetadata.size),
-							'Content-Type': (doc as any).mimeType
+							'Content-Type': (retrievedDoc as any).mimeType
 						}),
 						status: 200
 					});
@@ -159,23 +160,25 @@ function boxInternal(options: BoxStorageOptions, incomingConfig: Config): Adapte
 				}
 			},
 			handleDelete: async ({ doc, filename, req }) => {
-				const key = getKeyFromFilename(doc, filename);
+				const fileId = getFileIdFromFilename(doc, filename);
 
-				if (!key) {
+				if (!fileId) {
 					req.payload.logger.error({
-						msg: `Error deleting file: ${filename} - unable to extract key from doc`
+						msg: `Error deleting file: ${filename} - unable to extract file id from doc`
 					});
 					throw new APIError(`Error deleting file: ${filename}`);
 				}
-
+				
+				await client.auth.refreshToken()
+				
 				try {
-					if (key) {
-						await client.files.deleteFileById(key);
+					if (fileId) {
+						await client.files.deleteFileById(fileId);
 					}
 				} catch (err) {
 					req.payload.logger.error({
 						err,
-						msg: `Error deleting file with key: ${filename} - key: ${key}`
+						msg: `Error deleting file: ${filename} - file id: ${fileId}`
 					});
 					throw new APIError(`Error deleting file: ${filename}`);
 				}
@@ -188,6 +191,8 @@ function boxInternal(options: BoxStorageOptions, incomingConfig: Config): Adapte
 					readableStream.push(buffer);
 					readableStream.push(null);
 
+					await client.auth.refreshToken()
+					
 					const res = await client.uploads.uploadFile({
 						file: readableStream,
 						fileContentType: mimeType,
@@ -207,9 +212,9 @@ function boxInternal(options: BoxStorageOptions, incomingConfig: Config): Adapte
 					);
 
 					if (foundSize) {
-						data.sizes[foundSize]._key = entry.id;
+						data.sizes[foundSize]._file_id = entry.id;
 					} else {
-						data._key = entry.id;
+						data._file_id = entry.id;
 						data.filename = entry.name;
 					}
 
