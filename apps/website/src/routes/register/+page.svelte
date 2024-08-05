@@ -45,8 +45,8 @@
 </script>
 
 <svelte:head>
-	<title>Register - ASU UTDallas</title>
-	<meta name="description" content="Register and become a member of ASU UTDallas" />
+	<title>Register - ASU UT Dallas</title>
+	<meta name="description" content="Register and become a member of ASU UT Dallas" />
 </svelte:head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />

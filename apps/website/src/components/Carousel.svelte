@@ -21,7 +21,7 @@
 			<h1
 				class="block text-3xl font-bold text-gray-800 sm:text-4xl lg:text-6xl lg:leading-tight dark:text-white"
 			>
-				UTDallas <span class="text-primary">ASU</span>
+				UT Dallas <span class="text-primary">ASU</span>
 			</h1>
 			<p class="mt-3 text-lg text-gray-800 dark:text-gray-400">
 				Empowering, Uniting, and Celebrating the Rich Tapestry of African Diversity and Cultures

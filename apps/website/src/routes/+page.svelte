@@ -27,10 +27,10 @@
 </script>
 
 <svelte:head>
-	<title>ASU UTDallas</title>
+	<title>ASU UT Dallas</title>
 	<meta
 		name="description"
-		content="Connect more with the African community at UTDallas. From volunteering events to galas, ASU UTD has activities for everyone"
+		content="Connect more with the African community at UT Dallas. From volunteering events to galas, ASU UTD has activities for everyone"
 	/>
 </svelte:head>
 <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> -->
