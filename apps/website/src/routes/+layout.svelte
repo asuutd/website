@@ -6,10 +6,10 @@
 	let links: { href: string; name: string }[] = [
 		{ href: '/', name: 'Home' },
 		{ href: '/about', name: 'About' },
-		{ href: '/gallery', name: 'Gallery' },
-		{ href: '/pay', name: 'Pay Dues' },
+		// { href: '/gallery', name: 'Gallery' },
+		// { href: '/pay', name: 'Pay Dues' },
 
-		{ href: '/register', name: 'JOIN ASU' }
+		// { href: '/register', name: 'JOIN ASU' }
 	];
 
 	export let data: LayoutData;
