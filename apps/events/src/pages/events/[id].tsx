@@ -188,14 +188,14 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 								</h3>
 								<div className="flex items-center gap-2">
 									By
-									<div className="flex items-center h-6">
+									<div className="flex items-center h-6 gap-2">
 										<div className="h-6 w-6">
 											<Image
 												src={event.data?.organizer?.user.image ?? ''}
 												alt=""
 												width={200}
 												height={200}
-												className="object-contain"
+												className="object-contain rounded"
 											/>
 										</div>
 
