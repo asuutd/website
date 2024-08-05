@@ -9,7 +9,11 @@ export const serverSchema = z.object({
 	POSTGRES_URL: z.string().url(),
 	PAYLOAD_SECRET: z.string(),
 	JONZE_API_KEY: z.string(),
-	USE_JONZE_DEV: z.string().optional()
+	USE_JONZE_DEV: z.string().optional(),
+	BOX_FOLDER_ID: z.string(),
+	BOX_OAUTH_CLIENT_ID: z.string(),
+	BOX_OAUTH_CLIENT_SECRET: z.string(),
+	RESEND_API_KEY: z.string()
 });
 
 /**

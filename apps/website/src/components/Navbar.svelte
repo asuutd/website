@@ -25,9 +25,9 @@
 			<a
 				class="flex flex-none text-xl font-semibold dark:text-white items-center"
 				href="/"
-				aria-label="ASU UTDallas"
+				aria-label="ASU UT Dallas"
 			>
-				<img src="/images/pic_4.png" class="w-10 h-10" />ASU UTDallas</a
+				<img src="/images/logo.png" class="w-10 mr-2" alt="ASU UT Dallas logo" />ASU UT Dallas</a
 			>
 			<div class="sm:hidden">
 				<button

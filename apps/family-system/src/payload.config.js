@@ -10,29 +10,58 @@ import sharp from 'sharp';
 import { Users } from './collections/Users';
 import { Members } from './collections/Members';
 import { Families } from './collections/Families';
-import { LedgerEntries } from './collections/LedgerEntries';
+import { createLedgerEntryForEventAttendance, LedgerEntries } from './collections/LedgerEntries';
+import { Media } from './collections/Media';
+import { BoxAccessToken } from '@/collections/BoxAccessToken';
 import { getMember, getMembers } from './utils/jonze';
-import { getMembersByFamilyTag, recalculateScores } from './utils/scores';
+import { defaultFamily, getMembersByFamilyTag, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
+import { resendAdapter } from '@payloadcms/email-resend'
+import { boxStoragePlugin } from "@asu/payload-storage-box";
+import { tokenStorage } from './utils/box';
+import { BoxOAuth, OAuthConfig } from 'box-typescript-sdk-gen';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-export default buildConfig({
+const payloadConfig = buildConfig({
 	admin: {
 		user: Users.slug
 	},
-	collections: [Users, Members, Families, LedgerEntries],
+	debug: true,
+	telemetry: true,
+	onInit: async (payload) => {
+	 const { totalDocs } = await payload.find({
+		  collection: 'families',
+				where: {
+				  jonze_family_tag: {equals: defaultFamily.jonze_family_tag}
+				},
+		})
+		
+		if (totalDocs == 1) return
+		await payload.create({
+	    collection: 'families',
+			data: defaultFamily
+		})
+	},
+	collections: [Users, Members, Families, LedgerEntries, Media],
+	globals: [BoxAccessToken],
+	email: resendAdapter({
+	  apiKey: env.RESEND_API_KEY,
+    defaultFromAddress: 'admin@mails.fam.utd-asu.com',
+    defaultFromName: 'UTD African Student Union'
+	}),
 	editor: lexicalEditor(),
-	secret: env.PAYLOAD_SECRET || '',
+	secret: env.PAYLOAD_SECRET,
 	typescript: {
 		outputFile: path.resolve(dirname, 'payload-types.ts')
 	},
 	db: postgresAdapter({
 		pool: {
-			connectionString: env.POSTGRES_URL || ''
-		}
+			connectionString: env.POSTGRES_URL
+		},
+    // schemaName: 'git-' + process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? undefined
 	}),
 	sharp,
 	endpoints: [
@@ -141,7 +170,8 @@ export default buildConfig({
 						}
 					});
 				}
-
+				
+				// TODO: webhook validation
 				const { data, type } = await req.json();
 				console.log(data);
 
@@ -157,8 +187,11 @@ export default buildConfig({
 							.where(eq(req.payload.db.tables['members'].jonze_member_id, data.id));
 
 						break;
+          case 'attendance.marked':
+            await createLedgerEntryForEventAttendance(req.payload, data)
+            break;
 					default:
-						break;
+						req.payload.logger.warn("Received unhandled Jonze webhook type", type)
 				}
 				return new Response(null, {
 					status: 200
@@ -200,5 +233,24 @@ export default buildConfig({
 	],
 	graphQL: {
 		disable: true
-	}
+	},
+	plugins: [
+		boxStoragePlugin({
+			enabled: true,
+			collections: {
+				[Media.slug]: true
+			},
+			options: {
+				auth: new BoxOAuth({
+				  config: new OAuthConfig({
+            clientId: env.BOX_OAUTH_CLIENT_ID,
+            clientSecret: env.BOX_OAUTH_CLIENT_SECRET,
+            tokenStorage,
+          })
+				}),
+				folderId: env.BOX_FOLDER_ID
+			}
+		})
+	]
 });
+export default payloadConfig

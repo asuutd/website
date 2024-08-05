@@ -27,7 +27,9 @@ export const serverSchema = z.object({
 	R2_ACCOUNT_ID: z.string(),
 	R2_ACCESS_KEY_ID: z.string(),
 	R2_SECRET_ACCESS_KEY: z.string(),
-	QRCODE_BUCKET: z.string()
+	QRCODE_BUCKET: z.string(),
+	GOOGLE_WALLET_ISSUER: z.string(),
+	GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64: z.string()
 });
 
 /**
@@ -36,12 +38,13 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-	// NEXT_PUBLIC_BAR: z.string(),
 	NEXT_PUBLIC_URL: z.string(),
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: z.string(),
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: z.string(),
-	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string()
+	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string(),
+	NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+	NEXT_PUBLIC_POSTHOG_HOST: z.string()
 });
 
 /**
@@ -55,6 +58,7 @@ export const clientEnv = {
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: process.env.NEXT_PUBLIC_UPLOADCARE_PUB_KEY,
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
-	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-	// NEXT_PUBLIC_BAR: process.env.NEXT_PUBLIC_BAR,
+	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+	NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+	NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST
 };

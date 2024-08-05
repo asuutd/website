@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { SyncJonzeMembers } from '@/components/SyncJonzeMembers';
+import { defaultFamily } from '@/utils/scores';
 
 export const Members: CollectionConfig = {
 	slug: 'members',
@@ -43,9 +44,10 @@ export const Members: CollectionConfig = {
 			admin: {
 				readOnly: true
 			},
+			defaultValue: [defaultFamily.jonze_family_tag],
 			jsonSchema: {
-				uri: '',
-				fileMatch: [],
+        uri: 'a://b/foo.json', // required
+        fileMatch: ['a://b/foo.json'], // required
 				schema: {
 					type: 'array',
 					items: {

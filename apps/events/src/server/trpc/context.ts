@@ -6,6 +6,7 @@ import { getServerAuthSession } from '../common/get-server-auth-session';
 import { prisma } from '../db/client';
 import { IncomingHttpHeaders } from 'http';
 
+
 type CreateContextOptions = {
 	session: Session | null;
 	headers: IncomingHttpHeaders;
@@ -33,10 +34,10 @@ export const createContext = async (opts: trpcNext.CreateNextContextOptions) => 
 
 	// Get the session from the server using the unstable_getServerSession wrapper function
 	const session = await getServerAuthSession({ req, res });
-
+	
 	return await createContextInner({
 		session,
-		headers: headers
+		headers,
 	});
 };
 

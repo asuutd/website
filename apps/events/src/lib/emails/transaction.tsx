@@ -1,4 +1,3 @@
-import { env } from '@/env/client.mjs';
 import {
 	Html,
 	Body,
@@ -19,8 +18,6 @@ import {
 import React from 'react';
 import { CSSProperties } from 'react';
 
-const baseUrl = env.NEXT_PUBLIC_URL;
-
 // {QR_code}, {not right now;order_number}}
 
 interface purchaseEmailProps {
@@ -29,7 +26,9 @@ interface purchaseEmailProps {
 	event_photo: string;
 	order_date: string;
 	tiers: { tierName: string; quantity: number; tierId: string; tierPrice: number }[];
-	ticketQRCodes: string[];
+	tickets: {codeImg:string, googleWalletLink: string, appleWalletLink: string}[];
+	baseUrl: string
+	googleWalletEnabled: boolean
 }
 
 export const PurchaseEmail = ({
@@ -41,7 +40,9 @@ export const PurchaseEmail = ({
 		{ tierName: 'General Sale', tierId: '', quantity: 1, tierPrice: 12 },
 		{ tierName: 'Presale', tierId: '', quantity: 3, tierPrice: 15 }
 	],
-	ticketQRCodes = ['https://qrcode-dev.kazala.co/test_4.png']
+	tickets = [{codeImg:'https://qrcode-dev.kazala.co/test_4.png', googleWalletLink: 'https://kazala.co', appleWalletLink: 'https://kazala.co'}],
+	baseUrl = 'http://localhost:3000',
+	googleWalletEnabled = false
 }: purchaseEmailProps) => {
 	const totalPrice = tiers.reduce((sum, tier) => sum + tier.tierPrice, 0);
 	const firstName = user_name.split(' ')[0];
@@ -92,18 +93,14 @@ export const PurchaseEmail = ({
 							<Row className="mt-10 space-x-4">
 								<Button
 									href="https://kazala.co/"
-									pX={12}
-									pY={12}
-									style={{ ...button, backgroundColor: '#8c0327', color: '#f0ece9' }}
+									style={{ ...button, backgroundColor: '#8c0327', color: '#f0ece9', padding: 12 }}
 								>
 									VISIT KAZALA
 								</Button>
 
 								<Button
 									href="https://kazala.co/tickets"
-									pX={12}
-									pY={12}
-									style={{ ...button, backgroundColor: '#f0ece9', color: '#2e2e2e' }}
+									style={{ ...button, backgroundColor: '#f0ece9', color: '#2e2e2e', padding: 12 }}
 								>
 									GO TO MY TICKETS
 								</Button>
@@ -183,12 +180,23 @@ export const PurchaseEmail = ({
 						</Heading>
 						<Hr style={hr} />
 						<Text style={messageText}>
-							Add your tickets to Apple Wallet by opening the attached .pkpass file(s) on your
-							mobile device.
+							To add your tickets to Apple Wallet, open this email on your iPhone, iPod touch, or Mac.
 						</Text>
-						{ticketQRCodes.map((qrcode, index) => (
+						{tickets.map((qrcode, index) => (
 							<Section key={index}>
-								<Img src={qrcode} alt="QR Code" width="200" height="200" style={logo} />
+  							<Row>
+                  <Column>
+                    <Img src={qrcode.codeImg} alt="QR Code" width="200" height="200" style={logo} />
+                  </Column>
+                  <Column>
+                    <Link href={qrcode.appleWalletLink} style={{padding: '3px'}}>
+                      <Img width={190} src={baseUrl+ "/apple-wallet.png"} alt="Add to Apple Wallet" />
+                    </Link>
+                    {googleWalletEnabled && <Link href={qrcode.googleWalletLink} style={{padding: '3px'}}>
+                      <Img width={190} src={baseUrl + "/enUS_add_to_google_wallet_add-wallet-badge.png"} alt="Add to Google Wallet" />
+                    </Link>}
+                  </Column>
+                </Row>
 							</Section>
 						))}
 					</Container>
@@ -209,9 +217,7 @@ export const PurchaseEmail = ({
 								<Column style={{ ...tableCell, paddingBottom: '30px' }} align="left">
 									<Button
 										href="https://kazala.co/#events"
-										pX={12}
-										pY={12}
-										style={{ ...button, backgroundColor: '#8c0327', color: '#f0ece9' }}
+										style={{ ...button, backgroundColor: '#8c0327', color: '#f0ece9', padding: 12 }}
 									>
 										UPCOMING EVENTS
 									</Button>

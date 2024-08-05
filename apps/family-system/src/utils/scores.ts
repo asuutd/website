@@ -4,6 +4,12 @@ import type { BasePayload } from 'payload';
 
 // TODO: use prepared statements - https://orm.drizzle.team/docs/perf-queries#prepared-statement
 
+export const defaultFamily: Omit<Family, 'id' | 'createdAt' | 'updatedAt'> = {
+	family_name: "No family assigned",
+	jonze_family_tag: "#fam-no-family-assigned",
+	score: 0
+}
+
 export const recalculateScores = async (payload: BasePayload, familyIds?: number[]) => {
 	const { ledger_entries, families } = payload.db.tables;
 	const { drizzle: db } = payload.db;
@@ -92,7 +98,12 @@ export const getTopFamilies = async (payload: BasePayload, limit = 5) => {
 		collection: 'families',
 		page: 1,
 		limit,
-		sort: '-score'
+		sort: '-score',
+		where: {
+  		jonze_family_tag: {
+  		  not_equals: defaultFamily.jonze_family_tag
+  		}
+ 	  }
 	});
 
 	const membersInFamilies = await Promise.all(

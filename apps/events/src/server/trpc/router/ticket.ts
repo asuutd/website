@@ -395,20 +395,6 @@ export const ticketRouter = t.router({
 				nextCursor
 			};
 		}),
-	test: authedProcedure.mutation(async ({ input, ctx }) => {
-		await ctx.prisma.code.updateMany({
-			data: {
-				tierId: 'clm57cmaz0001l108k4xsef7y',
-				value: 2
-			},
-			where: {
-				tierId: 'clmh7qxk90000lb08gfi6cchl',
-				code: {
-					in: ['1UFAJD', 'F3STP3', 'P2JGZ0', 'WCO608', 'EVN4PQ', 'BKP5PV']
-				}
-			}
-		});
-	}),
 
 	validateTicket: authedProcedure
 		.input(

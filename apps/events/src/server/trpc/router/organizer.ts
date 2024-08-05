@@ -10,7 +10,7 @@ import {
 } from '../trpc';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import Collaborater from './emails/collaborater';
+import Collaborator from '@/lib/emails/collaborator';
 import { Resend } from 'resend';
 import { Admin_Type, EventAdmin, User } from '@prisma/client';
 const resend = new Resend(env.RESEND_API_KEY);
@@ -134,7 +134,7 @@ export const organizerRouter = t.router({
 					from: 'ticket@mails.kazala.co',
 					to: invite.email, // Replace with the buyer's email
 					subject: `Invite to collaborate on ${invite.event.name}.`,
-					react: Collaborater({
+					react: Collaborator({
 						receiver_name: user?.name ?? 'invitee',
 						receiver_photo: user?.image ?? '',
 						sender_email: ctx.session.user.email ?? '',
@@ -142,7 +142,8 @@ export const organizerRouter = t.router({
 						event_name: invite.event.name,
 						event_image: invite.event.ticketImage ?? '',
 						invite_link: `${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`,
-						expiry_date: invite.expiresAt
+						expiry_date: invite.expiresAt,
+						baseUrl: env.NEXT_PUBLIC_URL
 					})
 				});
 			} catch (error) {

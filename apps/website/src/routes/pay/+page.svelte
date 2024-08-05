@@ -20,8 +20,8 @@
 </script>
 
 <svelte:head>
-	<title>Payment - ASU UTDallas</title>
-	<meta name="description" content="Pay dues for ASU UTDallas and enjoy paid privileges" />
+	<title>Payment - ASU UT Dallas</title>
+	<meta name="description" content="Pay dues for ASU UT Dallas and enjoy paid privileges" />
 </svelte:head>
 
 <!-- Hero -->
