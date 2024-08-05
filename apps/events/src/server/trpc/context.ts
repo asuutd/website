@@ -5,9 +5,13 @@ import { Session } from 'next-auth';
 import { getServerAuthSession } from '../common/get-server-auth-session';
 import { prisma } from '../db/client';
 import { IncomingHttpHeaders } from 'http';
+import { PostHog } from 'posthog-node'
+import { getPostHog } from '../posthog';
+
 
 type CreateContextOptions = {
 	session: Session | null;
+	posthog: PostHog | null
 	headers: IncomingHttpHeaders;
 };
 
@@ -19,6 +23,7 @@ export const createContextInner = async (opts: CreateContextOptions) => {
 	return {
 		session: opts.session,
 		prisma,
+		posthog: opts.posthog,
 		headers: opts.headers
 	};
 };
@@ -33,10 +38,11 @@ export const createContext = async (opts: trpcNext.CreateNextContextOptions) => 
 
 	// Get the session from the server using the unstable_getServerSession wrapper function
 	const session = await getServerAuthSession({ req, res });
-
+	
 	return await createContextInner({
 		session,
-		headers: headers
+		headers,
+		posthog: getPostHog()
 	});
 };
 
