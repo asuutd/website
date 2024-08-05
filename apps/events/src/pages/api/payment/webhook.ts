@@ -9,7 +9,7 @@ import { Resend } from 'resend';
 import { uploadImage } from '@/utils/r2';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
-import { createApplePass } from '@/lib/wallets';
+import { getPostHog } from '@/server/posthog';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -65,14 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						}
 					});
 
-					// // Send the email to the buyer
-					// const emailTemplate = createEmailTemplate('URL_TO_PURCHASE_DETAILS'); // Replace with the actual URL
-					// resend.sendEmail({
-					// 	from: 'onboarding@resend',
-					// 	to: 'buyer-email@example.com', // Replace with the buyer's email
-					// 	subject: 'Purchase Successful',
-					// 	html: emailTemplate,
-					// });
 
 					try {
 						if (userEmail && userName && eventName && eventPhoto && eventId) {
@@ -116,6 +108,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									tier: true
 								}
 							});
+							
+							const posthog = getPostHog()
+							const uid = ticketData[0]?.user.id
 
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
@@ -128,7 +123,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									order_date: new Date().toLocaleDateString(),
 									tiers: tiers,
 									tickets: qr_code_links,
-									baseUrl: env.NEXT_PUBLIC_URL
+									baseUrl: env.NEXT_PUBLIC_URL,
+									googleWalletEnabled: uid ? (await posthog.isFeatureEnabled('google-wallet-pass-generation', uid) ?? false) : false
 								}),
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()

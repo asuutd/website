@@ -28,6 +28,7 @@ interface purchaseEmailProps {
 	tiers: { tierName: string; quantity: number; tierId: string; tierPrice: number }[];
 	tickets: {codeImg:string, googleWalletLink: string, appleWalletLink: string}[];
 	baseUrl: string
+	googleWalletEnabled: boolean
 }
 
 export const PurchaseEmail = ({
@@ -40,7 +41,8 @@ export const PurchaseEmail = ({
 		{ tierName: 'Presale', tierId: '', quantity: 3, tierPrice: 15 }
 	],
 	tickets = [{codeImg:'https://qrcode-dev.kazala.co/test_4.png', googleWalletLink: 'https://kazala.co', appleWalletLink: 'https://kazala.co'}],
-	baseUrl = 'http://localhost:3000'
+	baseUrl = 'http://localhost:3000',
+	googleWalletEnabled = false
 }: purchaseEmailProps) => {
 	const totalPrice = tiers.reduce((sum, tier) => sum + tier.tierPrice, 0);
 	const firstName = user_name.split(' ')[0];
@@ -187,12 +189,12 @@ export const PurchaseEmail = ({
                     <Img src={qrcode.codeImg} alt="QR Code" width="200" height="200" style={logo} />
                   </Column>
                   <Column>
-                    <Link href={qrcode.googleWalletLink} style={{padding: '3px'}}>
-                      <Img width={190} src={baseUrl+ "/enUS_add_to_google_wallet_add-wallet-badge.png"} alt="Add to Google Wallet" />
+                    <Link href={qrcode.appleWalletLink} style={{padding: '3px'}}>
+                      <Img width={190} src={baseUrl+ "/apple-wallet.png"} alt="Add to Apple Wallet" />
                     </Link>
-                    <Link href={qrcode.googleWalletLink} style={{padding: '3px'}}>
-                      <Img width={190} src={baseUrl+ "/apple-wallet.png"} alt="Add to Google Wallet" />
-                    </Link>
+                    {googleWalletEnabled && <Link href={qrcode.googleWalletLink} style={{padding: '3px'}}>
+                      <Img width={190} src={baseUrl + "/enUS_add_to_google_wallet_add-wallet-badge.png"} alt="Add to Google Wallet" />
+                    </Link>}
                   </Column>
                 </Row>
 							</Section>
