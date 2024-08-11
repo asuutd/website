@@ -1,0 +1,12 @@
+{
+	"name": "@asu/jonze",
+	"version": "1.0.0",
+	"description": "API client for https://jonze.co",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"devDependencies": {
+		"typescript": "5.5.2"
+	}
+}
