@@ -30,3 +30,20 @@ export const zodSchema = z.object({
 	newsletters: z.boolean(),
 	class: z.string().default('Freshman')
 });
+
+
+export const EventTypes = {
+	jonze: 'jonze',
+	kazala: 'kazala'
+} as const
+
+export type Event = {
+	id: string;
+	name: string;
+	description?: string;
+	image: string;
+	link: string;
+	type: typeof EventTypes[keyof typeof EventTypes];
+	startDate: Date;
+	endDate?: Date;
+}
