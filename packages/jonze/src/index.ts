@@ -57,6 +57,10 @@ export class JonzeClient {
 		this.apiBase = useDev ? 'https://dev-api.jonze.co' : 'https://api.jonze.co';
 	}
 
+	isDev() {
+		return this.apiBase === 'https://dev-api.jonze.co';
+	}
+
 	private async fetch(url: string, method: string, body?: any) {
 		const fetchOptions: RequestInit = {
 			method,
