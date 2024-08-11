@@ -9,7 +9,7 @@ export const load: PageServerLoad = async () => {
 	const now = new Date()
 	const [kazalaEvents, jonzeEvents] = await Promise.all([kazalaClient.event.getEvents.query(), jonzeClient.getEvents()]);
 
-	const events: Event[] = kazalaEvents.upcomingEvents.filter((evt) => ASU_EVENT_ORGANIZER_IDS.includes(evt.organizerId)).map((evt) => ({
+	const events: Event[] = [...kazalaEvents.upcomingEvents, ...kazalaEvents.ongoingEvents].filter((evt) => ASU_EVENT_ORGANIZER_IDS.includes(evt.organizerId)).map((evt) => ({
 		id: evt.id,
 		name: evt.name,
 		description: evt.description,
