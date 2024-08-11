@@ -37,42 +37,48 @@ type PartialMember = Pick<
 	'id' | 'orgId' | 'userId' | 'role' | 'additionalInfoId' | 'createdAt' | 'createdAt'
 >;
 
-const JONZE_API_BASE = env.USE_JONZE_DEV ? 'https://dev-api.jonze.co' : 'https://api.jonze.co';
 
-export const jonzeFetch = async (url: string, method: string, body?: any) => {
-	const fetchOptions: RequestInit = {
-		method,
-		headers: {
-			'Content-Type': 'application/json',
-			'x-api-key': env.JONZE_API_KEY
+export class JonzeClient {
+	private apiBase: string;
+	private apiKey: string;
+
+	constructor(apiKey: string, useDev: boolean = false) {
+		this.apiKey = apiKey;
+		this.apiBase = useDev ? 'https://dev-api.jonze.co' : 'https://api.jonze.co';
+	}
+
+	private async fetch(url: string, method: string, body?: any) {
+		const fetchOptions: RequestInit = {
+			method,
+			headers: {
+				'Content-Type': 'application/json',
+				'x-api-key': this.apiKey
+			}
+		};
+		if (body) {
+			fetchOptions.body = JSON.stringify(body);
 		}
-	};
-	if (body) {
-		fetchOptions.body = JSON.stringify(body);
+		const response = await fetch(this.apiBase + url, fetchOptions);
+
+		if (response.ok) {
+			return response.json();
+		} else {
+			throw new Error('Jonze API Error');
+		}
 	}
-	const response = await fetch(JONZE_API_BASE + url, fetchOptions);
 
-	if (response.ok) {
-		return response.json();
-	} else {
-		throw new Error('Jonze API Error');
+	async getMembers(): Promise<PartialMember[]> {
+		return this.fetch('/members', 'GET') as Promise<PartialMember[]>;
 	}
-};
 
-export const getMembers = async () => {
-	const members = (await jonzeFetch('/members', 'GET')) as PartialMember[];
-	return members;
-};
+	async getMember(id: string): Promise<Member> {
+		return this.fetch(`/members/${id}`, 'GET') as Promise<Member>;
+	}
 
-export const getMember = async (id: string) => {
-	const member = (await jonzeFetch(`/members/${id}`, 'GET')) as Member;
-	return member;
-};
+	async addTagsToMember(memberId: string, tags: string[]): Promise<void> {
+		const body = { tags };
+		await this.fetch(`/members/${memberId}/tags`, 'PUT', body);
+	}
+}
 
-export const addTagsToMember = async (memberId: string, tags: string[]) => {
-	// TODO: used as a server action, need to require auth...
-	const body = {
-		tags
-	};
-	await jonzeFetch(`/members/${memberId}/tags`, 'PUT', body);
-};
+export const jonzeClient = new JonzeClient(env.JONZE_API_KEY, !!env.USE_JONZE_DEV);

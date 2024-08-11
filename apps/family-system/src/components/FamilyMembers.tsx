@@ -3,7 +3,7 @@
 import { Member } from '@/payload-types';
 
 import { useDocumentInfo } from '@payloadcms/ui';
-import { addTagsToMember } from '@/utils/jonze';
+import { jonzeClient } from '@/utils/jonze';
 import { useState, useEffect } from 'react';
 
 function FamilyMembers() {
@@ -64,7 +64,7 @@ function FamilyMembers() {
 			<button
 				type="button"
 				onClick={async () => {
-					await addTagsToMember(memberId, [jonze_family_tag]);
+					await jonzeClient.addTagsToMember(memberId, [jonze_family_tag]);
 				}}
 			>
 				Add Member
