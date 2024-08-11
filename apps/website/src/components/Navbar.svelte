@@ -81,12 +81,6 @@
 						aria-current="page">{link.name}</a
 					>
 				{/each}
-
-				<a
-					class={`font-medium  sm:py-6 ${$page.url.pathname === '/register' && 'text-primary'}`}
-					href={'/register'}
-					aria-current="page">JOIN ASU</a
-				>
 			</div>
 		</div>
 	</nav>
