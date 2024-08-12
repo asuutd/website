@@ -5,11 +5,11 @@ import { jonzeClient } from '$lib/jonze';
 
 export const load: PageServerLoad = async () => {
 
-	const ASU_EVENT_ORGANIZER_IDS = ["cl981dcx80000l10asvu242yv"]
+	const UTD_ASU_EVENT_ORGANIZER_IDS = ["cl981dcx80000l10asvu242yv"]
 	const now = new Date()
 	const [kazalaEvents, jonzeEvents] = await Promise.all([kazalaClient.event.getEvents.query(), jonzeClient.getEvents()]);
 
-	const events: Event[] = [...kazalaEvents.upcomingEvents, ...kazalaEvents.ongoingEvents].filter((evt) => ASU_EVENT_ORGANIZER_IDS.includes(evt.organizerId)).map((evt) => ({
+	const events: Event[] = [...kazalaEvents.upcomingEvents, ...kazalaEvents.ongoingEvents].filter((evt) => UTD_ASU_EVENT_ORGANIZER_IDS.includes(evt.organizerId)).map((evt) => ({
 		id: evt.id,
 		name: evt.name,
 		description: evt.description,
@@ -25,7 +25,7 @@ export const load: PageServerLoad = async () => {
 		name: evt.name,
 		description: evt.description,
 		image: evt.image,
-		link: `https://${jonzeClient.isDev ? 'dev.' : '' }jonze.co/event/attendance/${evt.id}`,
+		link: `https://${jonzeClient.isDev() ? 'dev.' : '' }jonze.co/event/attendance/${evt.id}`,
 		startDate: new Date(evt.start),
 		endDate: new Date(evt.end),
 		type: EventTypes.jonze,

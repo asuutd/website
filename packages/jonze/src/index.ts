@@ -1,4 +1,3 @@
-'use server';
 export type Member = {
 	id: string;
 	orgId: string;
@@ -48,17 +47,24 @@ export type Event = {
     updatedAt?: string  
 }
 
+const PROD_API_BASE = 'https://api.jonze.co'
+const DEV_API_BASE = 'https://dev-api.jonze.co'
+
 export class JonzeClient {
-	private apiBase: string;
+	private useDev: boolean;
 	private apiKey: string;
 
 	constructor(apiKey: string, useDev: boolean = false) {
 		this.apiKey = apiKey;
-		this.apiBase = useDev ? 'https://dev-api.jonze.co' : 'https://api.jonze.co';
+		this.useDev = useDev;
 	}
 
-	isDev() {
-		return this.apiBase === 'https://dev-api.jonze.co';
+	isDev(): boolean {
+		return this.useDev;
+	}
+
+	private apiBase() {
+		return this.useDev ? DEV_API_BASE : PROD_API_BASE;
 	}
 
 	private async fetch(url: string, method: string, body?: any) {
@@ -72,7 +78,7 @@ export class JonzeClient {
 		if (body) {
 			fetchOptions.body = JSON.stringify(body);
 		}
-		const response = await fetch(this.apiBase + url, fetchOptions);
+		const response = await fetch(this.apiBase() + url, fetchOptions);
 
 		if (response.ok) {
 			return response.json();
