@@ -131,11 +131,11 @@ export const LedgerEntries: CollectionConfig = {
 			hasMany: false
 		},
 		{
-		  name: "metadata",
-      type: 'json',
-      jsonSchema: {
-        uri: 'a://b/foo.json', // required
-        fileMatch: ['a://b/foo.json'], // required
+			name: "metadata",
+			type: 'json',
+			jsonSchema: {
+				uri: 'a://b/foo.json',
+				fileMatch: ['a://b/foo.json'],
 				schema: metadataJsonSchemaDef
 			}
 		}
