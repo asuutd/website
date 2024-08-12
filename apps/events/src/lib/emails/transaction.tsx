@@ -41,8 +41,8 @@ export const PurchaseEmail = ({
 		{ tierName: 'Presale', tierId: '', quantity: 3, tierPrice: 15 }
 	],
 	tickets = [{codeImg:'https://qrcode-dev.kazala.co/test_4.png', googleWalletLink: 'https://kazala.co', appleWalletLink: 'https://kazala.co'}],
-	baseUrl = 'http://localhost:3000',
-	googleWalletEnabled = false
+	baseUrl = 'https://kazala.co',
+	googleWalletEnabled = true
 }: purchaseEmailProps) => {
 	const totalPrice = tiers.reduce((sum, tier) => sum + tier.tierPrice, 0);
 	const firstName = user_name.split(' ')[0];
@@ -68,8 +68,7 @@ export const PurchaseEmail = ({
 						<Img
 							src={`${baseUrl}/favicon.png`}
 							alt="Kazala Logo"
-							width="64"
-							height="64"
+							height={64}
 							style={logo}
 						/>
 
@@ -193,7 +192,7 @@ export const PurchaseEmail = ({
                       <Img width={190} src={baseUrl+ "/apple-wallet.png"} alt="Add to Apple Wallet" />
                     </Link>
                     {googleWalletEnabled && <Link href={qrcode.googleWalletLink} style={{padding: '3px'}}>
-                      <Img width={190} src={baseUrl + "/enUS_add_to_google_wallet_add-wallet-badge.png"} alt="Add to Google Wallet" />
+                      <Img height={60} src={baseUrl + "/enUS_add_to_google_wallet_add-wallet-badge.png"} alt="Add to Google Wallet" />
                     </Link>}
                   </Column>
                 </Row>

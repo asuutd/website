@@ -126,7 +126,7 @@
 						</span>
 					</button>
 
-					<button
+					<!-- <button
 						type="button"
 						class={`${
 							$currentTab == 2 ? 'bg-base-100 shadow-md hover:border-transparent' : ''
@@ -158,7 +158,7 @@
 								>
 							</span>
 						</span>
-					</button>
+					</button> -->
 
 					<button
 						type="button"
@@ -183,8 +183,7 @@
 								viewBox="0 0 16 16"
 							>
 								<path
-									fill-rule="evenodd"
-									d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z"
+									d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z"
 								/>
 							</svg>
 							<span class="grow ml-6">
@@ -382,7 +381,7 @@
 														</h3>
 														<p class="text-sm text-gray-500">
 															members in order to create a community of people interested in
-															learning about African countries& culture
+															learning about African countries & culture
 														</p>
 													</div>
 												</div>

@@ -117,7 +117,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 								</a>
 								{showGoogleWalletButton && <a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/google_wallet`}>
 									<button type="button">
-										<Image src={GoogleWallet} alt="Add to Google Wallet" width={192} />
+										<Image src={GoogleWallet} alt="Add to Google Wallet" height={60} />
 									</button>
 								</a>}
 							</div>

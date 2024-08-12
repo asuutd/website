@@ -13,8 +13,8 @@ import { Families } from './collections/Families';
 import { createLedgerEntryForEventAttendance, LedgerEntries } from './collections/LedgerEntries';
 import { Media } from './collections/Media';
 import { BoxAccessToken } from '@/collections/BoxAccessToken';
-import { getMember, getMembers } from './utils/jonze';
-import { defaultFamily, getMembersByFamilyTag, recalculateScores } from './utils/scores';
+import { jonzeClient } from './utils/jonze';
+import { defaultFamily, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
 import { resendAdapter } from '@payloadcms/email-resend'
@@ -90,13 +90,13 @@ const payloadConfig = buildConfig({
 
 						try {
 							sendLog(`Getting member list`);
-							const members = await getMembers();
+							const members = await jonzeClient.getMembers();
 
 							sendLog(`Got ${members.length} members`);
 
 							for (const member of members) {
 								sendLog(`Getting member ${member.id}`);
-								const memberData = await getMember(member.id);
+								const memberData = await jonzeClient.getMember(member.id);
 								sendLog(`Got member ${member.id}`);
 
 								sendLog(`Upserting member ${member.id}`);
@@ -220,7 +220,7 @@ const payloadConfig = buildConfig({
 					});
 				}
 
-				const members = await getMembersByFamilyTag(req.payload, tag);
+				const members = await jonzeClient.getMembersByFamilyTag(req.payload, tag);
 
 				return new Response(JSON.stringify(members), {
 					status: 200,
