@@ -18,8 +18,8 @@
 		"migrate": "payload migrate"
 	},
 	"dependencies": {
-		"@asu/payload-storage-box": "workspace:*",
 		"@asu/jonze": "workspace:*",
+		"@asu/payload-storage-box": "workspace:*",
 		"@payloadcms/db-postgres": "3.0.0-beta.77",
 		"@payloadcms/email-resend": "3.0.0-beta.77",
 		"@payloadcms/next": "3.0.0-beta.77",
@@ -27,7 +27,6 @@
 		"@payloadcms/ui": "3.0.0-beta.77",
 		"@radix-ui/react-avatar": "^1.1.0",
 		"@radix-ui/react-icons": "^1.3.0",
-		"babel-plugin-react-compiler": "0.0.0-experimental-696af53-20240625",
 		"blurhash": "^2.0.5",
 		"box-typescript-sdk-gen": "^1.3.0",
 		"class-variance-authority": "^0.6.1",
@@ -38,6 +37,7 @@
 		"lucide-react": "^0.260.0",
 		"next": "15.0.0-canary.111",
 		"payload": "3.0.0-beta.77",
+		"proxy-agent": "^6.4.0",
 		"react": "19.0.0-rc-187dd6a7-20240806",
 		"react-dom": "19.0.0-rc-187dd6a7-20240806",
 		"sharp": "0.32.6",
@@ -51,9 +51,11 @@
 		"@types/react": "npm:types-react@19.0.0-rc.0",
 		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.0",
 		"autoprefixer": "^10.4.19",
+		"babel-plugin-react-compiler": "0.0.0-experimental-da85dca-20240809",
 		"dotenv": "^16.4.5",
 		"eslint": "^8.57.0",
 		"eslint-config-next": "15.0.0-rc.0",
+		"eslint-plugin-react-compiler": "0.0.0-experimental-c7434b2-20240809",
 		"postcss": "^8.4.40",
 		"tailwindcss": "^3.4.7",
 		"typescript": "5.5.2"

@@ -4,5 +4,11 @@ module.exports = {
 	parserOptions: {
 		project: ['./tsconfig.json'],
 		tsconfigRootDir: __dirname
-	}
+	},
+	plugins: [
+		'eslint-plugin-react-compiler',
+	  ],
+	rules: {
+		'react-compiler/react-compiler': "error",
+	},
 };
