@@ -1,5 +1,3 @@
-'use server';
-
 import { env } from '@/env/server.mjs';
 import { JonzeClient } from '@asu/jonze';
 
