@@ -36,10 +36,10 @@
 		"drizzle-kit": "0.23.1-7816536",
 		"drizzle-orm": "0.32.1",
 		"lucide-react": "^0.260.0",
-		"next": "15.0.0-canary.104",
+		"next": "15.0.0-canary.111",
 		"payload": "3.0.0-beta.77",
-		"react": "19.0.0-rc-06d0b89e-20240801",
-		"react-dom": "19.0.0-rc-06d0b89e-20240801",
+		"react": "19.0.0-rc-187dd6a7-20240806",
+		"react-dom": "19.0.0-rc-187dd6a7-20240806",
 		"sharp": "0.32.6",
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss-animate": "^1.0.7",
@@ -57,16 +57,6 @@
 		"postcss": "^8.4.40",
 		"tailwindcss": "^3.4.7",
 		"typescript": "5.5.2"
-	},
-	"pnpm": {
-		"overrides": {
-			"@types/react": "npm:types-react@19.0.0-rc.0",
-			"@types/react-dom": "npm:types-react-dom@19.0.0-rc.0"
-		}
-	},
-	"overrides": {
-		"@types/react": "npm:types-react@19.0.0-rc.0",
-		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.0"
 	},
 	"packageManager": "pnpm@9.4.0"
 }
