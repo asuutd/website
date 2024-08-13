@@ -11,7 +11,8 @@ const nextConfig = {
 	// TODO: remove this after figuring out the TS error in src/app/(payload)/layout.tsx
 	typescript: {
 		ignoreBuildErrors: true
-	}
+	},
+	outputFileTracingRoot: path.join(__dirname, '../../'),
 };
 
 export default withPayload(nextConfig);
