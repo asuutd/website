@@ -17,7 +17,7 @@ import { jonzeClient } from './utils/jonze';
 import { defaultFamily, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
-import { resendAdapter } from '@payloadcms/email-resend'
+import { resendAdapter } from '@payloadcms/email-resend';
 // import { boxStoragePlugin } from "@asu/payload-storage-box";
 // import { tokenStorage } from './utils/box';
 // import { BoxOAuth, OAuthConfig } from 'box-typescript-sdk-gen';
@@ -32,25 +32,25 @@ const payloadConfig = buildConfig({
 	debug: true,
 	telemetry: true,
 	onInit: async (payload) => {
-	 const { totalDocs } = await payload.find({
-		  collection: 'families',
-				where: {
-				  jonze_family_tag: {equals: defaultFamily.jonze_family_tag}
-				},
-		})
-		
-		if (totalDocs == 1) return
+		const { totalDocs } = await payload.find({
+			collection: 'families',
+			where: {
+				jonze_family_tag: { equals: defaultFamily.jonze_family_tag }
+			}
+		});
+
+		if (totalDocs == 1) return;
 		await payload.create({
-	    collection: 'families',
+			collection: 'families',
 			data: defaultFamily
-		})
+		});
 	},
 	collections: [Users, Members, Families, LedgerEntries, Media],
 	globals: [BoxAccessToken],
 	email: resendAdapter({
-	  apiKey: env.RESEND_API_KEY,
-    defaultFromAddress: 'admin@mails.fam.utd-asu.com',
-    defaultFromName: 'UTD African Student Union'
+		apiKey: env.RESEND_API_KEY,
+		defaultFromAddress: 'admin@mails.fam.utd-asu.com',
+		defaultFromName: 'UTD African Student Union'
 	}),
 	editor: lexicalEditor(),
 	secret: env.PAYLOAD_SECRET,
@@ -60,8 +60,8 @@ const payloadConfig = buildConfig({
 	db: postgresAdapter({
 		pool: {
 			connectionString: env.POSTGRES_URL
-		},
-    // schemaName: 'git-' + process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? undefined
+		}
+		// schemaName: 'git-' + process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? undefined
 	}),
 	sharp,
 	endpoints: [
@@ -163,16 +163,40 @@ const payloadConfig = buildConfig({
 			path: '/webhook/jonze',
 			handler: async (req) => {
 				if (!req.json || !req.body) {
-					return new Response('Unauthorized', {
-						status: 401,
+					return new Response('Bad Request', {
+						status: 400,
 						headers: {
 							'Content-Type': 'text/plain'
 						}
 					});
 				}
-				
+
+				const svix_id = req.headers.get('svix-id') ?? '';
+				const svix_timestamp = req.headers.get('svix-timestamp') ?? '';
+				const svix_signature = req.headers.get('svix-signature') ?? '';
+
+				const payload = await req.json();
+				const body = JSON.stringify(payload);
+
+				const sivx = new Webhook(env.JONZE_WEBHOOK_SECRET);
+
+				let evt;
+
+				try {
+					evt = sivx.verify(body, {
+						'svix-id': svix_id,
+						'svix-timestamp': svix_timestamp,
+						'svix-signature': svix_signature
+					});
+				} catch (err) {
+					console.error('Error verifying webhook:', err);
+					return new Response('Bad Request', { status: 400 });
+				}
+
+				console.log(evt);
+
 				// TODO: webhook validation
-				const { data, type } = await req.json();
+				const { data, type } = payload;
 				console.log(data);
 
 				switch (type) {
@@ -187,11 +211,11 @@ const payloadConfig = buildConfig({
 							.where(eq(req.payload.db.tables['members'].jonze_member_id, data.id));
 
 						break;
-          case 'attendance.marked':
-            await createLedgerEntryForEventAttendance(req.payload, data)
-            break;
+					case 'attendance.marked':
+						await createLedgerEntryForEventAttendance(req.payload, data);
+						break;
 					default:
-						req.payload.logger.warn("Received unhandled Jonze webhook type", type)
+						req.payload.logger.warn('Received unhandled Jonze webhook type', type);
 				}
 				return new Response(null, {
 					status: 200
@@ -243,14 +267,14 @@ const payloadConfig = buildConfig({
 		// 	options: {
 		// 		auth: new BoxOAuth({
 		// 		  config: new OAuthConfig({
-        //     clientId: env.BOX_OAUTH_CLIENT_ID,
-        //     clientSecret: env.BOX_OAUTH_CLIENT_SECRET,
-        //     tokenStorage,
-        //   })
+		//     clientId: env.BOX_OAUTH_CLIENT_ID,
+		//     clientSecret: env.BOX_OAUTH_CLIENT_SECRET,
+		//     tokenStorage,
+		//   })
 		// 		}),
 		// 		folderId: env.BOX_FOLDER_ID
 		// 	}
 		// })
 	]
 });
-export default payloadConfig
+export default payloadConfig;

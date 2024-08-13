@@ -13,7 +13,8 @@ export const serverSchema = z.object({
 	BOX_FOLDER_ID: z.string(),
 	BOX_OAUTH_CLIENT_ID: z.string(),
 	BOX_OAUTH_CLIENT_SECRET: z.string(),
-	RESEND_API_KEY: z.string()
+	RESEND_API_KEY: z.string(),
+	JONZE_WEBHOOK_SECRET: z.string()
 });
 
 /**
