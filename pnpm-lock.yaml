@@ -330,8 +330,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       box-typescript-sdk-gen:
-        specifier: ^1.3.0
-        version: 1.3.0
+        specifier: ^1.4.0
+        version: 1.4.0
       class-variance-authority:
         specifier: ^0.6.1
         version: 0.6.1
@@ -356,9 +356,6 @@ importers:
       payload:
         specifier: 3.0.0-beta.77
         version: 3.0.0-beta.77(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2)
-      proxy-agent:
-        specifier: ^6.4.0
-        version: 6.4.0
       react:
         specifier: 19.0.0-rc-187dd6a7-20240806
         version: 19.0.0-rc-187dd6a7-20240806
@@ -602,8 +599,8 @@ importers:
         specifier: 3.0.0-beta.77
         version: 3.0.0-beta.77(@aws-sdk/client-s3@3.616.0)(@aws-sdk/lib-storage@3.616.0(@aws-sdk/client-s3@3.616.0))(payload@3.0.0-beta.77(patch_hash=sgik46mwf26dw7udj2o57hfsse)(@swc/core@1.6.13(@swc/helpers@0.5.12))(@swc/types@0.1.9)(graphql@16.9.0)(typescript@5.5.2))
       box-typescript-sdk-gen:
-        specifier: ^1.3.0
-        version: 1.3.0
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       payload:
         specifier: 3.0.0-beta.77
@@ -4213,8 +4210,8 @@ packages:
   bowser@2.11.0:
     resolution: {integrity: sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==}
 
-  box-typescript-sdk-gen@1.3.0:
-    resolution: {integrity: sha512-qf98EVPTusAYM9+6N6Wk+yEsLqzCPDef5L1fl57YP7ejvOl8zfuWJ3yhIASH2szYEkArdE4Y4Vly9/XR6qJfpw==}
+  box-typescript-sdk-gen@1.4.0:
+    resolution: {integrity: sha512-ZoTerrgmTksx4kLwtA0dGNK/lXANty7LdFiOMwn6fPuNKGoGTPYRExQeo6TpcPZKCY/Nn7Fw4wp58+MTksLdsw==}
     engines: {node: '>=16.0.0'}
 
   brace-expansion@1.1.11:
@@ -13742,7 +13739,7 @@ snapshots:
 
   bowser@2.11.0: {}
 
-  box-typescript-sdk-gen@1.3.0:
+  box-typescript-sdk-gen@1.4.0:
     dependencies:
       buffer: 6.0.3
       form-data: 4.0.0
