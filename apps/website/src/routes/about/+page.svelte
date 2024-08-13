@@ -400,7 +400,7 @@
 					<!-- SVG Element -->
 					<div class="hidden absolute top-0 right-0 translate-x-20 md:block lg:translate-x-20">
 						<svg
-							class="w-16 h-auto text-orange-500"
+							class="w-16 h-auto text-primary"
 							width="121"
 							height="135"
 							viewBox="0 0 121 135"

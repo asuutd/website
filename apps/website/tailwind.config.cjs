@@ -15,15 +15,15 @@ module.exports = {
 		themes: [
 			{
 				mytheme: {
-					primary: '#490419',
+					primary: '#096888',
 
-					secondary: '#79535C',
+					secondary: '#46616a',
 
 					accent: '#87b7f2',
 
 					neutral: '#4B5563',
 
-					'base-100': '#FEE8E1',
+					'base-100': '#e4f3f9',
 
 					info: '#97B1DD',
 
