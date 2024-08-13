@@ -3,7 +3,7 @@
 import { Member } from '@/payload-types';
 
 import { useDocumentInfo } from '@payloadcms/ui';
-import { jonzeClient } from '@/utils/jonze';
+// import { jonzeClient } from '@/utils/jonze';
 import { useState, useEffect } from 'react';
 
 function FamilyMembers() {
@@ -53,7 +53,7 @@ function FamilyMembers() {
 				))}
 			</ul>
 
-			<select name="memberId" onChange={(e) => setMemberId(e.target.value)} value={memberId}>
+			{/* <select name="memberId" onChange={(e) => setMemberId(e.target.value)} value={memberId}>
 				<option value="">Select a member</option>
 				{allMembers.map((member: Member) => (
 					<option key={member.jonze_member_id} value={member.jonze_member_id}>
@@ -64,11 +64,12 @@ function FamilyMembers() {
 			<button
 				type="button"
 				onClick={async () => {
+					// TODO: can't use jonzeClient here since it should be server only. move this to an api endpoint
 					await jonzeClient.addTagsToMember(memberId, [jonze_family_tag]);
 				}}
 			>
 				Add Member
-			</button>
+			</button> */}
 		</div>
 	);
 }
