@@ -1,3 +1,4 @@
+import 'server-only'
 import type { Family, Member } from '@/payload-types';
 import { arrayContains, desc, eq, sql, sum, inArray } from 'drizzle-orm';
 import type { BasePayload } from 'payload';
