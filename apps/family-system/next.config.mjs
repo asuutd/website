@@ -1,5 +1,8 @@
+// @ts-check
+
 import { withPayload } from '@payloadcms/next/withPayload';
 import { env } from './src/env/server.mjs';
+import path from 'path';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
