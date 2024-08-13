@@ -41,6 +41,7 @@
 		"react": "19.0.0-rc-187dd6a7-20240806",
 		"react-dom": "19.0.0-rc-187dd6a7-20240806",
 		"sharp": "0.32.6",
+		"svix": "^1.29.0",
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss-animate": "^1.0.7",
 		"zod": "^3.23.8",
