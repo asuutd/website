@@ -1,16 +1,4 @@
 <script>
-	const handleSubmit = async (event) => {
-		const formData = new FormData(event.target);
-		console.log(formData);
-
-		const result = await fetch('/api/register/list', {
-			method: 'POST',
-			body: formData
-		});
-
-		const response = await result.json();
-		console.log(response);
-	};
 	import { page } from '$app/stores';
 </script>
 
@@ -26,7 +14,7 @@
 				<a
 					class="flex-none text-xl font-semibold text-black dark:text-white"
 					href="/"
-					aria-label="Brand">ASU UTDallas</a
+					aria-label="Brand">ASU UT Dallas</a
 				>
 			</div>
 			<!-- End Col -->
