@@ -15,7 +15,7 @@ const nextConfig = {
 	typescript: {
 		ignoreBuildErrors: true
 	},
-	outputFileTracingRoot: path.join(__dirname, '../../'),
+	outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
 };
 
 export default withPayload(nextConfig);
