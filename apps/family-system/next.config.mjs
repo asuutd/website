@@ -9,13 +9,18 @@ const nextConfig = {
 	// Your Next.js config here
 	reactStrictMode: true,
 	experimental: {
-		reactCompiler: true
+		reactCompiler: true,
 	},
 	// TODO: remove this after figuring out the TS error in src/app/(payload)/layout.tsx
 	typescript: {
 		ignoreBuildErrors: true
 	},
 	outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
+	outputFileTracingIncludes: {
+		'/api/\\[\\[\\.\\.\\.slug\\]\\]': [
+			'./node_modules/@asu/payload-storage-box/node_modules/box-typescript-sdk-gen/**/*',
+		]
+	},
 };
 
 export default withPayload(nextConfig);
