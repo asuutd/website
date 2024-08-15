@@ -1,11 +1,24 @@
-import { drizzle as dzl } from 'drizzle-orm/planetscale-serverless';
-import { connect } from '@planetscale/database';
+import { drizzle as neonDrizzleAdapter } from 'drizzle-orm/neon-http';
+import { drizzle as postgresDrizzleAdapter } from 'drizzle-orm/node-postgres';
+import { neon } from '@neondatabase/serverless';
 import { env } from '@/env/server.mjs';
 import schema from './schema';
+import { Client } from "pg";
 
-// create the connection
-const connection = connect({
-	url: env.DATABASE_URL
-});
 
-export const drizzle = dzl(connection, { schema });
+const initAdapter = async () => {
+	const usingNeonDatabase = new URL(env.DATABASE_URL).host.endsWith('.neon.tech')
+	
+	if (usingNeonDatabase) {
+		return neonDrizzleAdapter(neon(env.DATABASE_URL), { schema });
+	}
+
+	const client = new Client({
+		connectionString: env.DATABASE_URL,
+	});
+	await client.connect();
+
+	return postgresDrizzleAdapter(client, { schema });
+};
+
+export const drizzle = initAdapter();

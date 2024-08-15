@@ -11,9 +11,9 @@ declare global {
 }
 
 const initNeonPrismaServerlessAdapter = () => {
-	const connectionString = `${process.env.DATABASE_URL}`;
-	const url = new URL(connectionString);
-	if (!url.host.endsWith('.neon.tech')) {
+	const connectionString = env.DATABASE_URL;
+	const usingNeonDatabase = new URL(connectionString).host.endsWith('.neon.tech')
+	if (!usingNeonDatabase) {
 		return null;
 	}
 
