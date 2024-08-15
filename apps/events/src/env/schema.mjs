@@ -9,7 +9,13 @@ export const serverSchema = z.object({
 	DATABASE_URL: z.string().url(),
 	NODE_ENV: z.enum(['development', 'test', 'production']),
 	NEXTAUTH_SECRET: z.string(),
-	NEXTAUTH_URL: z.string().url(),
+	NEXTAUTH_URL: z.preprocess(
+		// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
+		// Since NextAuth automatically uses the VERCEL_URL if present.
+		(str) => process.env.VERCEL_URL ?? str,
+		// VERCEL_URL doesnt include `https` so it cant be validated as a URL
+		process.env.VERCEL ? z.string() : z.string().url(),
+	),
 	GOOGLE_CLIENT_ID: z.string(),
 	GOOGLE_CLIENT_SECRET: z.string(),
 	STRIPE_SECRET_KEY: z.string(),
@@ -27,7 +33,9 @@ export const serverSchema = z.object({
 	R2_ACCOUNT_ID: z.string(),
 	R2_ACCESS_KEY_ID: z.string(),
 	R2_SECRET_ACCESS_KEY: z.string(),
-	QRCODE_BUCKET: z.string()
+	QRCODE_BUCKET: z.string(),
+	GOOGLE_WALLET_ISSUER: z.string(),
+	GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64: z.string()
 });
 
 /**
@@ -36,12 +44,16 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-	// NEXT_PUBLIC_BAR: z.string(),
-	NEXT_PUBLIC_URL: z.string(),
+	NEXT_PUBLIC_URL: z.preprocess(
+		(str) => process.env.VERCEL_URL ?? str,
+		process.env.VERCEL ? z.string() : z.string().url(),
+	),
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: z.string(),
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: z.string(),
-	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string()
+	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string(),
+	NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+	NEXT_PUBLIC_POSTHOG_HOST: z.string()
 });
 
 /**
@@ -55,6 +67,7 @@ export const clientEnv = {
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: process.env.NEXT_PUBLIC_UPLOADCARE_PUB_KEY,
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
-	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-	// NEXT_PUBLIC_BAR: process.env.NEXT_PUBLIC_BAR,
+	NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+	NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+	NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST
 };

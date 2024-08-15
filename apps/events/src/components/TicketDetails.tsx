@@ -1,4 +1,4 @@
-import { Dialog, Tab, Transition } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import type { Ticket, Tier, Event } from '@prisma/client';
 import QRCode from 'qrcode';
@@ -6,8 +6,10 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import VanillaTilt from 'vanilla-tilt';
 import { env } from '@/env/client.mjs';
-import AppleWallet from "@/../public/apple-wallet.svg"
+import AppleWallet from '@/../public/apple-wallet.svg';
+import GoogleWallet from '@/../public/enUS_add_to_google_wallet_add-wallet-badge.svg';
 import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
+import { useFeatureFlagEnabled } from 'posthog-js/react';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -21,6 +23,7 @@ type TicketWithEventData = Ticket & {
 const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 	const [QRCodeUrl, setQRCodeURL] = useState('');
 	const { data: session } = useSession();
+	const showGoogleWalletButton = useFeatureFlagEnabled('google-wallet-pass-generation');
 
 	useEffect(() => {
 		if (!ticket) return;
@@ -30,11 +33,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 				setQRCodeURL(
 					await QRCode.toDataURL(text, {
 						width: 400,
-						margin: 1,
-						color: {
-							dark: '#490419',
-							light: '#FEE8E1'
-						}
+						margin: 1
 					})
 				);
 			} catch (err) {
@@ -90,54 +89,44 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 								{ticket.event.start.toLocaleDateString()}
 							</p>
 
-							<Tab.Group>
-								<Tab.List className="flex space-x-1 rounded-xl bg-primary/20 p-1">
-									<Tab
-										key={'QRCode'}
-										className={({ selected }) =>
-											classNames(
-												'w-max rounded-lg p-2.5 text-sm font-medium leading-5 text-primary',
-												'ring-white ring-opacity-60 ring-offset-2 ring-offset-base-200 focus:outline-none focus:ring-2',
-												selected
-													? 'bg-white shadow'
-													: 'text-secondary hover:bg-white/[0.12] hover:text-white'
-											)
-										}
-									>
-										QR Code
-									</Tab>
-								</Tab.List>
-								<Tab.Panels className="mt-2">
-									<Tab.Panel
-										className={classNames(
-											'rounded-xl bg-white p-3',
-											'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2 flex flex-col justify-items-center items-center gap-4'
-										)}
-									>
-										{QRCodeUrl && (
-											<Image
-												src={QRCodeUrl}
-												width={200}
-												height={200}
-												className="mx-auto rounded-lg w-10/12"
-												alt=""
-											></Image>
-										)}
+							<div
+								className={classNames(
+									'rounded-xl bg-white p-3',
+									'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2 flex flex-col justify-items-center items-center gap-4 mt-2'
+								)}
+							>
+								{QRCodeUrl && (
+									<Image
+										src={QRCodeUrl}
+										width={200}
+										height={200}
+										className="mx-auto rounded-lg w-10/12"
+										alt=""
+									></Image>
+								)}
 
-										<a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/apple_wallet`}>
-							<button type="button">
-							<Image
-							src={AppleWallet}
-							alt="Add to Apple Wallet"
-							width={192}
+								<p className="text-center text-xs text-gray-500">
+									To add your tickets to Apple Wallet, open this page on your iPhone, iPod touch or
+									Mac.
+								</p>
+								<a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/apple_wallet`}>
+									<button type="button">
+										<Image src={AppleWallet} alt="Add to Apple Wallet" width={192} />
+									</button>
+								</a>
+								{showGoogleWalletButton && (
+									<a
+										target="_blank"
+										rel="noreferrer"
+										href={`/api/ticket/${ticket.id}/google_wallet`}
+									>
+										<button type="button">
+											<Image src={GoogleWallet} alt="Add to Google Wallet" height={60} />
+										</button>
+									</a>
+								)}
+							</div>
 
-							className=""
-						/>
-							</button>
-						</a>
-									</Tab.Panel>
-								</Tab.Panels>
-							</Tab.Group>
 							<div className="mt-6 border-t-2 border-b-gray-400 border-dashed p-6 font-mono flex flex-col gap-4 align-middle">
 								<p className="text-[0.5rem]">
 									This digital ticket #{ticket.id} grants 1 entry to{' '}

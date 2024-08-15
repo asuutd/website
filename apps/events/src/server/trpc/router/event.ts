@@ -1,5 +1,4 @@
-import { TRPCClientError } from '@trpc/client';
-import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
+import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { InferSelectModel, and, asc, eq, gte, lte, sql } from 'drizzle-orm';
@@ -14,11 +13,12 @@ import { organizer } from '@/server/db/drizzle/schema/organizer';
 type Event = typeof eventSchema.$inferSelect;
 type Tier = typeof tier.$inferSelect;
 type EventLocation = typeof eventLocation.$inferInsert;
-import { Fee_Holder, Prisma } from '@prisma/client';
+import { Fee_Holder } from '@prisma/client';
 import { env } from '@/env/server.mjs';
-import { ZodCustomDropDownField, ZodCustomField, ZodCustomRadioGroupField } from '@/utils/forms';
+import { ZodCustomField } from '@/utils/forms';
 import { splitEvents } from '@/utils/misc';
 import schema from '@/server/db/drizzle/schema';
+import { createOrUpdateGooglePassClass } from '@/lib/wallets';
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -212,55 +212,79 @@ export const eventRouter = t.router({
 				ticketImage: z.string().url(),
 				location: z
 					.object({
-						address: z.string().optional(),
-						coordinates: z
-							.array(z.number())
-							.optional()
-							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
+						address: z.string(),
+						coordinates: z.tuple([z.number(), z.number()])
 					})
 					.optional(),
 				feeBearer: z.nativeEnum(Fee_Holder)
 			})
 		)
-		.mutation(({ input, ctx }) => {
-			if (ctx.session.user.role === 'ORGANIZER') {
-				const newEvent = ctx.prisma.event.create({
-					data: {
-						name: input.name,
-						start: input.startTime,
-						end: input.endTime,
-						image: input.bannerImage,
-						ticketImage: input.ticketImage,
-						organizerId: ctx.session.user.id,
-						//RE-READ
-						...(input.location?.coordinates &&
-						input.location?.coordinates[0] &&
-						input.location?.coordinates[1]
-							? {
-									location: {
-										create: {
-											long: input.location.coordinates[0],
-											lat: input.location.coordinates[1],
-											name: input.location.address
-										}
-									}
-							  }
-							: {}),
-						EventAdmin: {
-							create: {
-								userId: ctx.session.user.id,
-								role: 'OWNER'
-							}
-						},
-						fee_holder: input.feeBearer
-					}
-				});
-				return newEvent;
-			} else {
+		.mutation(async ({ input, ctx }) => {
+			if (input.endTime < input.startTime) {
 				throw new TRPCError({
-					code: 'UNAUTHORIZED'
+					code: 'BAD_REQUEST',
+					message: 'End time should be greater than start time'
 				});
 			}
+      if (ctx.session.user.role !== 'ORGANIZER') {
+        throw new TRPCError({
+					code: 'UNAUTHORIZED'
+				});
+      }	
+      const newEvent = await ctx.prisma.event.create({
+        data: {
+          name: input.name,
+          start: input.startTime,
+          end: input.endTime,
+          image: input.bannerImage,
+          ticketImage: input.ticketImage,
+          organizerId: ctx.session.user.id,
+          google_pass_class_created: true,
+          ...(input.location
+            ? {
+              location: {
+                create: {
+                  long: input.location.coordinates[0],
+                  lat: input.location.coordinates[1],
+                  name: input.location.address
+                }
+              }
+            }
+            : {}),
+          EventAdmin: {
+            create: {
+              userId: ctx.session.user.id,
+              role: 'OWNER'
+            }
+          },
+          fee_holder: input.feeBearer
+        },
+        include: {
+          location: true,
+          organizer: {
+            include: {
+              user: true
+            }
+          }
+        }
+			});
+      
+      try {
+        await createOrUpdateGooglePassClass(newEvent)
+      } catch (e) {
+        console.error(e)
+        await ctx.prisma.event.update({
+          where: {
+            id: newEvent.id
+          },
+          data: {
+            google_pass_class_created: false
+          }
+        })
+      }
+      
+			return newEvent;
+			
 		}),
 	updateEvent: superAdminProcedure
 		.input(
@@ -273,11 +297,8 @@ export const eventRouter = t.router({
 				ticketImage: z.string().url(),
 				location: z
 					.object({
-						address: z.string().optional(),
-						coordinates: z
-							.array(z.number())
-							.optional()
-							.refine((data) => !data || data.length === 2, 'Location must have only two numbers')
+						address: z.string(),
+						coordinates: z.tuple([z.number(), z.number()])
 					})
 					.optional(),
 				description: z.string().optional(),
@@ -285,6 +306,12 @@ export const eventRouter = t.router({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+			if (input.endTime < input.startTime) {
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'End time should be greater than start time'
+				});
+			}
 			const event = await ctx.prisma.event.findFirstOrThrow({
 				where: {
 					id: input.eventId
@@ -304,9 +331,17 @@ export const eventRouter = t.router({
 				imagesToDelete.push(event.ticketImage);
 			}
 
-			await ctx.prisma.event.update({
+			const updatedEvent = await ctx.prisma.event.update({
 				where: {
 					id: input.eventId
+				},
+				include: {
+          location: true,
+          organizer: {
+            include: {
+              user: true
+            }
+          }
 				},
 				data: {
 					name: input.name,
@@ -315,15 +350,23 @@ export const eventRouter = t.router({
 					image: input.bannerImage,
 					ticketImage: input.ticketImage,
 					fee_holder: input.feeBearer,
-					...(input.location?.coordinates &&
-					input.location?.coordinates[0] &&
-					input.location?.coordinates[1]
+					...(input.location
 						? {
 								location: {
-									update: {
-										long: input.location.coordinates[0],
-										lat: input.location.coordinates[1],
-										name: input.location.address
+									upsert: {
+										where: {
+											id: input.eventId
+										},
+										create: {
+											long: input.location.coordinates[0],
+											lat: input.location.coordinates[1],
+											name: input.location.address
+										},
+										update: {
+											long: input.location.coordinates[0],
+											lat: input.location.coordinates[1],
+											name: input.location.address
+										}
 									}
 								}
 						  }
@@ -331,7 +374,21 @@ export const eventRouter = t.router({
 					description: input.description
 				}
 			});
-
+			
+			const shouldUpdatePassClass = updatedEvent.google_pass_class_created
+      const googlePassClassId = await createOrUpdateGooglePassClass(updatedEvent, shouldUpdatePassClass)
+		
+      if (!shouldUpdatePassClass) {
+        await ctx.prisma.event.update({
+          where: {
+            id: updatedEvent.id
+          },
+          data: {
+            google_pass_class_created: true
+          }
+        })
+      }
+			
 			if (imagesToDelete.length > 0) {
 				const response = await fetch('https://api.uploadcare.com/files/storage/', {
 					method: 'DELETE',

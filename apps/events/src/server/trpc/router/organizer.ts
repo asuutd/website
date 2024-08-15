@@ -10,7 +10,7 @@ import {
 } from '../trpc';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import Collaborater from './emails/collaborater';
+import Collaborator from '@/lib/emails/collaborator';
 import { Resend } from 'resend';
 import { Admin_Type, EventAdmin, User } from '@prisma/client';
 const resend = new Resend(env.RESEND_API_KEY);
@@ -134,14 +134,16 @@ export const organizerRouter = t.router({
 					from: 'ticket@mails.kazala.co',
 					to: invite.email, // Replace with the buyer's email
 					subject: `Invite to collaborate on ${invite.event.name}.`,
-					react: Collaborater({
+					react: Collaborator({
 						receiver_name: user?.name ?? 'invitee',
 						receiver_photo: user?.image ?? '',
 						sender_email: ctx.session.user.email ?? '',
 						sender_name: ctx.session.user.name ?? '',
 						event_name: invite.event.name,
 						event_image: invite.event.ticketImage ?? '',
-						invite_link: `${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`
+						invite_link: `${env.NEXT_PUBLIC_URL}/admin/invite/${invite.token}`,
+						expiry_date: invite.expiresAt,
+						baseUrl: env.NEXT_PUBLIC_URL
 					})
 				});
 			} catch (error) {
@@ -178,6 +180,15 @@ export const organizerRouter = t.router({
 		});
 	}),
 	getInvitedCollaborators: superAdminProcedure.query(async ({ input, ctx }) => {
+		await ctx.prisma.adminInvite.deleteMany({
+			where: {
+				eventId: input.eventId,
+				expiresAt: {
+					lt: new Date()
+				}
+			}
+		});
+
 		return await ctx.prisma.adminInvite.findMany({
 			where: {
 				eventId: input.eventId
@@ -314,33 +325,65 @@ export const organizerRouter = t.router({
 					}
 				}
 			});
-			if (
-				(result && result.email === ctx.session.user.email) ||
-				result?.event.EventAdmin.length === 0
-			) {
+			if (!result || !result.user) {
+				throw new TRPCError({
+					code: 'NOT_FOUND'
+				});
+			}
+			if (result.expiresAt < new Date()) {
 				try {
-					await ctx.prisma?.eventAdmin.create({
-						data: {
-							eventId: result.eventId,
-							userId: result.user.id
-						}
-					});
 					await ctx.prisma.adminInvite.delete({
 						where: {
 							token: result.token
 						}
 					});
-				} catch (err: any) {
-					console.log(err.message);
+				} catch (e) {
+					console.log(e);
+				} finally {
+					throw new TRPCError({
+						code: 'BAD_REQUEST',
+						message: 'Invite expired.'
+					});
 				}
-
-				return {
-					status: 'successful',
-					event: {
-						id: result.eventId,
-						name: result.event.name
-					}
-				};
 			}
+			if (result.email !== ctx.session.user.email) {
+				throw new TRPCError({
+					code: 'FORBIDDEN',
+					message: 'Email on invite is not the user who is currently logged in'
+				});
+			}
+			if (result.event.EventAdmin.length !== 0) {
+				await ctx.prisma.adminInvite.delete({
+					where: {
+						token: result.token
+					}
+				});
+				throw new TRPCError({
+					code: 'BAD_REQUEST',
+					message: 'User is already an admin on this event.'
+				});
+			}
+
+			await ctx.prisma.$transaction([
+				ctx.prisma.eventAdmin.create({
+					data: {
+						eventId: result.eventId,
+						userId: result.user.id
+					}
+				}),
+				ctx.prisma.adminInvite.delete({
+					where: {
+						token: result.token
+					}
+				})
+			]);
+
+			return {
+				status: 'successful',
+				event: {
+					id: result.eventId,
+					name: result.event.name
+				}
+			};
 		})
 });

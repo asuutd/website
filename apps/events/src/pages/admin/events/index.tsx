@@ -69,7 +69,7 @@ const Events: NextPage = () => {
 			</Head>
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
 				<div className="justify-between flex items-center">
-					<h1 className="text-4xl font-bold">Events</h1>
+					<h1 className="text-4xl font-bold">Organizer Dashboard</h1>
 
 					{events.data && (
 						<div className="join">
@@ -129,7 +129,7 @@ const Events: NextPage = () => {
 							>
 								{upcoming.length === 0 ? (
 									<div className="flex flex-wrap gap-8 bg-white rounded-md p-2">
-										<p>You have no tickets for upcoming events.</p>
+										<p>You have no upcoming events.</p>
 									</div>
 								) : (
 									upcoming.map((event) => (
@@ -148,7 +148,7 @@ const Events: NextPage = () => {
 							>
 								{past.length === 0 ? (
 									<div className="flex flex-wrap gap-8 bg-white rounded-md p-2">
-										<p>You have no tickets for past events.</p>
+										<p>You have no past events.</p>
 									</div>
 								) : (
 									past.map((event) => (

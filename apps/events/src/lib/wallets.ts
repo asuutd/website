@@ -6,6 +6,12 @@ import { writeFile, mkdir, readFile } from 'fs/promises';
 import sharp from 'sharp';
 import { env } from '@/env/server.mjs';
 import type { BarcodeDescriptor } from '@walletpass/pass-js/dist/interfaces';
+import { GoogleAuth } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
+
+const ticketQRContent = (ticket: Ticket) => `${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`
+const eventPage = (event: Event) => `${env.NEXT_PUBLIC_URL}/events/${event.id}`
+export const googlePassClass = (event: Event) => `${env.GOOGLE_WALLET_ISSUER}.${event.id}`
 
 export const createApplePass = async (
 	ticket: Ticket & {
@@ -30,7 +36,7 @@ export const createApplePass = async (
 	template.setCertificate(cert, env.APPLE_PASS_CERTIFICATE_PASSWORD);
 
 	const barcode: BarcodeDescriptor = {
-		message: `${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`,
+		message: ticketQRContent(ticket),
 		format: constants.barcodeFormat.QR,
 		messageEncoding: 'iso-8859-1'
 	};
@@ -48,7 +54,7 @@ export const createApplePass = async (
 		barcodes: [barcode],
 		appLaunchURL: `${env.NEXT_PUBLIC_URL}/tickets`,
 		// more than 15 chars leads to overlapping text
-		logoText: event?.organizer?.user.name?.slice(0,15).trim() || 'Kazala',
+		logoText: event?.organizer?.user.name?.slice(0, 15).trim() || 'Kazala',
 		teamIdentifier: env.APPLE_TEAM_ID,
 		passTypeIdentifier: env.APPLE_TICKET_PASS_TYPE_IDENTIFIER
 	});
@@ -151,11 +157,12 @@ export const createApplePass = async (
 		pass.images.add('icon', organizerImage);
 	}
 
-	const tierDisplayText = tier ? `| ${tier.name} | ` : ''
-	
-	return {pass: await pass.asBuffer(), filename: `${event.name} ${tierDisplayText}ID${ticket.id}.pkpass`};
+	const tierDisplayText = tier ? `| ${tier.name} | ` : '';
 
-
+	return {
+		pass: await pass.asBuffer(),
+		filename: `${event.name} ${tierDisplayText}ID${ticket.id}.pkpass`
+	};
 };
 
 const getImageAsPngBuffer = async (url: string, key: string, resize?: { w: number; h: number }) => {
@@ -188,3 +195,156 @@ const getImageAsPngBuffer = async (url: string, key: string, resize?: { w: numbe
 
 	return png;
 };
+
+const googleCredentialString = Buffer.from(env.GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64, 'base64').toString("utf8");
+const googleCredentials = JSON.parse(googleCredentialString)
+const googleHttpClient = new GoogleAuth({
+  credentials: googleCredentials,
+  scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
+});
+
+export async function createOrUpdateGooglePassClass(event: Event & {
+		organizer:
+			| (Organizer & {
+					user: User;
+			  })
+			| null;
+		location: EventLocation | null;
+	}, update = false) {
+  const id = googlePassClass(event)
+  const issuerName = event?.organizer?.user.name?.trim() || 'Kazala'
+  
+  const classObject: Record<string, any> = {
+    id,
+    issuerName,
+    cardTitle: issuerName,
+    allowMultipleUsersPerObject: false,
+    eventId: event.id,
+    eventName: {
+      defaultValue: {
+        language: "en-US",
+        value: event.name
+      }
+    },
+    dateTime: {
+      start: event.start.toISOString(),
+      end: event.end.toISOString()
+    },
+    heroImage: {
+      sourceUri: {
+        uri: event.ticketImage
+      },
+    },
+    multipleDevicesAndHoldersAllowedStatus: "ONE_USER_ALL_DEVICES",
+    reviewStatus: "UNDER_REVIEW",
+    homepageUri: {
+      uri: 'https://kazala.co'
+    },
+    linksModuleData: {
+      uris: [
+        {
+          uri: eventPage(event),
+          description: 'Event page'
+        }
+      ]
+    }
+  }
+  
+  if (event.organizer) {
+    classObject["logo"] =  {
+      sourceUri: {
+        uri: event.organizer.user.image
+      },
+      contentDescription: {
+        defaultValue: {
+          language: "en-US",
+          value: `${event.organizer.user.name} logo`
+        }
+      }
+    }
+  }
+  
+  
+  if (event.location) {
+    classObject['venue'] = {
+      name: {
+        defaultValue: {
+          language: "en-US",
+          value: event.location.name
+        }
+      },
+      address: {
+        defaultValue: {
+          language: "en-US",
+          value: event.location.name
+        }
+      }
+    }
+    classObject['locations'] = [
+      {
+        longitude: event.location.long,
+        latitude: event.location.lat
+      }
+    ]
+  }
+
+  
+  const response = await googleHttpClient.request({
+    url: 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass' + (update ? `/${id}` : ''),
+    method: update ? 'PUT' : 'POST',
+    data: classObject
+  });
+  
+  return id
+}
+
+export function createGooglePassObject(ticket: Ticket & { user: User }, classId: string, tier: Tier | null) {
+  const passObject: Record<string, any> = {
+    id: `${env.GOOGLE_WALLET_ISSUER}.${ticket.id}`,
+    classId,
+    state: "ACTIVE",
+    header: {
+      defaultValue: {
+        language: 'en-US',
+        value: ticket.user.name
+      }
+    },
+    cardTitle: ticket.user.name,
+    passConstraints: {
+      screenshotEligibility: "INELIGIBLE"
+    },
+    ticketHolderName: ticket.user.name,
+    ticketNumber: ticket.id,
+    barcode: {
+      type: 'QR_CODE',
+      value: ticketQRContent(ticket)
+    },
+  };
+
+  if (tier) {
+    passObject['textModulesData'] = [
+      {
+        header: 'Tier',
+        body: tier.name,
+        id: 'tier'
+      }
+    ]    
+  }
+  
+  const claims = {
+    iss: googleCredentials.client_email,
+    aud: 'google',
+    origins: [],
+    typ: 'savetowallet',
+    payload: {
+      eventTicketObjects: [
+        passObject
+      ]
+    }
+  };
+
+  const token = jwt.sign(claims, googleCredentials.private_key, { algorithm: 'RS256' });
+  return token
+}
+
+export const googlePassJwtToSaveUrl = (token: string) => `https://pay.google.com/gp/v/save/${token}`

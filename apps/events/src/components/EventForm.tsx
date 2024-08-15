@@ -1,7 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import DatePicker from './Miscellaneous/Datepicker';
-import { format, parse, parseISO, set } from 'date-fns';
+import React, { Fragment } from 'react';
+import { parseISO } from 'date-fns';
 import { z } from 'zod';
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/utils/constants';
 import { Controller, useForm } from 'react-hook-form';
@@ -10,8 +9,7 @@ import { imageUpload } from '@/utils/imageUpload';
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/utils/trpc';
 import dynamic from 'next/dynamic';
-import { Fee_Holder } from '@prisma/client';
-
+import { toast } from 'sonner';
 type Props = {
 	closeModal: () => void;
 };
@@ -29,8 +27,8 @@ const FormSchema = z.object({
 	endTime: z.string(),
 	location: z
 		.object({
-			address: z.string().optional(),
-			coordinates: z.array(z.number()).optional()
+			address: z.string(),
+			coordinates: z.tuple([z.number(), z.number()])
 		})
 		.optional(),
 
@@ -41,13 +39,10 @@ const FormSchema = z.object({
 export type EventFormInput = z.infer<typeof FormSchema>;
 
 const EventForm: React.FC<Props> = ({ closeModal }) => {
-	const root = useRef(null);
-	const [startDate, setStartDate] = useState<Date>(new Date());
 	const { data: session } = useSession();
 	const utils = trpc.useContext();
 
 	const mutation = trpc.event.createEvent.useMutation();
-	const updateMutation = trpc.event.updateEvent.useMutation();
 
 	const {
 		register,
@@ -55,11 +50,23 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 		control,
 		formState: { errors, isSubmitting }
 	} = useForm<EventFormInput>({
-		resolver: zodResolver(FormSchema)
+		resolver: zodResolver(FormSchema),
+		defaultValues: {
+			location: {
+				address: '',
+				coordinates: [0, 0]
+			}
+		}
 	});
 
 	const onSubmit = async (fields: EventFormInput) => {
 		if (fields.bannerImage[0] && fields.ticketImage[0]) {
+			const startTime = parseISO(fields.startTime);
+			const endTime = parseISO(fields.endTime);
+			if (endTime < startTime) {
+				toast.error('End time should be greater than start time');
+				return;
+			}
 			const [bannerUploadResponse, ticketImageUploadResponse] = await Promise.all([
 				imageUpload(fields.bannerImage[0], { user: session?.user?.id ?? '' }),
 				imageUpload(fields.ticketImage[0], { user: session?.user?.id ?? '' })
@@ -71,14 +78,15 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 					ticketImageUploadResponse.json()
 				]);
 				console.log(bannerResult, ticketImageResult);
+
 				mutation.mutate(
 					{
 						name: fields.name,
-						startTime: parseISO(fields.startTime),
-						endTime: parseISO(fields.endTime),
-						bannerImage: `https://ucarecdn.com/${bannerResult[fields.bannerImage[0].name]}/`,
-						ticketImage: `https://ucarecdn.com/${ticketImageResult[fields.ticketImage[0].name]}/`,
-						location: fields.location,
+						startTime,
+						endTime,
+						bannerImage: `https://ucarecdn.com/${Object.values(bannerResult)[0]}/`,
+						ticketImage: `https://ucarecdn.com/${Object.values(ticketImageResult)[0]}/`,
+						...(fields.location && fields.location.address ? { location: fields.location } : {}),
 						feeBearer: fields.feeBearer ? 'USER' : 'ORGANIZER'
 					},
 					{
@@ -102,10 +110,7 @@ const EventForm: React.FC<Props> = ({ closeModal }) => {
 			leaveFrom="opacity-100 scale-100"
 			leaveTo="opacity-0 scale-95"
 		>
-			<Dialog.Panel
-				ref={root}
-				className="w-[320px] transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all"
-			>
+			<Dialog.Panel className="w-[320px] transform overflow-hidden rounded-2xl text-left align-middle shadow-xl transition-all">
 				<div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
 					<form className="card-body" onSubmit={handleSubmit(onSubmit)}>
 						<h2 className="card-title">Event Form</h2>

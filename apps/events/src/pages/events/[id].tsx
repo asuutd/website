@@ -8,19 +8,18 @@ import Modal from '../../components/Modal';
 import RefCode from '../../components/RefCode';
 import TicketSummary from '../../components/TicketSummary';
 import Timer from '../../components/Timer/Timer';
-import { getServerAuthSession } from '../../server/common/get-server-auth-session';
-import { appRouter } from '../../server/trpc/router';
 import { useModalStore } from '../../utils/modalStore';
 import { trpc } from '../../utils/trpc';
 import { prisma } from '../../server/db/client';
 import isbot from 'isbot';
-import { NextSeo } from 'next-seo';
+import { NextSeo, EventJsonLd } from 'next-seo';
 import { env } from '../../env/client.mjs';
 import Image from 'next/image';
 import Display from '@/components/Map/Display';
 import parse from 'html-react-parser';
 import { drizzle } from '@/server/db/drizzle';
 import { twJoin } from 'tailwind-merge';
+import { getServerAuthSession } from '@/server/common/get-server-auth-session';
 
 type Ticket = {
 	tier: Tier;
@@ -35,12 +34,7 @@ enum UpOrDown {
 
 const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (props) => {
 	const router = useRouter();
-	const { data: session, status } = useSession();
-	//const [modalOpen, setModalOpen] = useState(false);
 
-	const modalOpen = useModalStore((state: any) => state.modal);
-	const open = useModalStore((state: any) => state.open);
-	const close = useModalStore((state: any) => state.close);
 	const [checkout, setCheckout] = useState(false);
 	const [quantity, setQuantity] = useState(0);
 
@@ -133,8 +127,8 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 				openGraph={{
 					title: `${props?.meta?.title}` ?? 'Event',
 					description: `Event Details of ${props?.meta?.title}`,
-					url: `https://${env.NEXT_PUBLIC_URL}/seller/${props.meta?.id}`,
-					type: 'profile',
+					url: `${env.NEXT_PUBLIC_URL}/event/${props.meta?.id}`,
+					type: 'website',
 					profile: {
 						username: props?.meta?.title
 					},
@@ -146,6 +140,24 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 					props.meta?.description ??
 					"Join us for an exciting event that promises to be a memorable experience. While the event details are not provided by the organizer, you can expect a day filled with fun, entertainment, and engagement. Stay tuned for updates and surprises as we get closer to the event date. Don't miss out on this fantastic opportunity to connect with like-minded individuals and enjoy a day of excitement. Save the date, and we look forward to sharing more information soon!"
 				}
+			/>
+
+			<EventJsonLd
+				name={props?.meta?.title}
+				startDate={props?.meta?.startTime}
+				endDate={props?.meta?.endTime}
+				location={props?.meta?.location}
+				url={`${env.NEXT_PUBLIC_URL}/event/${props.meta?.id}`}
+				description={
+					props.meta?.description ??
+					"Join us for an exciting event that promises to be a memorable experience. While the event details are not provided by the organizer, you can expect a day filled with fun, entertainment, and engagement. Stay tuned for updates and surprises as we get closer to the event date. Don't miss out on this fantastic opportunity to connect with like-minded individuals and enjoy a day of excitement. Save the date, and we look forward to sharing more information soon!"
+				}
+				organizer={{
+					type: 'Organization',
+					name: props.meta?.organizer
+				}}
+				images={[props.meta?.image]}
+				offers={props.meta?.offers}
 			/>
 			<Head>
 				<title>{props.meta?.title ?? event.data?.name ?? 'Event'}</title>
@@ -178,14 +190,14 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 								</h3>
 								<div className="flex items-center gap-2">
 									By
-									<div className="flex items-center h-6">
+									<div className="flex items-center h-6 gap-2">
 										<div className="h-6 w-6">
 											<Image
 												src={event.data?.organizer?.user.image ?? ''}
 												alt=""
 												width={200}
 												height={200}
-												className="object-contain"
+												className="object-contain rounded"
 											/>
 										</div>
 
@@ -383,14 +395,33 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 		const data = await client.event.getEvent({
 			eventId: id
 		});
+		if (!data) {
+			return {
+				props: {}
+			};
+		}
 
 		return {
 			props: {
 				meta: {
-					id: data?.id,
-					title: data?.name,
-					image: data?.image,
-					description: data?.description
+					id: data.id,
+					title: data.name,
+					image: data.image,
+					description: data.description,
+					startTime: data.start.toISOString(),
+					endTime: data.end.toISOString(),
+					location: data.location?.name ?? null,
+					organizer: data.organizer?.user?.name,
+					offers: data.Tier.map((tier) => ({
+						price: tier.price.toString(),
+						priceCurrency: 'USD',
+						seller: {
+							name: data.organizer?.user.name
+						},
+						validFrom: tier.start.toString(),
+						priceValidUntil: tier.end.toString(),
+						url: `${env.NEXT_PUBLIC_URL}/events/${data.id}`
+					}))
 				}
 			}
 		};

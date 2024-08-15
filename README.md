@@ -9,8 +9,7 @@ This is a monorepo based created using [**Turborepo**](https://turbo.build/repo/
 Below is the adequate installation guide\
 We assume you have NodeJS, NVM, and Git properly configured
 
-1. We use pnpm as our package manager. Install it using the following link
-   [PNPM Install Link](https://pnpm.io/installation)
+1. We use pnpm as our package manager. Install it with `corepack enable`.
 
 2. Clone the repository using the following command
 
@@ -19,7 +18,7 @@ git clone https://github.com/asuutd/website.git
 ```
 
 3. Install the dependencies `pnpm install`
-4. Start the development server ` pnpm run dev`
+4. Start the development server `pnpm run dev`
 
 ## Environment Variables
 

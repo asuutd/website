@@ -3,20 +3,16 @@
 
 generator client {
   provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider             = "mysql"
+  provider             = "postgresql"
   // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading: 
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url                  = env("DATABASE_URL")
-  relationMode = "prisma"
-}
-
-model Example {
-  id String @id @default(cuid())
 }
 
 // Necessary for Next auth
@@ -89,6 +85,7 @@ model Event {
   description  String? @db.Text
   ref_quantity Int?
   organizerId  String?
+  google_pass_class_created Boolean @default(false)
   fee_holder   Fee_Holder?
   tickets      Ticket[]
   RefCode      RefCode[]
@@ -115,8 +112,8 @@ model AdminInvite {
   eventId String
   event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
   email  String
-  user    User   @relation(fields: [email], references: [email], onDelete: Cascade)
-
+  user    User?   @relation(fields: [email], references: [email], onDelete: Cascade)
+  expiresAt DateTime @default(dbgenerated("NOW() + interval '72h'"))
   @@unique([eventId, email])
 }
 
@@ -124,7 +121,7 @@ model EventLocation {
   id      String @id @default(cuid())
   long    Float
   lat     Float
-  name    String?
+  name    String
   event   Event  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 

@@ -4,12 +4,12 @@ import Stripe from 'stripe';
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
-import Transaction from './emails/transaction';
+import Transaction from '@/lib/emails/transaction';
 import { Resend } from 'resend';
 import { uploadImage } from '@/utils/r2';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
-import { createApplePass } from '@/lib/wallets';
+import { getPostHog } from '@/server/posthog';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -65,15 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						}
 					});
 
-					// // Send the email to the buyer
-					// const emailTemplate = createEmailTemplate('URL_TO_PURCHASE_DETAILS'); // Replace with the actual URL
-					// resend.sendEmail({
-					// 	from: 'onboarding@resend',
-					// 	to: 'buyer-email@example.com', // Replace with the buyer's email
-					// 	subject: 'Purchase Successful',
-					// 	html: emailTemplate,
-					// });
-					
 					try {
 						if (userEmail && userName && eventName && eventPhoto && eventId) {
 							const qr_code_links = await Promise.all(
@@ -85,23 +76,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 											`${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticketId}&eventId=${eventId}`,
 											{
 												width: 400,
-												margin: 1,
-												color: {
-													dark: '#490419',
-													light: '#FEE8E1'
-												}
+												margin: 1
 											}
 										),
 										contentType: 'image/png'
 									});
 									console.log(result);
-									return `https://${env.QRCODE_BUCKET}.kazala.co/${ticketId}`;
+									return {
+										codeImg: `https://${env.QRCODE_BUCKET}.kazala.co/${ticketId}`,
+										googleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/google_wallet`,
+										appleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/apple_wallet`
+									};
 								})
 							);
 
 							const ticketData = await prisma.ticket.findMany({
 								where: {
-									id: {in: user_ticket_ids}
+									id: { in: user_ticket_ids }
 								},
 								include: {
 									user: true,
@@ -116,8 +107,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									tier: true
 								}
 							});
-		
-							const passes = await Promise.all(ticketData.map(async (ticket) => await createApplePass(ticket, ticket.event, ticket.tier)))
+
+							const posthog = getPostHog();
+							const uid = ticketData[0]?.user.id;
 
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
@@ -129,15 +121,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									event_photo: eventPhoto,
 									order_date: new Date().toLocaleDateString(),
 									tiers: tiers,
-									ticketQRCodes: qr_code_links
+									tickets: qr_code_links,
+									baseUrl: env.NEXT_PUBLIC_URL,
+									googleWalletEnabled: uid
+										? (await posthog.isFeatureEnabled('google-wallet-pass-generation', uid)) ??
+										  false
+										: false
 								}),
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()
-								},
-								attachments: passes.map(({pass, filename}) => ({
-									filename,
-									content: pass
-								}))
+								}
 							});
 						}
 					} catch (error) {

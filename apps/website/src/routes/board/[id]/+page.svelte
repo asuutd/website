@@ -141,7 +141,7 @@
 					xmlns:xlink="http://www.w3.org/1999/xlink"
 					x="0px"
 					y="0px"
-					class="p-1.5  w-12 md:w-24 m-auto fill-secondary translate-y-2.5"
+					class="p-1.5 w-12 md:w-24 m-auto fill-secondary translate-y-2.5"
 					viewBox="0 0 2626 1728"
 					enable-background="new 0 0 2626 1728"
 					xml:space="preserve"
@@ -204,7 +204,7 @@
 				</svg>
 			</div>
 			<div
-				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium "
+				class="w-full justify-self-center self-center col-span-3 mx-4 text-xl md:text-2xl lg:text-3xl text-base-100 font-medium"
 			>
 				{image.class}
 			</div>
@@ -219,7 +219,7 @@
 						xmlns:xlink="http://www.w3.org/1999/xlink"
 						x="0px"
 						y="0px"
-						class="p-1.5  w-12 md:w-24 m-auto fill-secondary "
+						class="p-1.5 w-12 md:w-24 m-auto fill-secondary"
 						viewBox="0 0 122.65 122.88"
 						style="enable-background:new 0 0 122.65 122.88"
 						xml:space="preserve"
@@ -232,7 +232,7 @@
 				</div>
 
 				<div
-					class="w-full justify-self-center self-center col-span-3 text-lg md:text-xl lg:text-2xl text-base-100 font-medium "
+					class="w-full justify-self-center self-center col-span-3 text-lg md:text-xl lg:text-2xl text-base-100 font-medium"
 				>
 					{image.major}
 				</div>
@@ -244,12 +244,12 @@
 			class="grid grid-cols-5 p-3 m-2 mt-20 bg-secondary rounded-3xl max-w-md mx-auto gap-2 h-24 content-center"
 		>
 			<div
-				class="col-span-2 bg-base-100 rounded-full  h-12 my-auto  w-full justify-center items-center flex"
+				class="col-span-2 bg-base-100 rounded-full h-12 my-auto w-full justify-center items-center flex"
 			>
 				<p class="text-center font-semibold text-secondary">FUN FACT</p>
 			</div>
 			<div
-				class="w-full text-left justify-self-center self-center col-span-3 mx-4 text-md md:text-lg lg:text-xl text-base-100 font-medium "
+				class="w-full text-left justify-self-center self-center col-span-3 mx-4 text-md md:text-lg lg:text-xl text-base-100 font-medium"
 			>
 				{image.fact}
 			</div>

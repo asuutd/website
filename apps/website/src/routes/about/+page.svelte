@@ -17,18 +17,19 @@
 	}
 	const board = [
 		{
-			name: 'Onyedi Ololo',
-			role: 'President'
-		},
-		{
 			name: 'Omolere Aliu',
-			role: 'Vice President',
+			role: 'President',
 			image: '/images/officers/omolere.jpeg'
 		},
 		{
-			name: 'Ayomide Dairo',
+			name: 'AJ Olaoye',
+			role: 'Vice President',
+			image: '/images/officers/aj.jpeg'
+		},
+		{
+			name: 'Miryam Boakye-Nkansah',
 			role: 'Secretary',
-			image: '/images/officers/ayomide.PNG'
+			image: '/images/officers/miryam.jpeg'
 		},
 		{
 			name: 'Ellen Elnour',
@@ -36,48 +37,39 @@
 			image: '/images/officers/ellen.jpeg'
 		},
 		{
-			name: 'Loluwa Olu-Osinowo',
-			role: 'Public Relations'
+			name: 'Ayomide Dairo',
+			role: 'Head Events Coordinator',
+			image: '/images/officers/ayomide.PNG'
 		},
 		{
-			name: 'Dena Yemane',
-			role: 'Event Coordinator',
-			image: '/images/officers/dena.jpeg'
+			name: 'Oisebe Nunda',
+			role: 'Sports Chair',
+			image: '/images/officers/oisebe.jpeg'
 		},
 		{
-			name: 'Quincy Kemany',
-			role: 'Event Coordinator (Student Experience)',
-			image: '/images/officers/quincy.jpeg'
-		},
-		{
-			name: 'Toluwanimi Ololade',
-			role: 'Event Coordinator (Budget Specialist)',
-			image: '/images/officers/tolu.jpeg'
-		},
-		{
-			name: 'Inioluwa Adenekan',
-			role: 'Commitee Chair',
-			image: '/images/officers/inioluwa.jpeg'
-		},
-		{
-			name: 'Maxwell Quaye',
-			role: 'Membership Commitee Co-Chair',
-			image: '/images/officers/maxwell.jpeg'
-		},
-		{
-			name: 'AJ Olaoye',
-			role: 'Sports Co-Chair',
-			image: '/images/officers/aj.jpeg'
-		},
-		{
-			name: 'Irving Baysah',
-			role: 'Sports Co-Chair',
-			image: '/images/officers/irving.jpeg'
-		},
-		{
-			name: 'Pelumi Adegoke',
+			name: 'Jason Antwi-Appah',
 			role: 'Technical Director',
-			image: '/images/officers/pelumi.jpeg'
+			image: '/images/officers/jason.jpg'
+		},
+		{
+			name: 'Chisom Akpunku',
+			role: 'Assistant Event Coordinator',
+			image: '/images/officers/chisom.jpg'
+		},
+		{
+			name: 'Isioma Emordi',
+			role: 'Public Relations Officer',
+			image: '/images/officers/isi.jpeg'
+		},
+		{
+			name: 'Monica Erewa-Meggison',
+			role: 'Content Creator',
+			image: '/images/officers/monica.jpeg'
+		},
+		{
+			name: 'Temilade Olabode',
+			role: 'Assistant Event Coordinator',
+			image: '/images/officers/temi.jpg'
 		}
 	];
 
@@ -134,7 +126,7 @@
 						</span>
 					</button>
 
-					<button
+					<!-- <button
 						type="button"
 						class={`${
 							$currentTab == 2 ? 'bg-base-100 shadow-md hover:border-transparent' : ''
@@ -166,7 +158,7 @@
 								>
 							</span>
 						</span>
-					</button>
+					</button> -->
 
 					<button
 						type="button"
@@ -191,8 +183,7 @@
 								viewBox="0 0 16 16"
 							>
 								<path
-									fill-rule="evenodd"
-									d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z"
+									d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z"
 								/>
 							</svg>
 							<span class="grow ml-6">
@@ -390,7 +381,7 @@
 														</h3>
 														<p class="text-sm text-gray-500">
 															members in order to create a community of people interested in
-															learning about African countries& culture
+															learning about African countries & culture
 														</p>
 													</div>
 												</div>
@@ -409,7 +400,7 @@
 					<!-- SVG Element -->
 					<div class="hidden absolute top-0 right-0 translate-x-20 md:block lg:translate-x-20">
 						<svg
-							class="w-16 h-auto text-orange-500"
+							class="w-16 h-auto text-primary"
 							width="121"
 							height="135"
 							viewBox="0 0 121 135"

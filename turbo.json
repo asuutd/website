@@ -1,7 +1,7 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"globalDependencies": ["**/.env"],
-	"pipeline": {
+	"tasks": {
 		"db:generate": {
 			"inputs": ["prisma/schema.prisma"],
 			"cache": false
@@ -15,6 +15,7 @@
 			"dependsOn": ["db:generate", "^build"]
 		},
 		"lint": {},
+		"lint:fix": {},
 		"dev": {
 			"dependsOn": ["db:generate"],
 			"dotEnv": [".env.development.local", ".env.development", ".env.local", ".env"],
