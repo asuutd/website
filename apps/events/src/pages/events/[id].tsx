@@ -20,6 +20,7 @@ import parse from 'html-react-parser';
 import { drizzle } from '@/server/db/drizzle';
 import { twJoin } from 'tailwind-merge';
 import { getServerAuthSession } from '@/server/common/get-server-auth-session';
+import { appRouter } from '@/server/trpc/router';
 
 type Ticket = {
 	tier: Tier;
@@ -412,7 +413,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query, res }
 					endTime: data.end.toISOString(),
 					location: data.location?.name ?? null,
 					organizer: data.organizer?.user?.name,
-					offers: data.Tier.map((tier) => ({
+					offers: data.tiers.map((tier) => ({
 						price: tier.price.toString(),
 						priceCurrency: 'USD',
 						seller: {

@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, numeric, timestamp, integer } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, doublePrecision, timestamp, integer } from 'drizzle-orm/pg-core';
 import { event } from './event';
 import { code } from './code';
 import { ticket } from './ticket';
@@ -9,7 +9,7 @@ export const tier = pgTable('Tier', {
 	id: varchar('id', { length: 128 })
 		.$defaultFn(() => createId())
 		.primaryKey(),
-	price: numeric('price').notNull(),
+	price: doublePrecision('price').notNull(),
 	start: timestamp('start', { mode: 'date', precision: 3 }).notNull(),
 	end: timestamp('end', { mode: 'date', precision: 3 }).notNull(),
 	eventId: varchar('eventId', { length: 191 }).notNull(),

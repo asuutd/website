@@ -201,7 +201,7 @@ const TicketSummary = ({
 						</div>
 					))}
 
-					{event?.fee_holder === 'USER' && (
+					{event?.feeHolder === 'USER' && (
 						<div className="flex justify-between items-center p-4   my-3">
 							<div className="text-sm  text-secondary">
 								Processing Fee{' '}

@@ -244,7 +244,7 @@ export const paymentRouter = t.router({
 					data: dataArray
 				});
 
-				if (event.fee_holder === 'USER') {
+				if (event.feeHolder === 'USER') {
 					line_items.push({
 						price_data: {
 							currency: 'usd',

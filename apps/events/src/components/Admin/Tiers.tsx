@@ -94,7 +94,7 @@ const TierCard = ({
 		);
 	};
 	const tierPriceLocked = useMemo(() => {
-		return tier._count.Ticket > 0;
+		return tier._count.tickets > 0;
 	}, [tier]);
 	return (
 		<div className="card w-72 md:96 bg-base-100 shadow-xl my-4 mx-auto">

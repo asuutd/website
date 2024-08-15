@@ -189,7 +189,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 							/>
 						</div>
 					</div> */}
-						{info.getValue() ?? info.row.original.user.email}
+						{info.getValue() ?? info.row.original.user?.email}
 					</>
 				),
 				id: 'User',
