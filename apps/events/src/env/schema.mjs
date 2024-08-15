@@ -44,7 +44,10 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-	NEXT_PUBLIC_URL: z.string(),
+	NEXT_PUBLIC_URL: z.preprocess(
+		(str) => process.env.VERCEL_URL ?? str,
+		process.env.VERCEL ? z.string() : z.string().url(),
+	),
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: z.string(),
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: z.string(),
