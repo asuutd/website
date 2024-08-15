@@ -24,7 +24,6 @@
 		"@neondatabase/serverless": "^0.9.4",
 		"@next-auth/prisma-adapter": "^1.0.7",
 		"@paralleldrive/cuid2": "^2.2.2",
-		"@planetscale/database": "^1.11.0",
 		"@prisma/adapter-neon": "^5.16.2",
 		"@prisma/client": "^5.18.0",
 		"@radix-ui/react-dialog": "^1.1.1",
