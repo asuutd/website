@@ -1,10 +1,10 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar } from 'drizzle-orm/pg-core';
 import { user } from './user';
 import { event } from './event';
 
-export const organizer = mysqlTable('Organizer', {
+export const organizer = pgTable('Organizer', {
 	id: varchar('id', { length: 128 })
 		.$defaultFn(() => createId())
 		.primaryKey(),

@@ -1,11 +1,11 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations, sql } from 'drizzle-orm';
-import { mysqlTable, varchar, json, datetime } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, json, datetime } from 'drizzle-orm/pg-core';
 import { event } from './event';
 import { formResponse } from './formresponse';
 import { CustomField } from '@/utils/forms';
 
-export const eventForm = mysqlTable('EventForm', {
+export const eventForm = pgTable('EventForm', {
 	id: varchar('id', { length: 128 })
 		.$defaultFn(() => createId())
 		.primaryKey(),

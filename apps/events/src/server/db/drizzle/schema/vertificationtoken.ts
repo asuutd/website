@@ -1,6 +1,6 @@
-import { mysqlTable, varchar, datetime, unique } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, datetime, unique } from 'drizzle-orm/pg-core';
 
-export const verificationToken = mysqlTable(
+export const verificationToken = pgTable(
 	'VerificationToken',
 	{
 		identifier: varchar('identifier', { length: 191 }).notNull(),

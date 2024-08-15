@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar, datetime, unique } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, datetime, unique } from 'drizzle-orm/pg-core';
 import { account } from './account';
 import { session } from './session';
 import { ticket } from './ticket';
@@ -8,7 +8,7 @@ import { refCode } from './refcode';
 import { eventAdmin } from './eventadmin';
 import { organizer } from './organizer';
 
-export const user = mysqlTable(
+export const user = pgTable(
 	'User',
 	{
 		id: varchar('id', { length: 128 })

@@ -1,13 +1,13 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations, sql } from 'drizzle-orm';
-import { mysqlTable, varchar, int, datetime } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, int, datetime } from 'drizzle-orm/pg-core';
 import { user } from './user';
 import { event } from './event';
 import { refCode } from './refcode';
 import { tier } from './tier';
 import { code } from './code';
 
-export const ticket = mysqlTable('Ticket', {
+export const ticket = pgTable('Ticket', {
 	id: varchar('id', { length: 128 })
 		.$defaultFn(() => createId())
 		.primaryKey(),

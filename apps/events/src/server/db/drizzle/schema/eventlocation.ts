@@ -1,9 +1,9 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar, double } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, double } from 'drizzle-orm/pg-core';
 import { event } from './event';
 
-export const eventLocation = mysqlTable('EventLocation', {
+export const eventLocation = pgTable('EventLocation', {
 	id: varchar('id', { length: 128 })
 		.$defaultFn(() => createId())
 		.primaryKey(),

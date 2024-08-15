@@ -5,7 +5,7 @@ import { InferSelectModel, and, asc, eq, gte, lte, sql } from 'drizzle-orm';
 import { event as eventSchema } from '../../db/drizzle/schema/event';
 import { user } from '@/server/db/drizzle/schema/user';
 import { tier } from '@/server/db/drizzle/schema/tier';
-import { date } from 'drizzle-orm/mysql-core';
+import { date } from 'drizzle-orm/pg-core';
 import { ticket } from '@/server/db/drizzle/schema/ticket';
 import { eventLocation } from '@/server/db/drizzle/schema/eventlocation';
 import { organizer } from '@/server/db/drizzle/schema/organizer';

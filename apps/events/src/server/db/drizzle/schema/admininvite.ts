@@ -1,10 +1,10 @@
 import { relations } from 'drizzle-orm';
-import { mysqlTable, unique, varchar } from 'drizzle-orm/mysql-core';
+import { pgTable, unique, varchar } from 'drizzle-orm/pg-core';
 import { randomUUID } from 'crypto';
 import { event } from './event';
 import { user } from './user';
 
-export const adminInvite = mysqlTable(
+export const adminInvite = pgTable(
 	'AdminInvite',
 	{
 		token: varchar('id', { length: 128 })

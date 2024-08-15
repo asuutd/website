@@ -3,7 +3,7 @@ import { z } from 'zod';
 import generateCode from '../../../utils/generateCode';
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
-import { alias } from 'drizzle-orm/mysql-core';
+import { alias } from 'drizzle-orm/pg-core';
 import { refCode as refCodeSchema } from '@/server/db/drizzle/schema/refcode';
 import { ticket } from '@/server/db/drizzle/schema/ticket';
 import { event as eventSchema } from '@/server/db/drizzle/schema/event';

@@ -1,9 +1,9 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar, datetime, unique } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, datetime, unique } from 'drizzle-orm/pg-core';
 import { user } from './user';
 
-export const session = mysqlTable(
+export const session = pgTable(
 	'Session',
 	{
 		id: varchar('id', { length: 128 })

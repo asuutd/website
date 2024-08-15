@@ -1,10 +1,10 @@
 import { relations, sql } from 'drizzle-orm';
-import { mysqlTable, varchar, json, datetime, primaryKey } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, json, datetime, primaryKey } from 'drizzle-orm/pg-core';
 import { eventForm } from './eventform';
 import { user } from './user';
 import { CustomResponseField } from '@/utils/forms';
 
-export const formResponse = mysqlTable(
+export const formResponse = pgTable(
 	'FormResponse',
 	{
 		formId: varchar('formId', { length: 191 }).notNull(),

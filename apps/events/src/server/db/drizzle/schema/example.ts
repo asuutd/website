@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
-import { mysqlTable, varchar } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar } from 'drizzle-orm/pg-core';
 
-export const example = mysqlTable('Example', {
+export const example = pgTable('Example', {
 	id: varchar('id', { length: 128 })
 		.$defaultFn(() => createId())
 		.primaryKey()

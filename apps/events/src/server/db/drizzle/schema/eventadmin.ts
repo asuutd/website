@@ -1,10 +1,10 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar, primaryKey, mysqlEnum } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, primaryKey, mysqlEnum } from 'drizzle-orm/pg-core';
 import { event } from './event';
 import { user } from './user';
 
-export const eventAdmin = mysqlTable(
+export const eventAdmin = pgTable(
 	'EventAdmin',
 	{
 		id: varchar('id', { length: 128 })

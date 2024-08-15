@@ -1,10 +1,10 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { mysqlTable, varchar, double, int, unique } from 'drizzle-orm/mysql-core';
+import { pgTable, varchar, double, int, unique } from 'drizzle-orm/pg-core';
 import { tier } from './tier';
 import { ticket } from './ticket';
 
-export const code = mysqlTable(
+export const code = pgTable(
 	'Code',
 	{
 		id: varchar('id', { length: 128 })

@@ -1,10 +1,10 @@
 import { relations } from 'drizzle-orm';
-import { mysqlTable, serial, varchar, unique } from 'drizzle-orm/mysql-core';
+import { pgTable, serial, varchar, unique } from 'drizzle-orm/pg-core';
 import { user } from './user';
 import { event } from './event';
 import { ticket } from './ticket';
 
-export const refCode = mysqlTable(
+export const refCode = pgTable(
 	'RefCode',
 	{
 		id: serial('id').primaryKey(),
