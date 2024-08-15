@@ -23,7 +23,7 @@ export const event = pgTable('Event', {
 	organizerId: varchar('organizerId', { length: 191 }),
 	ticketImage: varchar('ticketImage', { length: 191 }),
 	description: text('description'),
-	feeHolder: feeHolderEnum('fee_holder')
+	feeHolder: feeHolderEnum('fee_holder').default('USER').notNull()
 });
 
 export const eventRelations = relations(event, ({ one, many }) => ({

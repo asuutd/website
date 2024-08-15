@@ -6,7 +6,7 @@ const config: Config = {
 	dbCredentials: {
 		connectionString: process.env.DATABASE_URL ?? ''
 	},
-	out: './drizzle'
+	out: './drizzle/migrations'
 };
 
 export default config;
