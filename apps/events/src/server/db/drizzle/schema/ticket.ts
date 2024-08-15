@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations, sql } from 'drizzle-orm';
-import { pgTable, varchar, int, datetime } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, integer, timestamp } from 'drizzle-orm/pg-core';
 import { user } from './user';
 import { event } from './event';
 import { refCode } from './refcode';
@@ -15,9 +15,9 @@ export const ticket = pgTable('Ticket', {
 	tierId: varchar('tierId', { length: 191 }),
 	eventId: varchar('eventId', { length: 191 }).notNull(),
 	userId: varchar('userId', { length: 191 }).notNull(),
-	refCodeId: int('refCodeId'),
-	checkedInAt: datetime('checkedInAt', { mode: 'date', fsp: 3 }),
-	createdAt: datetime('createdAt', { mode: 'date', fsp: 3 })
+	refCodeId: integer('refCodeId'),
+	checkedInAt: timestamp('checkedInAt', { mode: 'date', precision: 3 }),
+	createdAt: timestamp('createdAt', { mode: 'date', precision: 3 })
 		.default(sql`CURRENT_TIMESTAMP(3)`)
 		.notNull(),
 	paymentIntent: varchar('paymentIntent', { length: 191 })

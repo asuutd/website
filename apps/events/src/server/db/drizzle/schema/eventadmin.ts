@@ -1,9 +1,10 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, primaryKey, mysqlEnum } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, primaryKey, pgEnum } from 'drizzle-orm/pg-core';
 import { event } from './event';
 import { user } from './user';
 
+const adminRoleEnum = pgEnum('role', ['OWNER', 'SUPER_ADMIN', 'ADMIN']);
 export const eventAdmin = pgTable(
 	'EventAdmin',
 	{
@@ -12,7 +13,7 @@ export const eventAdmin = pgTable(
 			.primaryKey(),
 		eventId: varchar('eventId', { length: 191 }).notNull(),
 		userId: varchar('userId', { length: 191 }).notNull(),
-		role: mysqlEnum('role', ['OWNER', 'SUPER_ADMIN', 'ADMIN']).default('ADMIN').notNull()
+		role: adminRoleEnum('role').default('ADMIN').notNull()
 	},
 	(table) => {
 		return {

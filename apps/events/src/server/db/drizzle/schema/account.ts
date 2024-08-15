@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, text, int, unique } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, text, integer, unique } from 'drizzle-orm/pg-core';
 import { user } from './user';
 
 export const account = pgTable(
@@ -15,7 +15,7 @@ export const account = pgTable(
 		providerAccountId: varchar('providerAccountId', { length: 191 }).notNull(),
 		refreshToken: text('refresh_token'),
 		accessToken: text('access_token'),
-		expiresAt: int('expires_at'),
+		expiresAt: integer('expires_at'),
 		tokenType: varchar('token_type', { length: 191 }),
 		scope: varchar('scope', { length: 191 }),
 		idToken: text('id_token'),

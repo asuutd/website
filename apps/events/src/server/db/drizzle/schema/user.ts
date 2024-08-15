@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, datetime, unique } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, timestamp, unique } from 'drizzle-orm/pg-core';
 import { account } from './account';
 import { session } from './session';
 import { ticket } from './ticket';
@@ -16,7 +16,7 @@ export const user = pgTable(
 			.primaryKey(),
 		name: varchar('name', { length: 191 }),
 		email: varchar('email', { length: 191 }).notNull(),
-		emailVerified: datetime('emailVerified', { mode: 'date', fsp: 3 }),
+		emailVerified: timestamp('emailVerified', { mode: 'date', precision: 3 }),
 		image: varchar('image', { length: 191 })
 	},
 	(table) => {

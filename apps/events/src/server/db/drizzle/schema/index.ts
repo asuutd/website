@@ -6,7 +6,6 @@ import * as eventAdmin from './eventadmin';
 import * as eventForm from './eventform';
 import * as formResponse from './formresponse';
 import * as eventLocation from './eventlocation';
-import * as example from './example';
 import * as organizer from './organizer';
 import * as refCode from './refcode';
 import * as session from './session';
@@ -24,7 +23,6 @@ const schema = {
 	...eventLocation,
 	...eventForm,
 	...formResponse,
-	...example,
 	...organizer,
 	...refCode,
 	...session,

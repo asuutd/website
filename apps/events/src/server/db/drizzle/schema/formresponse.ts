@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { pgTable, varchar, json, datetime, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, json, timestamp, primaryKey } from 'drizzle-orm/pg-core';
 import { eventForm } from './eventform';
 import { user } from './user';
 import { CustomResponseField } from '@/utils/forms';
@@ -10,7 +10,7 @@ export const formResponse = pgTable(
 		formId: varchar('formId', { length: 191 }).notNull(),
 		userId: varchar('userId', { length: 191 }).notNull(),
 		response: json('response').$type<Omit<CustomResponseField, 'type'>[]>().notNull(),
-		createdAt: datetime('createdAt', { mode: 'date', fsp: 3 })
+		createdAt: timestamp('createdAt', { mode: 'date', precision: 3 })
 			.default(sql`CURRENT_TIMESTAMP(3)`)
 			.notNull()
 	},
