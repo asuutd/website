@@ -4,11 +4,10 @@ import { account as accounts } from './schema/account';
 import { user as users } from './schema/user';
 import { verificationToken as verificationTokens } from './schema/vertificationtoken';
 import { session as sessions } from './schema/session';
-import schema from './schema';
 import type { Adapter } from 'next-auth/adapters';
-import type { PlanetScaleDatabase } from 'drizzle-orm/planetscale-serverless';
+import type { Database } from './index';
 
-export function DrizzleAdapter(db: PlanetScaleDatabase<typeof schema>): Adapter {
+export function DrizzleAdapter(db: Database): Adapter {
 	return {
 		async createUser(userData) {
 			console.log('ATTEMPTING TO CREATE USER');
@@ -21,7 +20,7 @@ export function DrizzleAdapter(db: PlanetScaleDatabase<typeof schema>): Adapter 
 					name: userData.name,
 					image: userData.image
 				})
-				.onDuplicateKeyUpdate({ set: userData });
+				.onConflictDoUpdate({ set: userData, target: users.email });
 			const rows = await db.select().from(users).where(eq(users.email, userData.email)).limit(1);
 			const row = rows[0];
 			if (!row) throw new Error('User not found');

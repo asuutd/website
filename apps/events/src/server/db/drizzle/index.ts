@@ -21,4 +21,7 @@ const initAdapter = async () => {
 	return postgresDrizzleAdapter(client, { schema });
 };
 
-export const drizzle = initAdapter();
+// TODO: need to figure out how to make this work since connecting to db is async
+export const drizzle = await initAdapter();
+
+export type Database = typeof drizzle;
