@@ -57,7 +57,7 @@ const Details = ({ event }: { event: Event }) => {
 			name: event.name,
 			startTime: format(event.start, "yyyy-MM-dd'T'HH:mm"),
 			endTime: format(event.end, "yyyy-MM-dd'T'HH:mm"),
-			feeBearer: event.fee_holder === 'USER' ? true : false,
+			feeBearer: event.feeHolder === 'USER' ? true : false,
 			...(event.location
 				? {
 						location: {
