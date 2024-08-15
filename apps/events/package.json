@@ -7,7 +7,7 @@
 		"dev": "next dev",
 		"db:generate": "prisma generate",
 		"db:push": "prisma db push",
-		"introspect": "drizzle-kit introspect:mysql",
+		"introspect": "drizzle-kit introspect:pg",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix",
 		"start": "next start",
