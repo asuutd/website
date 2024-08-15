@@ -6,7 +6,7 @@ import schema from './schema';
 import { Client } from "pg";
 
 
-const initAdapter = async () => {
+const initAdapter = () => {
 	const usingNeonDatabase = new URL(env.DATABASE_URL).host.endsWith('.neon.tech')
 	
 	if (usingNeonDatabase) {
@@ -16,12 +16,15 @@ const initAdapter = async () => {
 	const client = new Client({
 		connectionString: env.DATABASE_URL,
 	});
-	await client.connect();
+	
+	client.connect((err) => {
+		console.error(err);
+	});
 
-	return postgresDrizzleAdapter(client, { schema });
+	const adapter = postgresDrizzleAdapter(client, { schema });
+	return adapter;
 };
 
-// TODO: need to figure out how to make this work since connecting to db is async
-export const drizzle = await initAdapter();
+export const drizzle = initAdapter();
 
 export type Database = typeof drizzle;
