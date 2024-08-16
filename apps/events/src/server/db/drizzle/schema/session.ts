@@ -1,22 +1,17 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, timestamp, unique } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core';
 import { user } from './user';
 
 export const session = pgTable(
 	'Session',
 	{
-		id: varchar('id', { length: 128 })
+		id: text('id')
 			.$defaultFn(() => createId())
 			.primaryKey(),
-		sessionToken: varchar('sessionToken', { length: 191 }).notNull(),
-		userId: varchar('userId', { length: 191 }).notNull(),
+		sessionToken: text('sessionToken').notNull().unique('Session_sessionToken_key'),
+		userId: text('userId').notNull(),
 		expires: timestamp('expires', { mode: 'date', precision: 3 }).notNull()
-	},
-	(table) => {
-		return {
-			sessionSessionTokenKey: unique('Session_sessionToken_key').on(table.sessionToken)
-		};
 	}
 );
 

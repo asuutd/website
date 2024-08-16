@@ -1,10 +1,10 @@
-import { pgTable, varchar, timestamp, unique } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core';
 
 export const verificationToken = pgTable(
 	'VerificationToken',
 	{
-		identifier: varchar('identifier', { length: 191 }).notNull(),
-		token: varchar('token', { length: 191 }).notNull(),
+		identifier: text('identifier').notNull(),
+		token: text('token').notNull(),
 		expires: timestamp('expires', { mode: 'date', precision: 3 }).notNull()
 	},
 	(table) => {

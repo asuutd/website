@@ -1,15 +1,22 @@
-import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, text, primaryKey, foreignKey } from 'drizzle-orm/pg-core';
 import { user } from './user';
 import { event } from './event';
 
 export const organizer = pgTable('Organizer', {
-	id: varchar('id', { length: 128 })
-		.$defaultFn(() => createId())
-		.primaryKey(),
-	stripeAccountId: varchar('stripeAccountId', { length: 191 })
-});
+	id: text('id'),
+	stripeAccountId: text('stripeAccountId')
+},
+(table) => {
+	return {
+		organizerIdPk: primaryKey({ name: "Organizer_pkey", columns: [table.id] }),
+		organizerIdFk: foreignKey({
+			columns: [table.id],
+			foreignColumns: [user.id],
+			name: 'Organizer_id_fkey',
+		}).onDelete('cascade').onUpdate('cascade')
+	}
+})
 
 export const organizerRelations = relations(organizer, ({ one, many }) => ({
 	user: one(user, {

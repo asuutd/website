@@ -1,16 +1,23 @@
-import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, doublePrecision } from 'drizzle-orm/pg-core';
+import { pgTable, text, doublePrecision, foreignKey } from 'drizzle-orm/pg-core';
 import { event } from './event';
 
 export const eventLocation = pgTable('EventLocation', {
-	id: varchar('id', { length: 128 })
-		.$defaultFn(() => createId())
-		.primaryKey(),
+	id: text('id').notNull(),
 	long: doublePrecision('long').notNull(),
 	lat: doublePrecision('lat').notNull(),
-	name: varchar('name', { length: 191 })
-});
+	name: text('name').notNull()
+},
+(table) => {
+	return {
+		eventLocationEventIdFk: foreignKey({
+			columns: [table.id],
+			foreignColumns: [event.id],
+			name: 'EventLocation_eventId_fkey',
+		}).onDelete('cascade').onUpdate('cascade')
+	}
+}
+)
 
 export const eventLocationRelations = relations(eventLocation, ({ one }) => ({
 	event: one(event, {

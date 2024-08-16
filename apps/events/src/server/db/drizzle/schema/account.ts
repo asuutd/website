@@ -1,25 +1,25 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, text, integer, unique } from 'drizzle-orm/pg-core';
+import { pgTable, text, text, integer, unique } from 'drizzle-orm/pg-core';
 import { user } from './user';
 
 export const account = pgTable(
 	'Account',
 	{
-		id: varchar('id', { length: 128 })
+		id: text('id')
 			.$defaultFn(() => createId())
 			.primaryKey(),
-		userId: varchar('userId', { length: 191 }).notNull(),
-		type: varchar('type', { length: 191 }).notNull(),
-		provider: varchar('provider', { length: 191 }).notNull(),
-		providerAccountId: varchar('providerAccountId', { length: 191 }).notNull(),
+		userId: text('userId').notNull(),
+		type: text('type').notNull(),
+		provider: text('provider').notNull(),
+		providerAccountId: text('providerAccountId').notNull(),
 		refreshToken: text('refresh_token'),
 		accessToken: text('access_token'),
-		expiresAt: integer('expires_at'),
-		tokenType: varchar('token_type', { length: 191 }),
-		scope: varchar('scope', { length: 191 }),
+		expiresAt: integer('expires_at').notNull(),
+		tokenType: text('token_type'),
+		scope: text('scope').notNull(),
 		idToken: text('id_token'),
-		sessionState: varchar('session_state', { length: 191 })
+		sessionState: text('session_state')
 	},
 	(table) => {
 		return {

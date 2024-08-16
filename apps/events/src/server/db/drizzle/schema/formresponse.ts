@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { pgTable, varchar, json, timestamp, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, jsonb, timestamp, primaryKey, foreignKey } from 'drizzle-orm/pg-core';
 import { eventForm } from './eventform';
 import { user } from './user';
 import { CustomResponseField } from '@/utils/forms';
@@ -7,16 +7,26 @@ import { CustomResponseField } from '@/utils/forms';
 export const formResponse = pgTable(
 	'FormResponse',
 	{
-		formId: varchar('formId', { length: 191 }).notNull(),
-		userId: varchar('userId', { length: 191 }).notNull(),
-		response: json('response').$type<Omit<CustomResponseField, 'type'>[]>().notNull(),
+		formId: text('formId').notNull(),
+		userId: text('userId').notNull(),
+		response: jsonb('response').$type<Omit<CustomResponseField, 'type'>[]>().notNull(),
 		createdAt: timestamp('createdAt', { mode: 'date', precision: 3 })
 			.default(sql`CURRENT_TIMESTAMP(3)`)
 			.notNull()
 	},
 	(table) => {
 		return {
-			pk: primaryKey({ columns: [table.formId, table.userId] })
+			pk: primaryKey({ columns: [table.formId, table.userId], name: 'FormResponse_pkey' }),
+			formResponseFormIdFk: foreignKey({
+				columns: [table.formId],
+				foreignColumns: [eventForm.id],
+				name: 'FormResponse_formId_fkey',
+			}).onDelete('cascade').onUpdate('cascade'),
+			formResponseUserIdFk: foreignKey({
+				columns: [table.userId],
+				foreignColumns: [user.id],
+				name: 'FormResponse_userId_fkey',
+			}).onDelete('cascade').onUpdate('cascade')
 		};
 	}
 );

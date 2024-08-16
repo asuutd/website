@@ -1,21 +1,21 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, doublePrecision, integer, unique } from 'drizzle-orm/pg-core';
+import { pgTable, text, doublePrecision, integer, unique } from 'drizzle-orm/pg-core';
 import { tier } from './tier';
 import { ticket } from './ticket';
 
 export const code = pgTable(
 	'Code',
 	{
-		id: varchar('id', { length: 128 })
+		id: text('id')
 			.$defaultFn(() => createId())
 			.primaryKey(),
-		code: varchar('code', { length: 191 }).notNull(),
-		tierId: varchar('tierId', { length: 191 }).notNull(),
-		type: varchar('type', { length: 191 }).notNull(),
+		code: text('code').notNull(),
+		tierId: text('tierId').notNull(),
+		type: text('type').notNull(),
 		value: doublePrecision('value').notNull(),
 		limit: integer('limit').notNull(),
-		notes: varchar('notes', { length: 191 }).notNull().default('')
+		notes: text('notes').default('')
 	},
 	(table) => {
 		return {

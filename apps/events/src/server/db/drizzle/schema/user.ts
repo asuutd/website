@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, varchar, timestamp, unique } from 'drizzle-orm/pg-core';
+import { index, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core';
 import { account } from './account';
 import { session } from './session';
 import { ticket } from './ticket';
@@ -11,17 +11,19 @@ import { organizer } from './organizer';
 export const user = pgTable(
 	'User',
 	{
-		id: varchar('id', { length: 128 })
+		id: text('id')
 			.$defaultFn(() => createId())
 			.primaryKey(),
-		name: varchar('name', { length: 191 }),
-		email: varchar('email', { length: 191 }).notNull(),
+		name: text('name'),
+		email: text('email').notNull(),
 		emailVerified: timestamp('emailVerified', { mode: 'date', precision: 3 }),
-		image: varchar('image', { length: 191 })
+		image: text('image').default("/email_assets/Missing_avatar.svg")
 	},
 	(table) => {
 		return {
-			userEmailKey: unique('User_email_key').on(table.email)
+			userEmailKey: unique('User_email_key').on(table.email),
+			// TODO: only creating this index to replicate prisma schema - should we have 2 indexes on the same column? seems like this one is redundant because of the unique index but idk
+			userEmailIdx: index('User_email_idx').on(table.email)
 		};
 	}
 );

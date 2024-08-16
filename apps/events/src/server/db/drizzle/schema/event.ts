@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { timestamp, integer, pgEnum, pgTable, text, varchar } from 'drizzle-orm/pg-core';
+import { timestamp, integer, pgEnum, pgTable, text, boolean, foreignKey } from 'drizzle-orm/pg-core';
 import { organizer } from './organizer';
 import { ticket } from './ticket';
 import { refCode } from './refcode';
@@ -9,22 +9,34 @@ import { eventAdmin } from './eventadmin';
 import { eventLocation } from './eventlocation';
 import { eventForm } from './eventform';
 
-const feeHolderEnum = pgEnum('fee_holder', ['USER', 'ORGANIZER']);
+const feeHolderEnum = pgEnum('Fee_Holder', ['USER', 'ORGANIZER']);
 
 export const event = pgTable('Event', {
-	id: varchar('id', { length: 128 })
+	id: text('id')
 		.$defaultFn(() => createId())
 		.primaryKey(),
 	start: timestamp('start', { mode: 'date', precision: 3 }).notNull(),
 	end: timestamp('end', { mode: 'date', precision: 3 }).notNull(),
-	name: varchar('name', { length: 191 }).notNull(),
-	image: varchar('image', { length: 191 }),
+	name: text('name').notNull(),
+	image: text('image'),
 	refQuantity: integer('ref_quantity'),
-	organizerId: varchar('organizerId', { length: 191 }),
-	ticketImage: varchar('ticketImage', { length: 191 }),
+	organizerId: text('organizerId'),
+	ticketImage: text('ticketImage'),
 	description: text('description'),
-	feeHolder: feeHolderEnum('fee_holder').default('USER').notNull()
-});
+	// TODO: this should be non nullable and have a default, but this isn't the case in the prisma schema.
+	feeHolder: feeHolderEnum('fee_holder'),
+	google_pass_class_created: boolean('google_pass_class_created').default(false).notNull()
+},
+(table) => {
+	return {
+		eventOrganizerIdFk: foreignKey({
+			columns: [table.organizerId],
+			foreignColumns: [organizer.id],
+			name: 'Event_organizerId_fkey',
+		}).onDelete('cascade').onUpdate('cascade'),
+	}
+}
+)
 
 export const eventRelations = relations(event, ({ one, many }) => ({
 	organizer: one(organizer, {
