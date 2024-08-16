@@ -6,7 +6,7 @@ import { calculateApplicationFee } from '@/utils/misc';
 import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
-import cuid from 'cuid';
+import { createId } from '@paralleldrive/cuid2';
 
 export const paymentRouter = t.router({
 	createCheckoutLink: t.procedure
@@ -220,7 +220,7 @@ export const paymentRouter = t.router({
 					for (let i = 0; i < tier.quantity; ++i) {
 						if (input.eventId && user.id) {
 							const ticket = {
-								id: cuid(),
+								id: createId(),
 								userId: user.id,
 								eventId: input.eventId,
 								tierId: tier.tierId,
