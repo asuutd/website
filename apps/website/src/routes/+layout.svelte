@@ -13,6 +13,8 @@
 	];
 
 	import { goto } from '$app/navigation';
+	import { Toaster } from 'svelte-sonner'
+
 
 	const moveSidebar = (href: string) => {
 		console.log('HELLO');
@@ -27,6 +29,7 @@
 </script>
 
 <!-- ... -->
+<Toaster position="top-center"/>
 
 <div class="drawer p-0 mx-auto m-0 drawer-end">
 	<input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
