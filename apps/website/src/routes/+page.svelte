@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Carousel from '../components/Carousel.svelte';
-	import Sponsors from '../components/Sponsors.svelte';
 	import Event from '../components/Event.svelte';
-	import type { PageData } from './$types';
+	import { page } from '$app/stores';
+	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
-	export let data: PageData;
+
+	export let data;
 	const { events } = data
 
 
@@ -23,6 +26,14 @@
 			interval: 10 * 60,
 		}
 	}
+	onMount(() => {
+		if($page.url.searchParams.has("attendance_success", "true")){
+			const url = new URL($page.url);
+			url.searchParams.delete('attendance_success')
+			toast.success('Attendance Marked')
+			goto(url);
+		}
+	})
 </script>
 
 <svelte:head>
