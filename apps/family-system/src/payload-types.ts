@@ -121,7 +121,6 @@ export interface Media {
   id: number;
   alt?: string | null;
   blurhash?: string | null;
-  _file_id?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;

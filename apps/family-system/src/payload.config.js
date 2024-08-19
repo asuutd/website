@@ -18,6 +18,7 @@ import { defaultFamily, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
 import { resendAdapter } from '@payloadcms/email-resend';
+import { Webhook } from 'svix';
 // import { boxStoragePlugin } from "@asu/payload-storage-box";
 // import { tokenStorage } from './utils/box';
 // import { BoxOAuth, OAuthConfig } from 'box-typescript-sdk-gen';
@@ -68,7 +69,7 @@ const setUpDevUser = async (payload) => {
 	});
 
 	if (totalDocs == 1) {
-		payload.logger.info(`Dev user already exists, skipping creation. Login with email ${DEV_USER_EMAIL} and password ${DEV_USER_PASSWORD}.`)
+		payload.logger.info(`Dev user already exists, skipping creation. Login with email '${DEV_USER_EMAIL}' and password '${DEV_USER_PASSWORD}'.`)
 		return
 	};
 
@@ -80,7 +81,7 @@ const setUpDevUser = async (payload) => {
 		}
 	});
 
-	payload.logger.info(`Created dev user with email ${DEV_USER_EMAIL} and password ${DEV_USER_PASSWORD}`)
+	payload.logger.info(`Created dev user - login with email '${DEV_USER_EMAIL}' and password '${DEV_USER_PASSWORD}'`)
 };
 
 const payloadConfig = buildConfig({
@@ -90,9 +91,12 @@ const payloadConfig = buildConfig({
 			email: DEV_USER_EMAIL,
 			password: DEV_USER_PASSWORD,
 			prefillOnly: true,
-		} : false
+		} : false,
+		importMap: {
+			baseDir: dirname,
+		},
 	},
-	debug: true,
+	debug: env.NODE_ENV === 'development',
 	telemetry: true,
 	onInit: async (payload) => {
 		await setUpDefaultFamily(payload);
@@ -242,13 +246,12 @@ const payloadConfig = buildConfig({
 						'svix-signature': svix_signature
 					});
 				} catch (err) {
-					console.error('Error verifying webhook:', err);
+					payload.logger.error('Error verifying webhook:', err);
 					return new Response('Bad Request', { status: 400 });
 				}
 
 				console.log(evt);
 
-				// TODO: webhook validation
 				const { data, type } = payload;
 				console.log(data);
 
