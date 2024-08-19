@@ -14,7 +14,8 @@ export const serverSchema = z.object({
 	BOX_OAUTH_CLIENT_ID: z.string(),
 	BOX_OAUTH_CLIENT_SECRET: z.string(),
 	RESEND_API_KEY: z.string(),
-	JONZE_WEBHOOK_SECRET: z.string()
+	JONZE_WEBHOOK_SECRET: z.string(),
+	NODE_ENV: z.enum(['development', 'test', 'production']),
 });
 
 /**

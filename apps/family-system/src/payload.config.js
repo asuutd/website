@@ -25,25 +25,78 @@ import { resendAdapter } from '@payloadcms/email-resend';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+/**
+ * Sets up the default family in the database if it doesn't already exist.
+ * 
+ * @param {import('payload').Payload} payload - The Payload CMS instance.
+ * @returns {Promise<void>}
+ */
+const setUpDefaultFamily = async (payload) => {
+	const { totalDocs } = await payload.find({
+		collection: 'families',
+		where: {
+			jonze_family_tag: { equals: defaultFamily.jonze_family_tag }
+		}
+	});
+
+	if (totalDocs == 1) return;
+	await payload.create({
+		collection: 'families',
+		data: defaultFamily
+	});
+};
+
+const DEV_USER_EMAIL = 'dev@utd-asu.com'
+const DEV_USER_PASSWORD = 'password'
+
+/**
+ * Sets up the development user in the database if it doesn't already exist.
+ * 
+ * @param {import('payload').Payload} payload - The Payload CMS instance.
+ * @returns {Promise<void>}
+ */
+const setUpDevUser = async (payload) => {
+	if (env.NODE_ENV !== 'development') {
+		payload.logger.warn('Not in development environment, skipping dev user creation.')
+		return
+	}
+	const { totalDocs } = await payload.find({
+		collection: 'users',
+		where: {
+			email: { equals: DEV_USER_EMAIL }
+		}
+	});
+
+	if (totalDocs == 1) {
+		payload.logger.info(`Dev user already exists, skipping creation. Login with email ${DEV_USER_EMAIL} and password ${DEV_USER_PASSWORD}.`)
+		return
+	};
+
+	await payload.create({
+		collection: 'users',
+		data: {
+			email: DEV_USER_EMAIL,
+			password: DEV_USER_PASSWORD,
+		}
+	});
+
+	payload.logger.info(`Created dev user with email ${DEV_USER_EMAIL} and password ${DEV_USER_PASSWORD}`)
+};
+
 const payloadConfig = buildConfig({
 	admin: {
-		user: Users.slug
+		user: Users.slug,
+		autoLogin: env.NODE_ENV === 'development' ? {
+			email: DEV_USER_EMAIL,
+			password: DEV_USER_PASSWORD,
+			prefillOnly: true,
+		} : false
 	},
 	debug: true,
 	telemetry: true,
 	onInit: async (payload) => {
-		const { totalDocs } = await payload.find({
-			collection: 'families',
-			where: {
-				jonze_family_tag: { equals: defaultFamily.jonze_family_tag }
-			}
-		});
-
-		if (totalDocs == 1) return;
-		await payload.create({
-			collection: 'families',
-			data: defaultFamily
-		});
+		await setUpDefaultFamily(payload);
+		await setUpDevUser(payload);	
 	},
 	collections: [Users, Members, Families, LedgerEntries, Media],
 	globals: [BoxAccessToken],
