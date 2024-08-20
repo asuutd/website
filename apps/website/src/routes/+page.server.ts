@@ -40,7 +40,7 @@ export const load: PageServerLoad = async () => {
 	);
 
 	const eventsOrderedByDateAscending = events.sort(
-		(a, b) => b.startDate.getTime() - a.startDate.getTime()
+		(a, b) => a.startDate.getTime() - b.startDate.getTime()
 	);
 
 	return {
