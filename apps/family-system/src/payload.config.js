@@ -14,7 +14,7 @@ import { createLedgerEntryForEventAttendance, LedgerEntries } from './collection
 import { Media } from './collections/Media';
 import { BoxAccessToken } from '@/collections/BoxAccessToken';
 import { jonzeClient } from './utils/jonze';
-import { defaultFamily, recalculateScores } from './utils/scores';
+import { defaultFamily, getMembersByFamilyTag, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
 import { resendAdapter } from '@payloadcms/email-resend';
