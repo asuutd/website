@@ -337,8 +337,8 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       drizzle-kit:
-        specifier: 0.23.1-7816536
-        version: 0.23.1-7816536
+        specifier: 0.23.2-df9e596
+        version: 0.23.2-df9e596
       drizzle-orm:
         specifier: 0.32.1
         version: 0.32.1(@cloudflare/workers-types@4.20240712.0)(@libsql/client@0.5.6(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@neondatabase/serverless@0.9.4)(@prisma/client@5.18.0)(@types/pg@8.11.6)(pg@8.11.3)(postgres@3.4.4)(react@19.0.0-rc-49496d49-20240814)(types-react@19.0.0-rc.0)
@@ -4912,10 +4912,6 @@ packages:
 
   drizzle-kit@0.20.14-1f2c838:
     resolution: {integrity: sha512-Gun36T6RcfwrZAZ+Gk2ZeWJtvUhO002H/SvkY9BNcsACvhsd4OxkkxzrznuZ3Kz5NEdg12k7yvZqNoimPp68aw==}
-    hasBin: true
-
-  drizzle-kit@0.23.1-7816536:
-    resolution: {integrity: sha512-mc7Mo8Kuze3VJSccOjuOSibCRgMvyshp0r6ZVnGVAo+hgLgfIjOkyVIPDadzNFwGCH01j7gmjI1CkO8uvORuJg==}
     hasBin: true
 
   drizzle-kit@0.23.2-df9e596:
@@ -14544,15 +14540,6 @@ snapshots:
       minimatch: 7.4.6
       semver: 7.6.3
       zod: 3.23.8
-    transitivePeerDependencies:
-      - supports-color
-
-  drizzle-kit@0.23.1-7816536:
-    dependencies:
-      '@drizzle-team/brocli': 0.8.2
-      '@esbuild-kit/esm-loader': 2.6.5
-      esbuild: 0.19.12
-      esbuild-register: 3.5.0(esbuild@0.19.12)
     transitivePeerDependencies:
       - supports-color
 
