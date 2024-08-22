@@ -19,9 +19,9 @@ import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
 import { resendAdapter } from '@payloadcms/email-resend';
 import { Webhook } from 'svix';
-// import { boxStoragePlugin } from "@asu/payload-storage-box";
-// import { tokenStorage } from './utils/box';
-// import { BoxOAuth, OAuthConfig } from 'box-typescript-sdk-gen';
+import { boxStoragePlugin } from "@asu/payload-storage-box";
+import { tokenStorage } from './utils/box';
+import { BoxOAuth, OAuthConfig } from 'box-typescript-sdk-gen';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -315,22 +315,22 @@ const payloadConfig = buildConfig({
 		disable: true
 	},
 	plugins: [
-		// boxStoragePlugin({
-		// 	enabled: true,
-		// 	collections: {
-		// 		[Media.slug]: true
-		// 	},
-		// 	options: {
-		// 		auth: new BoxOAuth({
-		// 		  config: new OAuthConfig({
-		//     clientId: env.BOX_OAUTH_CLIENT_ID,
-		//     clientSecret: env.BOX_OAUTH_CLIENT_SECRET,
-		//     tokenStorage,
-		//   })
-		// 		}),
-		// 		folderId: env.BOX_FOLDER_ID
-		// 	}
-		// })
+		boxStoragePlugin({
+			enabled: true,
+			collections: {
+				[Media.slug]: true
+			},
+			options: {
+				auth: new BoxOAuth({
+					config: new OAuthConfig({
+						clientId: env.BOX_OAUTH_CLIENT_ID,
+						clientSecret: env.BOX_OAUTH_CLIENT_SECRET,
+						tokenStorage,
+					})
+				}),
+				folderId: env.BOX_FOLDER_ID
+			}
+		})
 	]
 });
 export default payloadConfig;
