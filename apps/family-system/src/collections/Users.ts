@@ -6,7 +6,9 @@ export const Users: CollectionConfig = {
 		useAsTitle: 'email',
 		description: 'Users that can manage the family system.'
 	},
-	auth: true,
+	auth: {
+		useAPIKey: true
+	},
 	fields: [
 		// Email added by default
 		// Add more fields as needed

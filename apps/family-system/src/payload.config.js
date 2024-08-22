@@ -300,7 +300,7 @@ const payloadConfig = buildConfig({
 					});
 				}
 
-				const members = await jonzeClient.getMembersByFamilyTag(req.payload, tag);
+				const members = await getMembersByFamilyTag(req.payload, tag);
 
 				return new Response(JSON.stringify(members), {
 					status: 200,
