@@ -53,6 +53,8 @@
 		"@supabase/supabase-js": "^1.35.7",
 		"@trpc/client": "^10.45.2",
 		"@types/pg": "^8.11.6",
+		"bits-ui": "^0.21.13",
+		"clsx": "^2.1.1",
 		"daisyui": "^2.52.0",
 		"dotenv": "^16.4.5",
 		"drizzle-kit": "0.20.14-1f2c838",
@@ -71,6 +73,8 @@
 		"svelte-sonner": "^0.3.27",
 		"svelte-stripe": "^0.0.22",
 		"sveltekit-superforms": "^1.13.4",
+		"tailwind-merge": "^1.14.0",
+		"tailwind-variants": "^0.2.1",
 		"yup": "^0.32.11",
 		"zod": "^3.23.8"
 	},
