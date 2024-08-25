@@ -1,6 +1,6 @@
 // import 'server-only'
 import type { Family, Member } from '@/payload-types';
-import { arrayContains, desc, eq, sql, sum, inArray } from 'drizzle-orm';
+import { arrayContains, desc, eq, sql, sum, inArray, not, isNull } from 'drizzle-orm';
 import type { BasePayload } from 'payload';
 
 // TODO: use prepared statements - https://orm.drizzle.team/docs/perf-queries#prepared-statement
@@ -12,22 +12,43 @@ export const defaultFamily: Omit<Family, 'id' | 'createdAt' | 'updatedAt'> = {
 }
 
 export const recalculateScores = async (payload: BasePayload, familyIds?: number[]) => {
-	const { ledger_entries, families } = payload.db.tables;
+	const { ledger_entries, families, members } = payload.db.tables;
 	const { drizzle: db } = payload.db;
 
 	const cond = familyIds ? inArray(ledger_entries.Family, familyIds) : sql`true`;
 
-	const newScoresQuery = await db
+	const newFamilyScoresQuery = (await db
 		.select({
 			familyId: ledger_entries.Family,
+			jonze_family_tag: families.jonze_family_tag,
 			score: sum(ledger_entries.amount).as('score')
 		})
 		.from(ledger_entries)
 		.where(cond)
-		.groupBy(ledger_entries.Family);
+		.leftJoin(families, eq(families.id, ledger_entries.Family))
+		.groupBy(ledger_entries.Family)).map((family) => ({ ...family, score: Number(family.score) }))
+
+
+
+	for (const familyIdx in newFamilyScoresQuery) {
+		const family = newFamilyScoresQuery[familyIdx];
+		const memberScores = await db
+			.select({
+				memberId: members.id,
+				score: sum(ledger_entries.amount).as('score')
+			})
+			.from(ledger_entries)
+			.leftJoin(members, eq(members.id, ledger_entries.memberId))
+			.where(inArray(family.jonze_family_tag, members.jonze_tags))
+			.groupBy(members.id);
+
+		const sumOfMemberScores = memberScores.reduce((sum, memberScore) => sum + Number(memberScore.score), 0);
+
+		newFamilyScoresQuery[familyIdx].score += sumOfMemberScores;
+	}
 
 	await Promise.all(
-		newScoresQuery.map(async (newScore) => {
+		newFamilyScoresQuery.map(async (newScore) => {
 			db.update(families)
 				.set({
 					score: newScore.score
@@ -49,6 +70,7 @@ export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) 
 				points: sum(ledger_entries.amount).as('points')
 			})
 			.from(ledger_entries)
+			.where(not(isNull(ledger_entries.member)))
 			.groupBy(ledger_entries.member)
 	);
 
@@ -73,7 +95,7 @@ export const getTopMemberPointEarners = async (payload: BasePayload, limit = 5) 
 			families,
 			arrayContains(topMembers.memberTags, sql`to_jsonb(${families.jonze_family_tag})`)
 		)
-		.orderBy(desc(topMembers.points));
+		.orderBy(desc(topMembers.points)).limit(limit);
 
 	const out = topMembersWithFamilies.map(
 		(result) =>

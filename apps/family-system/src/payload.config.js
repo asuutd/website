@@ -14,7 +14,7 @@ import { createLedgerEntryForEventAttendance, LedgerEntries } from './collection
 import { Media } from './collections/Media';
 import { BoxAccessToken } from '@/collections/BoxAccessToken';
 import { jonzeClient } from './utils/jonze';
-import { defaultFamily, getMembersByFamilyTag, recalculateScores } from './utils/scores';
+import { defaultFamily, getMembersByFamilyTag, getTopFamilies, getTopMemberPointEarners, recalculateScores } from './utils/scores';
 import { env } from './env/server.mjs';
 import { eq } from 'drizzle-orm';
 import { resendAdapter } from '@payloadcms/email-resend';
@@ -22,6 +22,7 @@ import { Webhook } from 'svix';
 import { boxStoragePlugin } from "@asu/payload-storage-box";
 import { tokenStorage } from './utils/box';
 import { BoxOAuth, OAuthConfig } from 'box-typescript-sdk-gen';
+import { randomUUID } from 'crypto';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -308,6 +309,238 @@ const payloadConfig = buildConfig({
 					headers: {
 						'Content-Type': 'application/json'
 					}
+				});
+			}
+		},
+		
+		{
+			method: 'get',
+			path: '/agg/get_top_members',
+			handler: async (req) => {
+				if (!req.user) {
+					return new Response('Unauthorized', {
+						status: 401,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					});
+				}
+
+				const topMembers = await getTopMemberPointEarners(req.payload);
+
+				return new Response(JSON.stringify(topMembers), {
+					status: 200,
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
+			}
+		},
+		{
+			method: 'get',
+			path: '/agg/get_top_families',
+			handler: async (req) => {
+				if (!req.user) {
+					return new Response('Unauthorized', {
+						status: 401,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					});
+				}
+
+				const topFamilies = await getTopFamilies(req.payload);
+
+				return new Response(JSON.stringify(topFamilies), {
+					status: 200,
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
+			}
+		},
+		{
+			method: 'get',
+			path: '/dev/seed_families',
+			handler: async (req) => {
+				if (!req.user) {
+					return new Response('Unauthorized', {
+						status: 401,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					});
+				}
+
+				if (env.NODE_ENV !== 'development') {
+					return new Response('Not in development mode', {
+						status: 403,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					});
+				}
+				
+				const FAMILIES_TO_CREATE = 5;
+
+				const createdFamilies = []
+				const batch = randomUUID();
+				for (let i = 1; i <= FAMILIES_TO_CREATE; i++) {
+					const jonze_family_tag =  '#fam-seed-' + i + '-' + batch
+					createdFamilies.push(await req.payload.create({
+						collection: 'families',
+						req,
+						data: {
+							jonze_family_tag,
+							family_name: 'Seeded Family ' + i + ' (Batch ' + batch + ')',
+							score: i * 10
+						}
+					}));
+					req.payload.logger.info('Created family', jonze_family_tag);
+				}
+
+				req.payload.logger.info('Getting members');
+				const members = await req.payload.find({
+					collection: 'members',
+					limit: 1000,
+					req
+				});
+				req.payload.logger.info('Got members');
+
+				let addToFamily = 0;
+				
+				for (const member of members.docs) {
+					const family = createdFamilies[addToFamily];
+					const newTagsArray = [...(member.jonze_tags || []).filter((tag) => tag.startsWith('#fam-seed-')), family.jonze_family_tag];
+					
+					req.payload.logger.info('Updating member', member.id);
+					await req.payload.update({
+						collection: 'members',
+						id: member.id,
+						data: {
+							jonze_tags: newTagsArray
+						},
+						req
+					});
+					req.payload.logger.info('Updated member', member.id);
+
+					addToFamily++;
+					if (addToFamily >= FAMILIES_TO_CREATE) {
+						addToFamily = 0;
+					}
+				}
+
+				return new Response(null, {
+					status: 200
+				});
+
+			}
+		},
+		{
+			method: 'get',
+			path: '/dev/seed_ledger_entries',
+			handler: async (req) => {
+				if (!req.user) {
+					return new Response('Unauthorized', {
+						status: 401,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					});
+				}
+
+				if (env.NODE_ENV !== 'development') {
+					return new Response('Not in development mode', {
+						status: 403,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					});
+				}
+
+				const MEMBER_POINT_DESCRIPTIONS = [
+					'Checked into event',
+					'Liked a post on Instagram',
+					'Commented on a post on Instagram',
+					'Shared a post on Instagram'
+				];
+
+				const FAMILY_POINT_DESCRIPTIONS = [
+					'Attended volunteer event',
+					'Submitted point request'
+				];
+
+				const AWARD_PTS_AMOUNT = 10;
+				const MAX_AWARDS_PER_FAMILY = 10;
+				const MAX_AWARDS_PER_MEMBER = 10;
+
+				// TODO: ledger entry schema requires family_id to be non-null. eventually want to be able to award points to a member OR a family, need to figure out how to do that
+				const members = await req.payload.find({
+					collection: 'members',
+					limit: 1000,
+					req
+				});
+				const memberAwards = members.docs.map((m) => ({m, count: Math.floor(Math.random() * MAX_AWARDS_PER_MEMBER)}));
+
+				for (const {m, count} of memberAwards) {
+					const points = new Array(count).fill(0).map((_, i) => ({
+						description: MEMBER_POINT_DESCRIPTIONS[Math.floor(Math.random() * MEMBER_POINT_DESCRIPTIONS.length)],
+						amount: AWARD_PTS_AMOUNT
+					}));
+
+					for (const point of points) {
+						req.payload.logger.info('Inserting ledger entry', point);
+						await req.payload.create({
+							collection: 'ledger_entries',
+							data: {
+								amount: point.amount,
+								description: point.description,
+								member: m.id
+							},
+							req
+						});
+						req.payload.logger.info('Inserted ledger entry', point);
+					}
+				}
+
+
+				req.payload.logger.info('Getting families');
+				const families = await req.payload.find({
+					collection: 'families',
+					limit: 1000,
+					req
+				});
+				req.payload.logger.info('Got families');
+
+				const familyAwards = families.docs.map((f) => ({f, count: Math.floor(Math.random() * MAX_AWARDS_PER_FAMILY)}));
+
+				for (const {f, count} of familyAwards) {
+					const points = new Array(count).fill(0).map((_, i) => ({
+						description: FAMILY_POINT_DESCRIPTIONS[Math.floor(Math.random() * FAMILY_POINT_DESCRIPTIONS.length)],
+						amount: AWARD_PTS_AMOUNT
+					}));
+
+					for (const point of points) {
+						req.payload.logger.info('Inserting ledger entry', point);
+						await req.payload.create({
+							collection: 'ledger_entries',
+							data: {
+								amount: point.amount,
+								description: point.description,
+								Family: f.id
+							},
+							req
+						});
+						req.payload.logger.info('Inserted ledger entry', point);
+					}
+				}
+
+				req.payload.logger.info('Recalculating scores');
+				await recalculateScores(req.payload);
+				req.payload.logger.info('Recalculated scores');
+
+				return new Response(null, {
+					status: 200
 				});
 			}
 		}

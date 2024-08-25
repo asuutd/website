@@ -101,7 +101,7 @@ export interface LedgerEntry {
   amount: number;
   description: string;
   member?: (number | null) | Member;
-  Family: number | Family;
+  Family?: (number | null) | Family;
   metadata?: {
     awardType: 'jonze_attendance_marked';
     hookPayload: {
