@@ -13,7 +13,7 @@ const nextConfig = {
 	},
 	  // FIXME: This handles an issue with Box's TypeScript SDK which causes errors when running in Vercel deployment (see https://github.com/box/box-typescript-sdk-gen/issues/213#issuecomment-2287180102). Whenever the issue is resolved, this should be removed.
 	outputFileTracingIncludes: {
-	  '/api/**/*': [
+	'/**/*': [
 		'node_modules/@tootallnate/quickjs-emscripten/**/*',
 		'node_modules/agent-base/**/*',
 		'node_modules/ast-types/**/*',
