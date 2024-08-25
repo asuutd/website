@@ -1,14 +1,11 @@
-<script>
-
+<script lang="ts">
 	import FamilyCard from './FamilyCard.svelte';
 	import MemberCard from './MemberCard.svelte';
 	import PointEarningMethodCard from './PointEarningMethodCard.svelte';
 
-	// import { getPayload } from '@/utils/payload';
-	// import { getTopFamilies, getTopMemberPointEarners } from '@/utils/scores';
+	export let data;
+	const { topFamilies, topMembers } = data;
 
-	let topFamilies = [];
-	let topMembers = [];
 	let pointEarningMethods = [
 		{
 			title: 'Engage with ASU Socials',
@@ -20,11 +17,12 @@
 		}
 	];
 
-	// onMount(async () => {
-	// 	const payload = await getPayload();
-	// 	topFamilies = await getTopFamilies(payload);
-	// 	topMembers = await getTopMemberPointEarners(payload);
-	// });
+	export const config = {
+		isr: {
+			// 10 minutes
+			interval: 10 * 60,
+		}
+	}
 </script>
 
 <style>
@@ -34,13 +32,13 @@
 		margin: 0 auto;
 		padding: 12px 16px;
 	}
-	
 </style>
 
 <div class="container">
+	<h1 class="text-4xl font-bold mb-8">Family Leaderboard</h1>
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 		<div>
-			<h2 class="text-2xl">Top Families</h2>
+			<h2 class="text-2xl mb-2">Top Families</h2>
 			<div class="space-y-4">
 				{#each topFamilies as family, index}
 					<FamilyCard
@@ -53,7 +51,7 @@
 			</div>
 		</div>
 		<div>
-			<h2 class="text-2xl">Top Individual Point Earners</h2>
+			<h2 class="text-2xl mb-2">Top Individual Point Earners</h2>
 			<div class="space-y-4">
 				{#each topMembers as { member, family }, index}
 					<MemberCard
@@ -66,7 +64,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="mt-8">
+	<div class="mt-8 flex flex-col gap-4">
 		<h2 class="text-2xl">Ways to Earn Points</h2>
 		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 			{#each pointEarningMethods as method, index}
@@ -77,6 +75,12 @@
 			{/each}
 		</div>
 	</div>
+
+	<a href="https://fam.utd-asu.com/admin"	>
+		<button class="btn mt-4">
+			ADMIN
+		</button>
+	</a>
 </div>
 
 

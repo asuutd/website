@@ -15,7 +15,7 @@
             <p class="text-muted-foreground">{points.toLocaleString()} points</p>
         </div>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 flex-wrap">
         {#each member_names as member_name}
             <Avatar.Root>
                 <Avatar.Fallback>

@@ -85,6 +85,7 @@ const setUpDevUser = async (payload) => {
 };
 
 const payloadConfig = buildConfig({
+	cors: '*',
 	admin: {
 		user: Users.slug,
 		autoLogin: env.NODE_ENV === 'development' ? {
