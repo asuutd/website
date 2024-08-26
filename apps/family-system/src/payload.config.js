@@ -550,7 +550,7 @@ const payloadConfig = buildConfig({
 	},
 	plugins: [
 		boxStoragePlugin({
-			enabled: true,
+			enabled: false,
 			collections: {
 				[Media.slug]: true
 			},
