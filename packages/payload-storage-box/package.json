@@ -7,15 +7,15 @@
 		".": "./src/index.ts"
 	},
 	"dependencies": {
-		"@payloadcms/plugin-cloud-storage": "3.0.0-beta.77",
+		"@payloadcms/plugin-cloud-storage": "3.0.0-beta.90",
 		"box-typescript-sdk-gen": "^1.4.0"
 	},
 	"devDependencies": {
-		"payload": "3.0.0-beta.77",
+		"payload": "3.0.0-beta.90",
 		"typescript": "5.5.2"
 	},
 	"peerDependencies": {
 		"box-typescript-sdk-gen": "^1.4.0",
-		"payload": "3.0.0-beta.77"
+		"payload": "3.0.0-beta.90"
 	}
 }

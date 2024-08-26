@@ -65,7 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						}
 					});
 
-
 					try {
 						if (userEmail && userName && eventName && eventPhoto && eventId) {
 							const qr_code_links = await Promise.all(
@@ -77,17 +76,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 											`${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticketId}&eventId=${eventId}`,
 											{
 												width: 400,
-												margin: 1,
-												color: {
-													dark: '#490419',
-													light: '#FEE8E1'
-												}
+												margin: 1
 											}
 										),
 										contentType: 'image/png'
 									});
 									console.log(result);
-									return {codeImg: `https://${env.QRCODE_BUCKET}.kazala.co/${ticketId}`, googleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/google_wallet`, appleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/apple_wallet`};
+									return {
+										codeImg: `https://${env.QRCODE_BUCKET}.kazala.co/${ticketId}`,
+										googleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/google_wallet`,
+										appleWalletLink: `https://${env.NEXT_PUBLIC_URL}/api/ticket/${ticketId}/apple_wallet`
+									};
 								})
 							);
 
@@ -108,9 +107,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									tier: true
 								}
 							});
-							
-							const posthog = getPostHog()
-							const uid = ticketData[0]?.user.id
+
+							const posthog = getPostHog();
+							const uid = ticketData[0]?.user.id;
 
 							const data = await resend.sendEmail({
 								from: 'Kazala Tickets <ticket@mails.kazala.co>',
@@ -124,7 +123,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 									tiers: tiers,
 									tickets: qr_code_links,
 									baseUrl: env.NEXT_PUBLIC_URL,
-									googleWalletEnabled: uid ? (await posthog.isFeatureEnabled('google-wallet-pass-generation', uid) ?? false) : false
+									googleWalletEnabled: uid
+										? (await posthog.isFeatureEnabled('google-wallet-pass-generation', uid)) ??
+										  false
+										: false
 								}),
 								headers: {
 									'X-Entity-Ref-ID': uuidv4()

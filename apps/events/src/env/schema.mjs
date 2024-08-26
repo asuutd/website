@@ -9,7 +9,13 @@ export const serverSchema = z.object({
 	DATABASE_URL: z.string().url(),
 	NODE_ENV: z.enum(['development', 'test', 'production']),
 	NEXTAUTH_SECRET: z.string(),
-	NEXTAUTH_URL: z.string().url(),
+	NEXTAUTH_URL: z.preprocess(
+		// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
+		// Since NextAuth automatically uses the VERCEL_URL if present.
+		(str) => process.env.VERCEL_URL ?? str,
+		// VERCEL_URL doesnt include `https` so it cant be validated as a URL
+		process.env.VERCEL ? z.string() : z.string().url(),
+	),
 	GOOGLE_CLIENT_ID: z.string(),
 	GOOGLE_CLIENT_SECRET: z.string(),
 	STRIPE_SECRET_KEY: z.string(),
@@ -38,7 +44,10 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-	NEXT_PUBLIC_URL: z.string(),
+	NEXT_PUBLIC_URL: z.preprocess(
+		(str) => process.env.VERCEL_URL ?? str,
+		process.env.VERCEL ? z.string() : z.string().url(),
+	),
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: z.string(),
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: z.string(),

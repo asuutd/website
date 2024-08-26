@@ -56,6 +56,9 @@ export interface User {
   id: number;
   updatedAt: string;
   createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -98,7 +101,7 @@ export interface LedgerEntry {
   amount: number;
   description: string;
   member?: (number | null) | Member;
-  Family: number | Family;
+  Family?: (number | null) | Family;
   metadata?: {
     awardType: 'jonze_attendance_marked';
     hookPayload: {

@@ -1,0 +1,41 @@
+{
+    "folders": [
+        {
+            "path": "../apps/website",
+            "name": "website"
+        },
+        {
+            "path": "../apps/events",
+            "name": "events"
+        },
+        {
+            "path": "../apps/family-system",
+            "name": "family-system"
+        },
+        {
+            "path": "..",
+            "name": "root"
+        },
+        {
+            "path": "../packages/jonze",
+            "name": "jonze"
+        },
+        {
+            "path": "../packages/payload-storage-box",
+            "name": "payload-storage-box"
+        }
+    ],
+    
+    "settings": {
+        "tailwind-fold.foldStyle": "QUOTES",
+        "tailwind-fold.unfoldIfLineSelected": true
+    },
+    "extensions": {
+        "recommendations": [
+            "svelte.svelte-vscode",
+            "bradlc.vscode-tailwindcss",
+            "stivo.tailwind-fold",
+            "Prisma.prisma"
+        ]
+    }
+}

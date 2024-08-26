@@ -9,7 +9,7 @@ import { env } from '@/env/client.mjs';
 import AppleWallet from '@/../public/apple-wallet.svg';
 import GoogleWallet from '@/../public/enUS_add_to_google_wallet_add-wallet-badge.svg';
 import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
-import { useFeatureFlagEnabled } from 'posthog-js/react'
+import { useFeatureFlagEnabled } from 'posthog-js/react';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -23,7 +23,7 @@ type TicketWithEventData = Ticket & {
 const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 	const [QRCodeUrl, setQRCodeURL] = useState('');
 	const { data: session } = useSession();
-	const showGoogleWalletButton = useFeatureFlagEnabled('google-wallet-pass-generation')
+	const showGoogleWalletButton = useFeatureFlagEnabled('google-wallet-pass-generation');
 
 	useEffect(() => {
 		if (!ticket) return;
@@ -33,11 +33,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 				setQRCodeURL(
 					await QRCode.toDataURL(text, {
 						width: 400,
-						margin: 1,
-						color: {
-							dark: '#490419',
-							light: '#FEE8E1'
-						}
+						margin: 1
 					})
 				);
 			} catch (err) {
@@ -108,18 +104,27 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 										alt=""
 									></Image>
 								)}
-								
-								<p className="text-center text-xs text-gray-500">To add your tickets to Apple Wallet, open this page on your iPhone, iPod touch or Mac.</p>
+
+								<p className="text-center text-xs text-gray-500">
+									To add your tickets to Apple Wallet, open this page on your iPhone, iPod touch or
+									Mac.
+								</p>
 								<a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/apple_wallet`}>
 									<button type="button">
 										<Image src={AppleWallet} alt="Add to Apple Wallet" width={192} />
 									</button>
 								</a>
-								{showGoogleWalletButton && <a target="_blank" rel="noreferrer" href={`/api/ticket/${ticket.id}/google_wallet`}>
-									<button type="button">
-										<Image src={GoogleWallet} alt="Add to Google Wallet" height={60} />
-									</button>
-								</a>}
+								{showGoogleWalletButton && (
+									<a
+										target="_blank"
+										rel="noreferrer"
+										href={`/api/ticket/${ticket.id}/google_wallet`}
+									>
+										<button type="button">
+											<Image src={GoogleWallet} alt="Add to Google Wallet" height={60} />
+										</button>
+									</a>
+								)}
 							</div>
 
 							<div className="mt-6 border-t-2 border-b-gray-400 border-dashed p-6 font-mono flex flex-col gap-4 align-middle">

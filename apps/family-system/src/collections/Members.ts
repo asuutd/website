@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload';
-import { SyncJonzeMembers } from '@/components/SyncJonzeMembers';
 import { defaultFamily } from '@/utils/scores';
 
 export const Members: CollectionConfig = {
@@ -9,7 +8,12 @@ export const Members: CollectionConfig = {
 		description:
 			"Member data is automatically synced from Jonze and can't be updated here. If you need to manually sync, click the button below.",
 		components: {
-			beforeListTable: [SyncJonzeMembers]
+			beforeListTable: [
+				{
+					path: '@/components/SyncJonzeMembers',
+					exportName: 'SyncJonzeMembers'
+				}
+			]
 		}
 	},
 	access: {
@@ -46,8 +50,8 @@ export const Members: CollectionConfig = {
 			},
 			defaultValue: [defaultFamily.jonze_family_tag],
 			jsonSchema: {
-        uri: 'a://b/foo.json', // required
-        fileMatch: ['a://b/foo.json'], // required
+				uri: 'a://b/foo.json', // required
+				fileMatch: ['a://b/foo.json'], // required
 				schema: {
 					type: 'array',
 					items: {
