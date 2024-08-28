@@ -83,17 +83,13 @@ export const LedgerEntries: CollectionConfig = {
 		afterChange: [
 			async ({ req, doc }) => {
 				const entry = doc as unknown as LedgerEntry;
-				await recalculateScores(req.payload, [
-					typeof entry.Family === 'number' ? entry.Family : entry.Family.id
-				]);
+				await recalculateScores(req.payload);
 			}
 		],
 		afterDelete: [
 			async ({ req, doc }) => {
 				const entry = doc as unknown as LedgerEntry;
-				await recalculateScores(req.payload, [
-					typeof entry.Family === 'number' ? entry.Family : entry.Family.id
-				]);
+				await recalculateScores(req.payload);
 			}
 		]
 	},
@@ -123,11 +119,12 @@ export const LedgerEntries: CollectionConfig = {
 			required: false
 		},
 		{
+			// TODO: lower case this
 			name: 'Family',
 			type: 'relationship',
 			label: 'Family',
 			relationTo: 'families',
-			required: true,
+			required: false,
 			hasMany: false
 		},
 		{

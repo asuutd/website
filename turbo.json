@@ -17,7 +17,6 @@
 		"lint": {},
 		"lint:fix": {},
 		"dev": {
-			"dependsOn": ["db:generate"],
 			"dotEnv": [".env.development.local", ".env.development", ".env.local", ".env"],
 			"persistent": true,
 			"cache": false

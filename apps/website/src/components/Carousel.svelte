@@ -21,7 +21,7 @@
 			<h1
 				class="block text-3xl font-bold text-gray-800 sm:text-4xl lg:text-6xl lg:leading-tight dark:text-white"
 			>
-				UT Dallas <span class="text-primary">ASU</span>
+				UT Dallas <span class="text-primary">African Student Union</span>
 			</h1>
 			<p class="mt-3 text-lg text-gray-800 dark:text-gray-400">
 				Empowering, Uniting, and Celebrating the Rich Tapestry of African Diversity and Cultures
@@ -48,7 +48,7 @@
 	<!-- End Grid -->
 </div>
 
-<div class="relative mt-20">
+<div class="relative mt-32">
 	<div class="custom-shape-divider-bottom-1691955919">
 		<svg
 			data-name="Layer 1"

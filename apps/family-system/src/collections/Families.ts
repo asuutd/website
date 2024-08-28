@@ -1,7 +1,5 @@
 import { Family } from '@/payload-types';
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload';
-import { RefreshFamilyScores } from '@/components/RefreshFamilyScores';
-import FamilyMembers from '@/components/FamilyMembers';
 
 const generateTagFromFamilyName: CollectionBeforeChangeHook<Family> = async ({
 	data,
@@ -32,7 +30,12 @@ export const Families: CollectionConfig = {
 		description:
 			'Use this collection to create new families, update family names, and update the people included within a family.',
 		components: {
-			beforeListTable: [RefreshFamilyScores]
+			beforeListTable: [
+				{
+					path: '@/components/RefreshFamilyScores',
+					exportName: 'RefreshFamilyScores'
+				}
+			]
 		}
 	},
 	hooks: {
@@ -71,7 +74,9 @@ export const Families: CollectionConfig = {
 			admin: {
 				disableListColumn: true,
 				components: {
-					Field: FamilyMembers
+					Field: {
+						path: '@/components/FamilyMembers',
+					}
 				}
 			}
 		}
