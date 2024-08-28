@@ -7,13 +7,17 @@
 	const { topFamilies, topMembers } = data;
 
 	let pointEarningMethods = [
-		{
-			title: 'Engage with ASU Socials',
-			description: "Earn points for liking, commenting, and sharing content from ASU's Instagram page."
-		},
+		// {
+		// 	title: 'Engage with ASU Socials',
+		// 	description: "Earn points for liking, commenting, and sharing content from ASU's Instagram page."
+		// },
 		{
 			title: 'Participate in Events',
 			description: 'Earn 10 points for checking into events.'
+		},
+		{
+			title: 'And more to be announced soon!',
+			description: ''
 		}
 	];
 
