@@ -421,11 +421,18 @@ export const ticketRouter = t.router({
 					id: input.ticketId
 				}
 			});
+			
+			if (!ticket) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Ticket not found'
+        })
+			}
 
-			if (ticket?.checkedInAt !== null) {
+			if (ticket.checkedInAt !== null) {
 				throw new TRPCError({
 					code: 'CONFLICT',
-					message: 'Already checked In'
+					message: 'Already checked in'
 				});
 			}
 
@@ -435,6 +442,11 @@ export const ticketRouter = t.router({
 				},
 				data: {
 					checkedInAt: new Date()
+				},
+				include: {
+          tier: true, 
+          user: true,
+          event: true
 				}
 			});
 		}),

@@ -52,6 +52,3 @@ export default function Test() {
 	);
 }
 
-const Scanner = dynamic(() => import('../components/Admin/Scanner/BarCodeScanner'), {
-	ssr: false
-});

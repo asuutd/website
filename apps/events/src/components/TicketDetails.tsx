@@ -1,9 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import type { Ticket, Tier, Event } from '@prisma/client';
+import type { Ticket, Tier, Event, User } from '@prisma/client';
 import QRCode from 'qrcode';
 import Image from 'next/image';
-import { useSession } from 'next-auth/react';
 import VanillaTilt from 'vanilla-tilt';
 import { env } from '@/env/client.mjs';
 import AppleWallet from '@/../public/apple-wallet.svg';
@@ -17,16 +16,15 @@ function classNames(...classes: string[]) {
 
 type TicketWithEventData = Ticket & {
 	event: Event;
-	tier: Tier | null;
+	tier: Tier | null,
 };
 
-const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
+const TicketSummary = ({ ticket, showQR = true, user }: { ticket?: TicketWithEventData, showQR: boolean, user: Partial<Pick<User, 'name' | 'image' | 'email'>> | null }) => {
 	const [QRCodeUrl, setQRCodeURL] = useState('');
-	const { data: session } = useSession();
 	const showGoogleWalletButton = useFeatureFlagEnabled('google-wallet-pass-generation');
 
 	useEffect(() => {
-		if (!ticket) return;
+		if (!ticket || !showQR) return;
 
 		const generateQR = async (text: string) => {
 			try {
@@ -41,7 +39,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 			}
 		};
 		generateQR(`${env.NEXT_PUBLIC_URL}/tickets/validate?id=${ticket.id}&eventId=${ticket.eventId}`);
-	}, [ticket]);
+	}, [ticket, showQR]);
 	const root = useRef(null);
 	useEffect(() => {
 		if (!root.current) return;
@@ -74,22 +72,22 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 					<div className="pt-6 bg-white">
 						<div className="flex flex-col place-items-center">
 							<Image
-								src={session?.user?.image || DEFAULT_PROFILE_IMAGE_PATH}
+								src={user?.image || DEFAULT_PROFILE_IMAGE_PATH}
 								alt=""
 								className="w-10 rounded-full"
 								width="50"
 								height="50"
 							/>
 
-							<h2 className="text-lg font-bold">{session?.user?.name}</h2>
-							<p className="text-xs">{session?.user?.email}</p>
+              <h2 className="text-lg font-bold">{user?.name ?? 'No Name'}</h2>
+							<p className="text-xs">{user?.email ?? 'No Email'}</p>
 
 							<p className="text-4xl font-bold mt-4 mb-2 text-center">{ticket.event.name}</p>
 							<p className="text-gray-500 text-xs mb-2">
 								{ticket.event.start.toLocaleDateString()}
 							</p>
 
-							<div
+							{showQR && <div
 								className={classNames(
 									'rounded-xl bg-white p-3',
 									'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2 flex flex-col justify-items-center items-center gap-4 mt-2'
@@ -125,7 +123,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 										</button>
 									</a>
 								)}
-							</div>
+							</div>}
 
 							<div className="mt-6 border-t-2 border-b-gray-400 border-dashed p-6 font-mono flex flex-col gap-4 align-middle">
 								<p className="text-[0.5rem]">
@@ -133,6 +131,7 @@ const TicketSummary = ({ ticket }: { ticket?: TicketWithEventData }) => {
 									<span className="italic">{ticket.event.name}</span>.
 								</p>
 								<ul className="text-xs font-mono flex  border border-primary divide-x divide-primary text-primary w-max">
+                  {!!ticket.checkedInAt && <li className="bg-primary text-white py-1 px-2">CHECKED IN</li>}
 									<li className="py-1 px-2">${ticket.tier?.price || '0'}</li>
 									<li className="py-1 px-2">
 										{ticket.tier && ticket.paymentIntent
