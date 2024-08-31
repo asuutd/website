@@ -4,6 +4,8 @@ import { trpc } from '../utils/trpc';
 import { useRouter } from 'next/router';
 import { event as eventSchema } from '@/server/db/drizzle/schema/event';
 import { tier } from '@/server/db/drizzle/schema/tier';
+
+// TODO: import these types from schema/types.ts
 type Event = typeof eventSchema.$inferSelect;
 type Tier = typeof tier.$inferSelect;
 

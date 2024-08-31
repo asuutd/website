@@ -45,6 +45,7 @@ export const codeRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
+		// TODO: import these types from schema/types.ts
 			type Tier = typeof schema.tier.$inferSelect;
 			type Code = typeof schema.code.$inferSelect;
 
@@ -119,9 +120,6 @@ export const codeRouter = t.router({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			type User = typeof user.$inferSelect;
-			type RefCode = typeof refCodeSchema.$inferSelect;
-			type Ticket = typeof ticket.$inferSelect;
 			const { event } = ctx;
 			if (!event.refQuantity || event.refQuantity === 0) {
 				throw new TRPCError({

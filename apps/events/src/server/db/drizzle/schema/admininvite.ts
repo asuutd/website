@@ -1,5 +1,5 @@
-import { relations } from 'drizzle-orm';
-import { pgTable, timestamp, unique, text, foreignKey } from 'drizzle-orm/pg-core';
+import { relations, sql } from 'drizzle-orm';
+import { pgTable, timestamp, uniqueIndex, text, foreignKey } from 'drizzle-orm/pg-core';
 import { randomUUID } from 'crypto';
 import { event } from './event';
 import { user } from './user';
@@ -9,21 +9,22 @@ export const adminInvite = pgTable(
 	{
 		token: text('token')
 			.$defaultFn(() => randomUUID())
-			.primaryKey(),
-		eventId: text('eventId').notNull(),
-		email: text('email').notNull(),
-		expiresAt: timestamp('expiresAt', { precision: 3 }).notNull()
+			.primaryKey()
+			.notNull(),
+		eventId: text("eventId").notNull().references(() => event.id, { onUpdate: "cascade" } ),
+		email: text('email').notNull().references(() => user.email, { onDelete: "cascade", onUpdate: "cascade" } ),
+		expiresAt: timestamp('expiresAt', { precision: 3 }).notNull().default(sql`NOW + '72:00:00'::interval `)
 	},
-	(t) => ({
-		unq: unique("AdminInvite_eventId_email_key").on(t.eventId, t.email),
+	(table) => ({
+		eventIdEmailKey: uniqueIndex("AdminInvite_eventId_email_key").using("btree", table.eventId, table.email),
 		eventInviteEventIdFk: foreignKey({
-			columns: [t.eventId],
+			columns: [table.eventId],
 			foreignColumns: [event.id],
 			name: 'AdminInvite_eventId_fkey',
 		}).onDelete('cascade').onUpdate('cascade'),
 		// TODO: this index exists in the prisma schema, is this technically correct? i thought admin invite is just a fallback in case the user doesn't exist in the db, so we can't create a regular eventadmin right away.
 		eventInviteEmailFk: foreignKey({
-			columns: [t.email],
+			columns: [table.email],
 			foreignColumns: [user.email],
 			name: 'AdminInvite_email_fkey',
 		}).onDelete('cascade').onUpdate('cascade')

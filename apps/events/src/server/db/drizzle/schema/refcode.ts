@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { foreignKey, pgTable, serial, text, unique } from 'drizzle-orm/pg-core';
+import { foreignKey, pgTable, serial, text, uniqueIndex } from 'drizzle-orm/pg-core';
 import { user } from './user';
 import { event } from './event';
 import { ticket } from './ticket';
@@ -8,24 +8,14 @@ export const refCode = pgTable(
 	'RefCode',
 	{
 		// TODO: need to figure out how to make this use a specific squeence (RefCode_id_seq)
-		id: serial('id').primaryKey(),
+		id: serial('id').primaryKey().notNull(),
 		code: text('code').notNull(),
-		userId: text('userId').notNull(),
-		eventId: text('eventId').notNull()
+		userId: text('userId').notNull().references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" } ),
+		eventId: text('eventId').notNull().references(() => event.id, { onDelete: "cascade", onUpdate: "cascade" } )
 	},
 	(table) => {
 		return {
-			refCodeUserIdEventIdKey: unique('RefCode_userId_eventId_key').on(table.userId, table.eventId),
-			refCodeEventIdFk: foreignKey({
-				columns: [table.eventId],
-				foreignColumns: [event.id],
-				name: 'RefCode_eventId_fkey',
-			}).onDelete('cascade').onUpdate('cascade'),
-			refCodeUserIdFk: foreignKey({
-				columns: [table.userId],
-				foreignColumns: [user.id],
-				name: 'RefCode_userId_fkey',
-			}).onDelete('cascade').onUpdate('cascade')
+			refCodeUserIdEventIdKey: uniqueIndex("RefCode_userId_eventId_key").using("btree", table.userId, table.eventId)
 		};
 	}
 );

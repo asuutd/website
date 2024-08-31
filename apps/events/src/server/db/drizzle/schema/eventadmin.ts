@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, text, primaryKey, pgEnum, unique, foreignKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, primaryKey, pgEnum, uniqueIndex, foreignKey } from 'drizzle-orm/pg-core';
 import { event } from './event';
 import { user } from './user';
 
@@ -9,25 +9,16 @@ export const eventAdmin = pgTable(
 	'EventAdmin',
 	{
 		id: text('id')
-			.$defaultFn(() => createId()),
-		eventId: text('eventId').notNull(),
-		userId: text('userId').notNull(),
+			.$defaultFn(() => createId())
+			.primaryKey()
+			.notNull(),
+		eventId: text("eventId").notNull().references(() => event.id, { onUpdate: "cascade" } ),
+		userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 		role: adminRoleEnum('role').default('ADMIN').notNull()
 	},
 	(table) => {
 		return {
-			eventAdminIdPk: primaryKey({ name: "EventAdmin_pkey", columns: [table.id] }),
-			eventAdminEventIdFk: foreignKey({
-				columns: [table.eventId],
-				foreignColumns: [event.id],
-				name: 'EventAdmin_eventId_fkey',
-			}).onDelete('cascade').onUpdate('cascade'),
-			eventAdminUserIdFk: foreignKey({
-				columns: [table.userId],
-				foreignColumns: [user.id],
-				name: 'EventAdmin_userId_fkey',
-			}).onDelete('cascade').onUpdate('cascade'),
-			eventAdminEventIdUserIdKey: unique('EventAdmin_eventId_userId_key').on(table.eventId, table.userId)
+			eventIdUserIdKey: uniqueIndex("EventAdmin_eventId_userId_key").using("btree", table.eventId, table.userId),
 		};
 	}
 );

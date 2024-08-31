@@ -1,4 +1,5 @@
 import { event as eventSchema } from './../server/db/drizzle/schema/event';
+// TODO: import these types from schema/types.ts
 type Event = typeof eventSchema.$inferSelect;
 
 export const calculateApplicationFee = (total: number): number => {

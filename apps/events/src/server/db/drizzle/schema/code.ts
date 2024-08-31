@@ -9,9 +9,10 @@ export const code = pgTable(
 	{
 		id: text('id')
 			.$defaultFn(() => createId())
-			.primaryKey(),
+			.primaryKey()
+			.notNull(),
 		code: text('code').notNull(),
-		tierId: text('tierId').notNull(),
+		tierId: text('tierId').notNull().references(() => tier.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 		type: text('type').notNull(),
 		value: doublePrecision('value').notNull(),
 		limit: integer('limit').notNull(),

@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
-import { pgTable, text, text, integer, unique } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, uniqueIndex } from 'drizzle-orm/pg-core';
 import { user } from './user';
 
 export const account = pgTable(
@@ -8,8 +8,9 @@ export const account = pgTable(
 	{
 		id: text('id')
 			.$defaultFn(() => createId())
-			.primaryKey(),
-		userId: text('userId').notNull(),
+			.primaryKey()
+			.notNull(),
+		userId: text('userId').notNull().references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 		type: text('type').notNull(),
 		provider: text('provider').notNull(),
 		providerAccountId: text('providerAccountId').notNull(),
@@ -23,11 +24,8 @@ export const account = pgTable(
 	},
 	(table) => {
 		return {
-			accountProviderProviderAccountIdKey: unique('Account_provider_providerAccountId_key').on(
-				table.provider,
-				table.providerAccountId
-			)
-		};
+		providerProviderAccountIdKey: uniqueIndex("Account_provider_providerAccountId_key").using("btree", table.provider, table.providerAccountId),
+	}
 	}
 );
 

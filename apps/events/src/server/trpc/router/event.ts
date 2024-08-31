@@ -10,6 +10,7 @@ import { ticket } from '@/server/db/drizzle/schema/ticket';
 import { eventLocation } from '@/server/db/drizzle/schema/eventlocation';
 import { organizer } from '@/server/db/drizzle/schema/organizer';
 
+// TODO: import these types from schema/types.ts
 type Event = typeof eventSchema.$inferSelect;
 type Tier = typeof tier.$inferSelect;
 type EventLocation = typeof eventLocation.$inferInsert;

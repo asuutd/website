@@ -3,19 +3,10 @@ import { pgTable, text, doublePrecision, foreignKey } from 'drizzle-orm/pg-core'
 import { event } from './event';
 
 export const eventLocation = pgTable('EventLocation', {
-	id: text('id').notNull(),
+	id: text("id").primaryKey().notNull().references(() => event.id, { onDelete: "cascade", onUpdate: "cascade" }),
 	long: doublePrecision('long').notNull(),
 	lat: doublePrecision('lat').notNull(),
 	name: text('name').notNull()
-},
-(table) => {
-	return {
-		eventLocationEventIdFk: foreignKey({
-			columns: [table.id],
-			foreignColumns: [event.id],
-			name: 'EventLocation_eventId_fkey',
-		}).onDelete('cascade').onUpdate('cascade')
-	}
 }
 )
 

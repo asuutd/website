@@ -1,4 +1,4 @@
-import { createId } from '@paralleldrive/cuid2';
+ import { createId } from '@paralleldrive/cuid2';
 import { relations, sql } from 'drizzle-orm';
 import { pgTable, text, integer, timestamp, foreignKey } from 'drizzle-orm/pg-core';
 import { user } from './user';
@@ -10,45 +10,18 @@ import { code } from './code';
 export const ticket = pgTable('Ticket', {
 	id: text('id')
 		.$defaultFn(() => createId())
-		.primaryKey(),
-	codeId: text('codeId'),
-	tierId: text('tierId'),
-	eventId: text('eventId').notNull(),
+		.primaryKey()
+		.notNull(),
+	codeId: text('codeId').references(() => code.id, { onUpdate: "cascade" } ),
+	tierId: text('tierId').references(() => event.id, { onUpdate: "cascade" } ),
+	eventId: text('eventId').notNull().references(() => event.id, { onUpdate: "cascade" } ),
 	userId: text('userId').notNull(),
-	refCodeId: integer('refCodeId'),
+	refCodeId: integer('refCodeId').references(() => refCode.id, { onUpdate: "cascade" } ),
 	checkedInAt: timestamp('checkedInAt', { mode: 'date', precision: 3 }),
 	createdAt: timestamp('createdAt', { mode: 'date', precision: 3 })
-		.default(sql`CURRENT_TIMESTAMP(3)`)
+		.defaultNow()
 		.notNull(),
 	paymentIntent: text('paymentIntent')
-}, (table) => {
-	return {
-		ticketCodeIdFk: foreignKey({
-			columns: [table.codeId],
-			foreignColumns: [code.id],
-			name: 'Ticket_codeId_fkey',
-		}).onDelete('cascade').onUpdate('cascade'),
-		ticketTierIdFk: foreignKey({
-			columns: [table.tierId],
-			foreignColumns: [tier.id],
-			name: 'Ticket_tierId_fkey',
-		}).onDelete('cascade').onUpdate('cascade'),
-		ticketEventIdFk: foreignKey({
-			columns: [table.eventId],
-			foreignColumns: [event.id],
-			name: 'Ticket_eventId_fkey',
-		}).onDelete('cascade').onUpdate('cascade'),
-		ticketUserIdFk: foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: 'Ticket_userId_fkey',
-		}).onDelete('cascade').onUpdate('cascade'),
-		ticketRefCodeIdFk: foreignKey({
-			columns: [table.refCodeId],
-			foreignColumns: [refCode.id],
-			name: 'Ticket_refCodeId_fkey',
-		}).onDelete('cascade').onUpdate('cascade')
-	};
 });
 
 export const ticketRelations = relations(ticket, ({ one }) => ({

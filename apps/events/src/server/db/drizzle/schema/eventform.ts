@@ -7,22 +7,16 @@ import { CustomField } from '@/utils/forms';
 
 export const eventForm = pgTable('EventForm', {
 	id: text('id')
-		.$defaultFn(() => createId()),
-	eventId: text('eventId').notNull(),
+		.primaryKey().notNull().$defaultFn(() => createId()),
+	eventId: text('eventId').notNull().references(() => event.id, { onDelete: "cascade", onUpdate: "cascade" } ),
 	form: jsonb('form').$type<CustomField[]>().notNull(),
 	updatedAt: timestamp('updatedAt', { mode: 'date', precision: 3 })
-		.default(sql`CURRENT_TIMESTAMP(3)`)
+		.defaultNow()
 		.notNull()
 },
 (table) => {
 	return {
-		eventFormEventIdFk: foreignKey({
-			columns: [table.eventId],
-			foreignColumns: [event.id],
-			name: 'EventForm_eventId_fkey',
-		}).onDelete('cascade').onUpdate('cascade'),
-		eventFormEventIdIdx: index('EventForm_eventId_idx').on(table.eventId),
-		eventFormPkey: unique('EventForm_pkey').on(table.id)
+		eventIdIdx: index("EventForm_eventId_idx").using("btree", table.eventId),
 	}
 }
 )
