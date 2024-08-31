@@ -44,10 +44,7 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-	NEXT_PUBLIC_URL: z.preprocess(
-		(str) => process.env.VERCEL ? ("https://" + process.env.NEXT_PUBLIC_VERCEL_URL) : str,
-		z.string().url(),
-	),
+	NEXT_PUBLIC_URL: z.string().url(),
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: z.string(),
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: z.string(),
@@ -63,7 +60,7 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-	NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+	NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_VERCEL ? ("https://" + process.env.NEXT_PUBLIC_VERCEL_URL) : process.env.NEXT_PUBLIC_URL,
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: process.env.NEXT_PUBLIC_UPLOADCARE_PUB_KEY,
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
