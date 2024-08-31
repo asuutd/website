@@ -1,9 +1,8 @@
-import { Dialog, Tab, Transition } from '@headlessui/react';
+import { Tab } from '@headlessui/react';
 import type { Ticket, Event, Tier } from '@prisma/client';
-import Head from 'next/head';
 import Image from 'next/image';
 import { NextPage } from 'next/types';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import Modal from '../../components/Modal';
 import TicketDetails from '../../components/TicketDetails';
 import { trpc } from '../../utils/trpc';
@@ -13,6 +12,7 @@ import Parser from '@/components/Admin/Forms/Parser';
 import { transformData } from '@/utils/forms';
 import ModalChild from '@/components/ModalChild';
 import { NextSeo } from 'next-seo';
+import { useSession } from 'next-auth/react';
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ');
@@ -28,7 +28,7 @@ const Ticket: NextPage = () => {
 	const { survey, email } = router.query;
 	const eventId =
 		typeof survey === 'string' ? survey : survey == undefined ? undefined : survey[0]!;
-
+	const {data: session} = useSession();
 	const emailString =
 		typeof email === 'string' ? email : email == undefined ? undefined : email[0]!;
 	const [past, setPast] = useState<TicketWithEventData[]>([]);
@@ -199,6 +199,7 @@ const Ticket: NextPage = () => {
 						(ticket.data?.find((t) => t.id == selectedTicket) as unknown as TicketWithEventData) ||
 						undefined
 					}
+					user={session?.user}
 				/>
 			</Modal>
 

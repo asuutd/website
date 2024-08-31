@@ -1,11 +1,5 @@
-import { Dialog, Transition } from '@headlessui/react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { rm } from 'fs';
-import { NextPage } from 'next/types';
-import React, { Fragment, useEffect, useState } from 'react';
-import Modal from '../components/Modal';
-import { trpc } from '../utils/trpc';
-import { animated, useSpring, useTransition, config } from '@react-spring/web';
+import React, { useEffect, useState } from 'react';
+import { animated, useTransition } from '@react-spring/web';
 import Image from 'next/image';
 function shiftFirstElement(arr: any) {
 	const shiftedArray = arr?.slice(1) ?? [];

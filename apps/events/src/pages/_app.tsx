@@ -1,7 +1,5 @@
 // src/pages/_app.tsx
 import '../styles/globals.css';
-import '@fontsource/inter';
-import '@fontsource/inter/700.css';
 
 import { SessionProvider } from 'next-auth/react';
 import type { Session } from 'next-auth';

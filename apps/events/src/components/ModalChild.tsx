@@ -1,4 +1,4 @@
-import { Dialog, Tab, Transition } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useRef } from 'react';
 
 const ModalChild = ({ children }: { children: React.ReactNode }) => {
