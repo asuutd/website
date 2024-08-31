@@ -45,7 +45,7 @@ export const serverSchema = z.object({
  */
 export const clientSchema = z.object({
 	NEXT_PUBLIC_URL: z.preprocess(
-		(str) => process.env.VERCEL ? "https://" + process.env.VERCEL_URL : str,
+		(str) => process.env.VERCEL ? ("https://" + process.env.VERCEL_URL) : str,
 		z.string().url(),
 	),
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
