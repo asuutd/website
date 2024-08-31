@@ -1,10 +1,9 @@
-import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
+import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
-import { env } from '../../../env/server.mjs';
 import { TRPCError } from '@trpc/server';
-import stripe from '../../../utils/stripe';
+import stripe from '@/utils/stripe';
 
 export const ticketRouter = t.router({
 	createTicket: authedProcedure
@@ -421,11 +420,18 @@ export const ticketRouter = t.router({
 					id: input.ticketId
 				}
 			});
+			
+			if (!ticket) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Ticket not found'
+        })
+			}
 
-			if (ticket?.checkedInAt !== null) {
+			if (ticket.checkedInAt !== null) {
 				throw new TRPCError({
 					code: 'CONFLICT',
-					message: 'Already checked In'
+					message: 'Already checked in'
 				});
 			}
 
@@ -435,6 +441,11 @@ export const ticketRouter = t.router({
 				},
 				data: {
 					checkedInAt: new Date()
+				},
+				include: {
+          tier: true, 
+          user: true,
+          event: true
 				}
 			});
 		}),

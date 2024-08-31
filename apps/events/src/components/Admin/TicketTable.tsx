@@ -17,9 +17,6 @@ import {
 	useReactTable
 } from '@tanstack/react-table';
 import { createPortal } from 'react-dom';
-import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
-import Modal from '../Modal';
-import Wrapper from './Scanner/Wrapper';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -164,7 +161,6 @@ const filterReducer = (state: State['filters'], action: FilterAction) => {
 const TicketTable = ({ eventId }: { eventId: string }) => {
 	const [page, setPage] = useState(0);
 	const [filter, setFilter] = useState<Record<string, any>>();
-	const [scannerModal, setScannerModal] = useState(false);
 	const router = useRouter();
 	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
 		Code: false,
@@ -517,10 +513,6 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 					</select>
 				</div>
 			</div>
-
-			<Modal isOpen={scannerModal} closeModal={() => setScannerModal(false)}>
-				<Wrapper />
-			</Modal>
 		</div>
 	);
 };
