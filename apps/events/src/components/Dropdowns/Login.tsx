@@ -2,6 +2,7 @@ import { Menu } from '@headlessui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+import { env } from '@/env/client.mjs';
 
 const LoginDropDown = () => {
 	const router = useRouter();
@@ -10,7 +11,7 @@ const LoginDropDown = () => {
 		[router.pathname, router.asPath]
 	);
 	const signInUrl = useMemo(() => {
-		const url = new URL('/signin', process.env.NEXT_PUBLIC_URL);
+		const url = new URL('/signin', env.NEXT_PUBLIC_URL);
 		url.searchParams.set('callbackUrl', callbackUrl);
 		return url.toString();
 	}, [callbackUrl]);

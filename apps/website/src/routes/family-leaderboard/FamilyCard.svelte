@@ -7,7 +7,7 @@
 </script>
 <div class="bg-background rounded-lg p-4 flex items-center justify-between">
     <div class="flex items-center gap-4">
-        <div class="bg-primary rounded-full w-8 h-8 flex items-center justify-center text-primary-foreground font-bold">
+        <div class="bg-primary rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
             {position}
         </div>
         <div>
