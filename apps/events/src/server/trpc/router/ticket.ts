@@ -1,10 +1,9 @@
-import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
+import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
-import { env } from '../../../env/server.mjs';
 import { TRPCError } from '@trpc/server';
-import stripe from '../../../utils/stripe';
+import stripe from '@/utils/stripe';
 
 export const ticketRouter = t.router({
 	createTicket: authedProcedure
