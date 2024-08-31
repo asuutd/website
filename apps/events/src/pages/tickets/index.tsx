@@ -1,6 +1,5 @@
-import { Dialog, Tab, Transition } from '@headlessui/react';
+import { Tab } from '@headlessui/react';
 import type { Ticket, Event, Tier } from '@prisma/client';
-import Head from 'next/head';
 import Image from 'next/image';
 import { NextPage } from 'next/types';
 import React, { Fragment, useEffect, useState } from 'react';

@@ -14,7 +14,6 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.614.0",
-		"@fontsource/inter": "^4.5.15",
 		"@headlessui/react": "^1.7.19",
 		"@hookform/resolvers": "^3.9.0",
 		"@mapbox/search-js-react": "1.0.0-beta.21",
@@ -45,10 +44,8 @@
 		"clsx": "^2.1.1",
 		"daisyui": "^3.9.4",
 		"date-fns": "^2.30.0",
-		"framer-motion": "^7.10.3",
 		"google-auth-library": "^9.11.0",
 		"html-react-parser": "^4.2.10",
-		"html5-qrcode": "^2.3.8",
 		"isbot": "^3.8.0",
 		"jsonwebtoken": "^9.0.2",
 		"lodash": "^4.17.21",
