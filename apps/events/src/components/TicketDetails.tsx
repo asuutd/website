@@ -19,7 +19,13 @@ type TicketWithEventData = Ticket & {
 	tier: Tier | null,
 };
 
-const TicketSummary = ({ ticket, showQR = true, user }: { ticket?: TicketWithEventData, showQR: boolean, user: Partial<Pick<User, 'name' | 'image' | 'email'>> | null }) => {
+type TicketSummaryProps = {
+  ticket?: TicketWithEventData;
+  showQR?: boolean;
+  user?: { name?: string | null, image?: string | null, email?: string | null};
+};
+
+const TicketSummary = ({ ticket, showQR = true, user }: TicketSummaryProps) => {
 	const [QRCodeUrl, setQRCodeURL] = useState('');
 	const showGoogleWalletButton = useFeatureFlagEnabled('google-wallet-pass-generation');
 

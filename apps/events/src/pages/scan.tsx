@@ -55,7 +55,7 @@ export default function ScanPage() {
 			<NextSeo nofollow={true} />
 
 			<Modal isOpen={!!validationData} closeModal={()=>setValidationData(null)}>
-				{!!validationData && <TicketDetails showQR={false} ticket={validationData} user={validationData.user} />}
+				<TicketDetails showQR={false} ticket={validationData ?? undefined} user={validationData?.user ?? undefined} />
 			</Modal>
 
 			<div className="flex justify-start items-center gap-2">

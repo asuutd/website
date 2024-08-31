@@ -199,7 +199,7 @@ const Ticket: NextPage = () => {
 						(ticket.data?.find((t) => t.id == selectedTicket) as unknown as TicketWithEventData) ||
 						undefined
 					}
-					user={(session?.user && 'name' in session?.user) ? session.user : null}
+					user={session?.user}
 				/>
 			</Modal>
 
