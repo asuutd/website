@@ -2,6 +2,7 @@ import { Menu } from '@headlessui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+import { env } from '@/env/client.mjs';
 
 const LoginDropDown = () => {
 	const router = useRouter();
