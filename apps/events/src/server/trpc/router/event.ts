@@ -6,6 +6,9 @@ import { env } from '@/env/server.mjs';
 import { ZodCustomField } from '@/utils/forms';
 import { splitEvents } from '@/utils/misc';
 import { createOrUpdateGooglePassClass } from '@/lib/wallets';
+import { getPostHog } from '@/server/posthog';
+
+const client = getPostHog();
 
 export const eventRouter = t.router({
 	getEvent: t.procedure
@@ -106,7 +109,9 @@ export const eventRouter = t.router({
 				feeBearer: z.nativeEnum(Fee_Holder)
 			})
 		)
+
 		.mutation(async ({ input, ctx }) => {
+			console.log(ctx.session.user.role)
 			if (input.endTime < input.startTime) {
 				throw new TRPCError({
 					code: 'BAD_REQUEST',
@@ -155,6 +160,20 @@ export const eventRouter = t.router({
           }
         }
 			});
+
+			client.capture({
+				distinctId: ctx.session.user.id,
+				event: 'event created',
+				properties: {
+					
+					name : newEvent.name,
+					start_time : newEvent.start,
+					end_time : newEvent.end,
+					location : input.location?.address,
+					bearer : input.feeBearer,
+
+				}
+			  });
       
       try {
         await createOrUpdateGooglePassClass(newEvent)

@@ -7,6 +7,9 @@ import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
 import { createId } from '@paralleldrive/cuid2';
+import { getPostHog } from '@/server/posthog';
+
+const client = getPostHog();
 
 export const paymentRouter = t.router({
 	createCheckoutLink: t.procedure
@@ -301,6 +304,16 @@ export const paymentRouter = t.router({
 					},
 					expires_at: Math.floor(Date.now() / 1000) + 30 * 60
 				});
+
+				client.capture({
+					distinctId: user.id,
+					event: 'ticket purchased',
+					properties: {
+						//ticket id
+				
+					}
+				  });
+
 				if (session.url) {
 					return {
 						url: session.url

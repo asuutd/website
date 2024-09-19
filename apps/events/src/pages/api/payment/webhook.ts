@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getPostHog } from '@/server/posthog';
 
 const resend = new Resend(env.RESEND_API_KEY);
+const client = getPostHog();
 
 export const config = {
 	api: {
@@ -135,6 +136,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						}
 					} catch (error) {
 						console.error(error);
+					}
+
+					if (userId){
+						client.capture({
+						distinctId: userId,
+						event: 'ticket purchased',
+						properties: {
+							//ticket id
+							ticket_ids : user_ticket_ids,
+							quantity : user_ticket_ids.length,
+						}
+					  });
+				  
+					  //await client.shutdownAsync()
 					}
 
 					res.status(200).json({ received: true });
