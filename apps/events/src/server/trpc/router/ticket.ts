@@ -4,6 +4,10 @@ import { Prisma } from '@prisma/client';
 
 import { TRPCError } from '@trpc/server';
 import stripe from '@/utils/stripe';
+import { getPostHog } from '@/server/posthog';
+import posthog from 'posthog-js';
+
+const client = getPostHog();
 
 export const ticketRouter = t.router({
 	createTicket: authedProcedure
@@ -66,6 +70,8 @@ export const ticketRouter = t.router({
 			const ticket = await ctx.prisma.ticket.createMany({
 				data: dataArray
 			});
+
+			posthog.capture('ticket bought',ticket);
 
 			return ticket;
 		}),
