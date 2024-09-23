@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { BuiltInProviderType } from 'next-auth/providers';
 import { env } from '@/env/client.mjs';
 import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
+import posthog from 'posthog-js'
 
 export default function Example() {
 	const [providers, setProviders] = useState<Record<
@@ -30,8 +31,16 @@ export default function Example() {
 		console.log(window.location.href);
 	}, [router]);
 	const { data: session, status } = useSession();
+	useEffect(() => {
+	if (session != null && session.user != null)
+		posthog.identify(
+			session.user.id, 
+			session.user
+		  );
+	}, [session]);
 	const handleLogout = (e: MouseEvent<HTMLButtonElement>) => {
 		//assertConfiguration().close(); //Close Ably Client on Logout
+		posthog.reset()
 		signOut({ redirect: true, callbackUrl: env.NEXT_PUBLIC_URL });
 	};
 
