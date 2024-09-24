@@ -5,7 +5,7 @@ const args: Stripe.RequestOptions = {
   stripeAccount: ''
 }
 
-async function main() { 
+async function payoutAll() { 
   const balances = {...await stripe.balance.retrieve(undefined, args), lastResponse: undefined};
   console.log(JSON.stringify(balances, null, 2));
   
@@ -20,6 +20,10 @@ async function main() {
   
 }
 
-main().then(() => {
-  console.log('done');
-});
+async function getPayouts() {
+  const payouts = {...await stripe.payouts.list(undefined, args), lastResponse: undefined};
+  console.log(JSON.stringify(payouts, null, 2));
+}
+
+getPayouts().then(() => {console.log('done')});
+// payoutAll().then(() => {console.log('done')});

@@ -1,9 +1,11 @@
 import { Event } from '@prisma/client';
 
 export const calculateApplicationFee = (total: number): number => {
-	const fee = 0.065 * total + 80;
-	console.log(total, fee);
-	return 0.065 * total + 80;
+  const KAZALA_TRANSACTION_FEE_PERCENTAGE = 0.065
+  const KAZALA_TRANSACTION_FEE_CENTS = 80
+  
+	const fee = KAZALA_TRANSACTION_FEE_PERCENTAGE * total + KAZALA_TRANSACTION_FEE_CENTS;
+	return fee;
 };
 
 export function isValidHttpUrl(string: string) {

@@ -70,7 +70,7 @@
 		"resend": "^0.17.2",
 		"sharp": "^0.32.6",
 		"sonner": "^1.5.0",
-		"stripe": "^12.18.0",
+		"stripe": "^16.12.0",
 		"superjson": "1.9.1",
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss-animate": "^1.0.7",
