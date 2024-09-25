@@ -7,6 +7,9 @@ import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
 import { createId } from '@paralleldrive/cuid2';
+import { getPostHog } from '@/server/posthog';
+
+const client = getPostHog();
 
 export const paymentRouter = t.router({
 	createCheckoutLink: t.procedure
@@ -240,9 +243,6 @@ export const paymentRouter = t.router({
 					}
 				}
 				console.log(dataArray);
-				await ctx.prisma.ticket.createMany({
-					data: dataArray
-				});
 
 				if (event.fee_holder === 'USER') {
 					line_items.push({
@@ -264,43 +264,66 @@ export const paymentRouter = t.router({
 						return_url.searchParams.append('email', user.email);
 					}
 				}
+				
+        const session = await ctx.prisma.$transaction(async (tx) => {
+          // TODO: include the payment intent in the ticket creation, add another field to the ticket model to track  payment intent status (pending, succeeded, failed, canceled)
+          // TODO: delete the ticket if the cancel URL is hit. maybe we make an API endpoint for this instead so it redirects to the cancel URL and then to the ticket page
+          
+          await tx.ticket.createMany({
+  					data: dataArray
+  				});
+          
+          // TODO: make organizer non nullable on event model
+          const s = await stripe.checkout.sessions.create({
+  					line_items,
+  					...(user?.email ? { customer_email: user.email } : {}),
+  					mode: 'payment',
+  					success_url: return_url.toString(),
+  					cancel_url: `${ctx.headers.origin}/?canceled=true`,
+  					metadata: {
+  						eventId: input.eventId,
+  						tiers: JSON.stringify(input.tiers),
+  						codeId: input.codeId ?? '',
+  						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
+  						userId: user.id,
+  						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
+  					},
+  					payment_intent_data: {
+  						application_fee_amount: Math.ceil(calculateApplicationFee(total)),
+  						transfer_data: {
+  							destination: event.organizer!.stripeAccountId
+  						},
+  						metadata: {
+  							eventId: input.eventId,
+  							eventName: event.name,
+  							eventPhoto: event.ticketImage,
+  							...(user.email && {
+  								userEmail: user.email,
+  								userName: user.name ?? user.email
+  							}),
+  							tiers: JSON.stringify(transformTiers),
+  							codeId: input.codeId ?? '',
+  							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
+  							userId: user.id,
+  							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
+  						}
+  					},
+  					expires_at: Math.floor(Date.now() / 1000) + 30 * 60
+  				});
+          
+          return s
+        })
+			
 
-				const session = await stripe.checkout.sessions.create({
-					line_items: line_items,
-					...(user?.email ? { customer_email: user.email } : {}),
-					mode: 'payment',
-					success_url: return_url.toString(),
-					cancel_url: `${ctx.headers.origin}/?canceled=true`,
-					metadata: {
-						eventId: input.eventId,
-						tiers: JSON.stringify(input.tiers),
-						codeId: input.codeId ?? '',
-						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-						userId: user.id,
-						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
-					},
-					payment_intent_data: {
-						application_fee_amount: Math.ceil(calculateApplicationFee(total)),
-						transfer_data: {
-							destination: event.organizer.stripeAccountId
-						},
-						metadata: {
-							eventId: input.eventId,
-							eventName: event.name,
-							eventPhoto: event.ticketImage,
-							...(user.email && {
-								userEmail: user.email,
-								userName: user.name ?? user.email
-							}),
-							tiers: JSON.stringify(transformTiers),
-							codeId: input.codeId ?? '',
-							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-							userId: user.id,
-							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
-						}
-					},
-					expires_at: Math.floor(Date.now() / 1000) + 30 * 60
-				});
+        // TODO: should we capture separate events for each ticket?
+				client.capture({
+					distinctId: user.id,
+					event: 'ticket purchased',
+					properties: {
+						tickets: dataArray,
+					}
+			  });
+
 				if (session.url) {
 					return {
 						url: session.url
