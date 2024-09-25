@@ -273,7 +273,7 @@ export const paymentRouter = t.router({
   					data: dataArray
   				});
           
-          const s = await stripe.checkout.sessions.create({
+          return await stripe.checkout.sessions.create({
   					line_items,
   					...(user?.email ? { customer_email: user.email } : {}),
   					mode: 'payment',
@@ -309,8 +309,6 @@ export const paymentRouter = t.router({
   					},
   					expires_at: Math.floor(Date.now() / 1000) + 30 * 60
   				});
-          
-          return s
         })
 			
 

@@ -1,4 +1,4 @@
-import { Event } from '@prisma/client';
+import { Event, Ticket } from '@prisma/client';
 
 export const calculateApplicationFee = (total: number): number => {
   const KAZALA_TRANSACTION_FEE_PERCENTAGE = 0.065
@@ -36,4 +36,19 @@ export function splitEvents(events: Event[]) {
 	});
 
 	return { ongoingEvents, upcomingEvents };
+}
+
+
+
+export function ticketIsValid(ticket: Ticket) {
+  /*
+    This function checks if a ticket is valid (i.e. it has been paid for and is able to be scanned).
+    
+    TODO: Use this function everywhere instead of checking if paymentIntent is null
+  */
+  return !!ticket.paymentIntent;
+  
+  // // TODO: use this new logic
+  // if (!ticket.paymentIntent) return false;
+  // return ticket.paymentIntentObject.status === 'succeeded'
 }
