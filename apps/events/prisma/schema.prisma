@@ -7,12 +7,12 @@ generator client {
 }
 
 datasource db {
-  provider             = "postgresql"
+  provider = "postgresql"
   // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading: 
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-  url                  = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
@@ -43,11 +43,11 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String      @unique
+  email         String         @unique
   emailVerified DateTime?
-  image         String? @default("/email_assets/Missing_avatar.svg")
+  image         String?        @default("/email_assets/Missing_avatar.svg")
   accounts      Account[]
   sessions      Session[]
   tickets       Ticket[]
@@ -64,7 +64,7 @@ model Organizer {
   id              String  @id @default(cuid())
   stripeAccountId String?
   user            User    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  events        Event[]
+  events          Event[]
 }
 
 model VerificationToken {
@@ -76,91 +76,96 @@ model VerificationToken {
 }
 
 model Event {
-  id           String       @id @default(cuid())
-  start        DateTime
-  end          DateTime
-  name         String
-  image        String?
-  ticketImage  String?
-  description  String? @db.Text
-  ref_quantity Int?
-  organizerId  String?
-  google_pass_class_created Boolean @default(false)
-  fee_holder   Fee_Holder?
-  tickets      Ticket[]
-  RefCode      RefCode[]
-  Tier         Tier[]
-  EventAdmin   EventAdmin[]
-  location     EventLocation?
-  forms        EventForm[]
-  invites      AdminInvite[]
-  organizer    Organizer?        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  id                        String         @id @default(cuid())
+  start                     DateTime
+  end                       DateTime
+  name                      String
+  image                     String?
+  ticketImage               String?
+  description               String?        @db.Text
+  ref_quantity              Int?
+  organizerId               String
+  google_pass_class_created Boolean        @default(false)
+  fee_holder                Fee_Holder?
+  tickets                   Ticket[]
+  RefCode                   RefCode[]
+  Tier                      Tier[]
+  EventAdmin                EventAdmin[]
+  location                  EventLocation?
+  forms                     EventForm[]
+  invites                   AdminInvite[]
+  organizer                 Organizer      @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 }
 
 model EventAdmin {
-  id      String @id @default(cuid())
+  id      String     @id @default(cuid())
   eventId String
   userId  String
   role    Admin_Type @default(ADMIN)
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event   Event      @relation(fields: [eventId], references: [id], onDelete: NoAction)
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([eventId, userId])
 }
 
 model AdminInvite {
-  token   String @id @default(uuid())
-  eventId String
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: NoAction)
-  email  String
-  user    User?   @relation(fields: [email], references: [email], onDelete: Cascade)
+  token     String   @id @default(uuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: NoAction)
+  email     String
+  user      User?    @relation(fields: [email], references: [email], onDelete: Cascade)
   expiresAt DateTime @default(dbgenerated("NOW() + interval '72h'"))
+
   @@unique([eventId, email])
 }
 
 model EventLocation {
-  id      String @id @default(cuid())
-  long    Float
-  lat     Float
-  name    String
-  event   Event  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id    String @id @default(cuid())
+  long  Float
+  lat   Float
+  name  String
+  event Event  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model EventForm {
-  id        String @id @default(cuid())
+  id        String         @id @default(cuid())
   eventId   String
   form      Json
-  updatedAt DateTime @default(now())
+  updatedAt DateTime       @default(now())
   responses FormResponse[]
-  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  event     Event          @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   @@index([eventId])
 }
 
 model FormResponse {
-  formId  String
-  userId  String
-  response Json
+  formId    String
+  userId    String
+  response  Json
   createdAt DateTime  @default(now())
-  form    EventForm @relation(fields: [formId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@id([formId, userId])
+  form      EventForm @relation(fields: [formId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@id([formId, userId])
 }
 
 model Ticket {
-  id            String    @id @default(cuid())
-  codeId        String?
-  tierId        String?
-  eventId       String
-  userId        String
-  refCodeId     Int?
-  checkedInAt   DateTime?
-  createdAt     DateTime  @default(now())
-  paymentIntent String?
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event         Event     @relation(fields: [eventId], references: [id], onDelete: NoAction)
-  tier          Tier?     @relation(fields: [tierId], references: [id], onDelete: NoAction)
-  refCode       RefCode?  @relation(fields: [refCodeId], references: [id], onDelete: NoAction)
-  code          Code?     @relation(fields: [codeId], references: [id], onDelete: NoAction)
+  id                  String         @id @default(cuid())
+  codeId              String?
+  tierId              String?
+  eventId             String
+  userId              String
+  refCodeId           Int?
+  checkedInAt         DateTime?
+  createdAt           DateTime       @default(now())
+  paymentIntent       String?
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event               Event          @relation(fields: [eventId], references: [id], onDelete: NoAction)
+  tier                Tier?          @relation(fields: [tierId], references: [id], onDelete: NoAction)
+  refCode             RefCode?       @relation(fields: [refCodeId], references: [id], onDelete: NoAction)
+  code                Code?          @relation(fields: [codeId], references: [id], onDelete: NoAction)
+  // TODO: Need to run the buildPaymentIntentTable script before this will work due to FK constraints
+  // paymentIntentObject PaymentIntent? @relation(fields: [paymentIntent], references: [paymentIntentId], onDelete: NoAction)
 }
 
 model Code {
@@ -172,7 +177,7 @@ model Code {
   limit   Int
   tier    Tier     @relation(fields: [tierId], references: [id], onDelete: Cascade)
   tickets Ticket[]
-  notes String? @default("")
+  notes   String?  @default("")
 
   @@unique([code, tierId])
 }
@@ -211,4 +216,23 @@ enum Admin_Type {
   ADMIN
   SUPER_ADMIN
   OWNER
+}
+
+enum PaymentIntentStatus {
+  SUCCESS
+  CANCELED
+  FAILED
+  PROCESSING
+  PENDING
+}
+
+model PaymentIntent {
+  paymentIntentId String               
+  status          PaymentIntentStatus @default(PENDING)
+  // TODO: Need to run the buildPaymentIntentTable script before this will work due to FK constraints
+  // tickets         Ticket[] 
+  // This is the expiration date of the payment intent. If the payment intent is still in a pending state after this time, the payment intent will be canceled.
+  expiresAt       DateTime? 
+
+  @@unique([paymentIntentId])
 }
