@@ -84,7 +84,7 @@ model Event {
   ticketImage  String?
   description  String? @db.Text
   ref_quantity Int?
-  organizerId  String?
+  organizerId  String
   google_pass_class_created Boolean @default(false)
   fee_holder   Fee_Holder?
   tickets      Ticket[]
@@ -94,7 +94,7 @@ model Event {
   location     EventLocation?
   forms        EventForm[]
   invites      AdminInvite[]
-  organizer    Organizer?        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  organizer    Organizer        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 }
 
 model EventAdmin {

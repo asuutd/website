@@ -273,7 +273,6 @@ export const paymentRouter = t.router({
   					data: dataArray
   				});
           
-          // TODO: make organizer non nullable on event model
           const s = await stripe.checkout.sessions.create({
   					line_items,
   					...(user?.email ? { customer_email: user.email } : {}),
@@ -291,7 +290,7 @@ export const paymentRouter = t.router({
   					payment_intent_data: {
   						application_fee_amount: Math.ceil(calculateApplicationFee(total)),
   						transfer_data: {
-  							destination: event.organizer!.stripeAccountId
+  							destination: event.organizer.stripeAccountId
   						},
   						metadata: {
   							eventId: input.eventId,
