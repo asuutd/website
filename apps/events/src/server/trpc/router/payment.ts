@@ -307,7 +307,6 @@ export const paymentRouter = t.router({
   							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
   						}
   					},
-  					expires_at: Math.floor(Date.now() / 1000) + 30 * 60
   				});
         })
 			
