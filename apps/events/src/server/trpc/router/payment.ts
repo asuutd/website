@@ -272,9 +272,17 @@ export const paymentRouter = t.router({
   					data: dataArray
   				});
           
+          if (!event.organizer?.stripeAccountId) {
+  					throw new TRPCError({
+  						code: 'UNAUTHORIZED',
+  						message: 'Organizer has not set up Stripe'
+  					});
+  				}
+          
           return await stripe.checkout.sessions.create({
   					line_items,
   					...(user?.email ? { customer_email: user.email } : {}),
+            mode: 'payment',
   					success_url: return_url.toString(),
   					cancel_url: `${ctx.headers.origin}/?canceled=true`,
   					metadata: {
@@ -282,7 +290,7 @@ export const paymentRouter = t.router({
   						tiers: JSON.stringify(input.tiers),
   						codeId: input.codeId ?? '',
   						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-  						userId: user.id,
+  						userId: user?.id as string,
   						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
   					},
   					payment_intent_data: {
@@ -294,18 +302,18 @@ export const paymentRouter = t.router({
   							eventId: input.eventId,
   							eventName: event.name,
   							eventPhoto: event.ticketImage,
-  							...(user.email && {
+  							...(user?.email && {
   								userEmail: user.email,
   								userName: user.name ?? user.email
   							}),
   							tiers: JSON.stringify(transformTiers),
   							codeId: input.codeId ?? '',
   							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-  							userId: user.id,
+  							userId: user?.id as string,
   							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
   						}
   					},
-  				});
+  				}, {});
         })
 			
 
