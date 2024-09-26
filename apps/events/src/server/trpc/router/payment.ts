@@ -267,7 +267,6 @@ export const paymentRouter = t.router({
 				
         const session = await ctx.prisma.$transaction(async (tx) => {
           // TODO: include the payment intent in the ticket creation, add another field to the ticket model to track  payment intent status (pending, succeeded, failed, canceled)
-          // TODO: delete the ticket if the cancel URL is hit. maybe we make an API endpoint for this instead so it redirects to the cancel URL and then to the ticket page
           
           await tx.ticket.createMany({
   					data: dataArray
@@ -276,7 +275,6 @@ export const paymentRouter = t.router({
           return await stripe.checkout.sessions.create({
   					line_items,
   					...(user?.email ? { customer_email: user.email } : {}),
-  					mode: 'payment',
   					success_url: return_url.toString(),
   					cancel_url: `${ctx.headers.origin}/?canceled=true`,
   					metadata: {
