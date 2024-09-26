@@ -441,7 +441,7 @@ export const ticketRouter = t.router({
 				});
 			}
 
-			return ctx.prisma.ticket.update({
+			const ticketsuccess = await ctx.prisma.ticket.update({
 				where: {
 					id: input.ticketId
 				},
@@ -454,6 +454,17 @@ export const ticketRouter = t.router({
           event: true
 				}
 			});
+
+			client.capture({
+				distinctId: ctx.session.user.id,
+				event: 'ticket scanned',
+				properties: {
+					
+					ticketsuccess
+
+				}
+			})
+			return ticketsuccess
 		}),
 
 	getTicOrRef: authedProcedure
