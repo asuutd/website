@@ -290,7 +290,7 @@ export const paymentRouter = t.router({
   						tiers: JSON.stringify(input.tiers),
   						codeId: input.codeId ?? '',
   						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-  						userId: user?.id as string,
+  						userId: (user?.id as string ?? ''),
   						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
   					},
   					payment_intent_data: {
@@ -302,18 +302,18 @@ export const paymentRouter = t.router({
   							eventId: input.eventId,
   							eventName: event.name,
   							eventPhoto: event.ticketImage,
-  							...(user?.email && {
+  							...(user?.email ? {
   								userEmail: user.email,
   								userName: user.name ?? user.email
-  							}),
+  							} : {}),
   							tiers: JSON.stringify(transformTiers),
   							codeId: input.codeId ?? '',
   							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-  							userId: user?.id as string,
+  							userId: (user?.id as string ?? ''),
   							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
   						}
   					},
-  				}, {});
+  				}, undefined);
         })
 			
 
