@@ -223,7 +223,7 @@ export const PurchaseEmail = ({
 								</Column>
 
 								<Column style={tableCell} align="right">
-									<Link href="https://kazala.co/register" style={links}>
+									<Link href="https://kazala.co/organizers" style={links}>
 										<Text style={{ color: '#8c0327' }}>Run an Event?</Text>
 									</Link>
 								</Column>

@@ -21,8 +21,11 @@ async function payoutAll() {
 }
 
 async function getPayouts() {
-  const payouts = {...await stripe.payouts.list(undefined, args), lastResponse: undefined};
-  console.log(JSON.stringify(payouts, null, 2));
+  const payouts = await stripe.payouts.list(undefined, args).autoPagingToArray({limit: -1})
+  for (const payout of payouts) {
+    const jsDate = new Date(payout.arrival_date * 1000)
+    console.log({...payout, human_arrival_date: jsDate.toLocaleDateString() + " " + jsDate.toLocaleTimeString()})
+  }
 }
 
 getPayouts().then(() => {console.log('done')});

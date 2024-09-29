@@ -1,3 +1,5 @@
+// TODO: delete this - seems to be unused / superseded by the paymentRouter.createCheckoutLink mutation in payment.ts
+// 
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db/client';
