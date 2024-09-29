@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { trpc } from '../utils/trpc';
 import { NextSeo } from 'next-seo';
 
-const Register = () => {
-	const mutation = trpc.organizer.createOrganizer.useMutation();
-
+const BecomeAnOrganizerButton = () => {
+  const mutation = trpc.organizer.createOrganizer.useMutation();
+ 
 	const handleClick = () => {
 		mutation.mutate(undefined, {
 			onSuccess: ({ accountLink }) => {
@@ -21,6 +21,16 @@ const Register = () => {
 			}
 		});
 	};
+  return (
+		<button className="btn btn-primary" onClick={() => handleClick()}>
+			Become an Organizer
+		</button>
+	)
+}
+	
+
+const Register = () => {
+	
 	const [value, setValue] = useState<{
 		perTicket: number;
 		numTickets: number;
@@ -48,17 +58,16 @@ const Register = () => {
 			const ev_order_fee = 0.029 * (ev_service_fee + ev_tax);
 
 			eventbrite += ev_service_fee + ev_order_fee;
-
+			
+			const tempo = 0.075 * value.perTicket + 0.93 * value.numTickets;
+			
 			return {
-				kazala,
-				eventbrite
+				kazala: '$' + kazala.toFixed(2),
+				eventbrite: '$' + eventbrite.toFixed(2),
+				tempo: '$' + tempo.toFixed(2)
 			};
 		}
 	}, [value]);
-
-	useEffect(() => {
-		console.log(fees);
-	}, [fees, value]);
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -83,23 +92,20 @@ const Register = () => {
 	return (
 		<>
 			<NextSeo
-				title="Organizer | Kazala"
-				description="Make a seamless and inexpensive ticketing experience for your eventgoers with Kazala"
+				title="Organizers | Kazala"
+				description="Make a seamless and inexpensive ticketing experience for your eventgoers with Kazala."
 			/>
-			<div className="hero min-h-[70vh]   rounded-md">
+			<div className="hero min-h-[70vh] rounded-md">
 				<div className="hero-content text-center w-full">
-					<div className="max-w-md">
-						<h1 className="text-3xl lg:text-5xl font-bold">
-							<span className=" text-primary">Leave the ticketing to us </span>
-							<span className="text-xl lg:text-3xl">and make your event the best it can be</span>
+					<div className="max-w-md flex flex-col items-center gap-4">
+						<h1 className="text-3xl lg:text-5xl font-bold text-primary">
+							Leave the ticketing to us.
 						</h1>
 						<p className="text-sm">
 							You already have a lot on your plate trying to plan your events. Don&apos;t let absurd
-							ticketing fees stop you from giving the best experience to your attendees
+							ticketing fees stop you from giving the best experience to your attendees.
 						</p>
-						<button className="btn btn-primary" onClick={() => handleClick()}>
-							Become an Organizer
-						</button>
+						<BecomeAnOrganizerButton />
 					</div>
 				</div>
 			</div>
@@ -112,17 +118,17 @@ const Register = () => {
 				</div>
 
 				<div className="relative xl:w-10/12 xl:mx-auto">
-					<div className="card  bg-base-100 shadow-lg  m-4 max-w-md">
+					<div className="card bg-base-100 shadow-lg mx-auto my-4 max-w-md">
 						<div className="card-body">
-							<h2 className="card-title text-3xl lg:text-4xl">Calculate your Fees</h2>
+							<h2 className="card-title text-3xl lg:text-4xl">Calculate your fees</h2>
 							<div className="">
 								<label htmlFor="" className="mr-3">
-									Price per ticket: <span>${value.perTicket}</span>
+									Price per ticket: <span className="font-semibold">${value.perTicket}</span>
 								</label>
 								<span className="">
 									<input
 										type="range"
-										min={0}
+										min={5}
 										max={100}
 										step={5}
 										value={value.perTicket}
@@ -131,22 +137,17 @@ const Register = () => {
 									/>
 								</span>
 							</div>
-							<div className="">
-								<label htmlFor="" className="mr-3">
-									Number of Tickets:{' '}
-									<span>
-										<input
-											className=" w-14 h-8 py-0 border-none bg-base-100 ring-0"
-											onChange={(e) => handleInputChange(e, 'numTickets')}
-											value={value.numTickets}
-										/>
-									</span>
+							<div>
+								<label htmlFor="numTickets" className="mr-3">
+									Number of tickets: <span className="font-semibold">{value.numTickets}</span>
 								</label>
 								<span className="">
 									<input
+									 id="numTickets"
 										type="range"
-										min={0}
-										max={200}
+										min={10}
+										step={10}
+										max={1500}
 										className="range range-accent"
 										value={value.numTickets}
 										onChange={(e) => handleInputChange(e, 'numTickets')}
@@ -155,11 +156,10 @@ const Register = () => {
 							</div>
 						</div>
 					</div>
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-						<div>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
 							<div className="p-4 relative z-10 bg-base-100 border rounded-xl md:p-10 dark:bg-slate-900 dark:border-gray-700">
 								<h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Kazala</h3>
-								<div className="text-sm text-gray-500">One simple fee for everything</div>
+								<div className="text-sm text-gray-500">One simple fee for everything.</div>
 
 								{fees && (
 									<div className="mt-5">
@@ -167,7 +167,7 @@ const Register = () => {
 											Total Fees
 										</h3>
 										<span className="text-4xl font-bold text-primary dark:text-gray-200">
-											${fees.kazala.toFixed(2)}
+											{fees.kazala}
 										</span>
 									</div>
 								)}
@@ -179,14 +179,12 @@ const Register = () => {
 								</div>
 
 								<div className="mt-5">
-									<span className="text-6xl font-bold text-gray-800 dark:text-gray-200">
-										That&apos;s all
+									<span className="text-5xl font-bold text-gray-800 dark:text-gray-200">
+										That&apos;s all.
 									</span>
 								</div>
 							</div>
-						</div>
-
-						<div>
+							
 							<div className="shadow-xl shadow-gray-200 p-5 relative z-10 bg-base-100 border rounded-xl md:p-10 dark:bg-slate-900 dark:border-gray-700 dark:shadow-gray-900/[.2]">
 								<h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Eventbrite</h3>
 								<div className="text-sm text-gray-500 invisible">For growing businesses.</div>
@@ -197,7 +195,7 @@ const Register = () => {
 											Total Fees
 										</h3>
 										<span className="text-4xl font-bold dark:text-gray-200">
-											${fees.eventbrite.toFixed(2)}
+											{fees.eventbrite}
 										</span>
 									</div>
 								)}
@@ -219,8 +217,30 @@ const Register = () => {
 									<span className="text-xl ml-3 text-gray-500">upfront fees</span>
 								</div>
 							</div>
-						</div>
+							
+							<div className="shadow-xl shadow-gray-200 p-5 relative z-10 bg-base-100 border rounded-xl md:p-10 dark:bg-slate-900 dark:border-gray-700 dark:shadow-gray-900/[.2]">
+								<h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Tempo</h3>
+								<div className="text-sm text-gray-500 invisible">For growing businesses.</div>
+
+								{fees && (
+									<div className="mt-5">
+										<h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+											Total Fees
+										</h3>
+										<span className="text-4xl font-bold dark:text-gray-200">
+											{fees.tempo}
+										</span>
+									</div>
+								)}
+
+								<div className="mt-5">
+									<span className="text-6xl font-bold text-gray-800 dark:text-gray-200">7</span>
+									<span className="text-2xl font-bold text-gray-800 dark:text-gray-200">.5%</span>
+									<span className="text-2xl ml-3 text-gray-500">+ $0.93</span>
+								</div>
+							</div>
 					</div>
+					
 
 					<div className="hidden md:block absolute top-0 right-0 translate-y-16 translate-x-16">
 						<svg
@@ -269,6 +289,10 @@ const Register = () => {
 							/>
 						</svg>
 					</div>
+				</div>
+				
+				<div className="w-full flex justify-center my-4">
+				  <BecomeAnOrganizerButton />
 				</div>
 			</div>
 		</>
