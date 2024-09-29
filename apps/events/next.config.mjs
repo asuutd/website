@@ -31,6 +31,15 @@ export default withSentryConfig(
 		i18n: {
 			locales: ['en'],
 			defaultLocale: 'en'
+		},
+		redirects: async () => {
+			return [
+				{
+					source: '/register',
+					destination: '/organizers',
+					permanent: true
+				}
+			]
 		}
 	}),
 	{

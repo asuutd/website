@@ -18,7 +18,7 @@ const Home: NextPage = () => {
 				title="Kazala"
 				description="Kazala links you to campus activities and organization-hosted gatherings, enabling you to explore and engage in what matters most to you."
 			/>
-			<main className="py-2 ">
+			<main className="py-2">
 				<div className="relative overflow-hidden">
 					<div
 						aria-hidden="true"
@@ -78,8 +78,8 @@ const Home: NextPage = () => {
 											/>
 										</svg>
 									</a>
-									<Link legacyBehavior href="/register">
-										<div className='className="group py-3 px-4 bg-base-100 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold hover:bg-accent hover:text-white focus:outline-none focus:ring-2  focus:ring-offset-2 transition-all text-sm dark:text-white "'>
+									<Link href="/organizers">
+										<div className="group py-3 px-4 bg-base-100 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold hover:bg-accent hover:text-white focus:outline-none focus:ring-2  focus:ring-offset-2 transition-all text-sm dark:text-white">
 											Run an Event?
 											<svg
 												className="w-6 h-6 fill-black group-hover:fill-white -rotate-90"
