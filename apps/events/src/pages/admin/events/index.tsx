@@ -68,12 +68,12 @@ const Events: NextPage = () => {
 				<title>Events</title>
 			</Head>
 			<div className="flex flex-col w-full gap-y-5 px-2 py-16 sm:px-0 mx-auto">
-				<div className="justify-between flex items-center">
+				<div className="justify-between flex flex-col sm:flex-row items-center gap-4">
 					<h1 className="text-4xl font-bold">Organizer Dashboard</h1>
 
 					{events.data && (
 						<div className="join">
-							<Link legacyBehavior className="" href="/scan">
+							<Link href="/scan">
 								<p className="btn btn-sm join-item ">Scan Ticket</p>
 							</Link>
 							<button className="btn  btn-sm join-item" onClick={() => handlePaymentClick()}>

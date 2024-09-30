@@ -64,14 +64,14 @@ export default function Example() {
 					className="mt-3 z-[30] p-2 gap-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
 				>
 					<li>
-						<Link legacyBehavior href="/tickets">
+						<Link href="/tickets">
 							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
 								Tickets
 							</p>
 						</Link>
 					</li>
 					<li>
-						<Link legacyBehavior href="/register">
+						<Link href="/register">
 							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
 								Organize an Event
 							</p>
@@ -79,7 +79,7 @@ export default function Example() {
 					</li>
 
 					<li>
-						<Link legacyBehavior href="/admin/events">
+						<Link href="/admin/events">
 							<p className="group flex w-full items-center rounded-md px-2 py-2 text-sm gap-2 hover:bg-base-200">
 								Dashboard
 							</p>
@@ -87,6 +87,7 @@ export default function Example() {
 					</li>
 					<li>
 						<button
+						  type="button"
 							className={`hover:bg-base-200 group flex w-full items-center rounded-md px-2 py-2 text-sm`}
 							onClick={handleLogout}
 						>
