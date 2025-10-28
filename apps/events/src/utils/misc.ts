@@ -1,4 +1,16 @@
-import { Event, Ticket } from '@prisma/client';
+import { Event, Ticket, Code } from '@prisma/client';
+
+
+export const calculateTicketDiscount = (ticketUnitCost: number, code: Code) => {
+	if (code.type === 'percent') {
+		console.log(code.value);
+		return (1 - code.value) * ticketUnitCost;
+	} else if (code.type === 'flat') {
+		return ticketUnitCost - code.value;
+	} else {
+		throw new Error("Saw unexpected code type")
+	}
+}
 
 export const calculateApplicationFee = (total: number): number => {
   const KAZALA_TRANSACTION_FEE_PERCENTAGE = 0.065

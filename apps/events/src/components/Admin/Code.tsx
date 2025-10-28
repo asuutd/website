@@ -16,7 +16,7 @@ const Code = ({ eventId }: { eventId: string }) => {
 	}>({});
 
 	const [newCodes, setNewCodes] = useState<Set<string>>(new Set());
-	const codes = trpc.code.getCodes.useQuery(
+	const codes = trpc.code.getCodesWithSalesData.useQuery(
 		{ eventId },
 		{
 			structuralSharing(oldData, newData) {

@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { trpc } from '../utils/trpc';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Tier } from '@prisma/client';
-import { calculateApplicationFee } from '@/utils/misc';
+import { calculateApplicationFee, calculateTicketDiscount } from '@/utils/misc';
 import { twJoin } from 'tailwind-merge';
 import { useSession } from 'next-auth/react';
 import { cloneDeep } from 'lodash';
@@ -33,33 +33,32 @@ const TicketSummary = ({
 	const event = trpc.useContext().event.getEvent.getData({
 		eventId
 	});
-	const codeQuery = trpc.code.getCode.useMutation({
-		onSuccess: (data) => {
-			if (data) {
-				const ticket = tickets.find((ticket) => ticket.tier.id === data?.tierId);
+	const codeQuery = trpc.code.getCodeWithEligibleTiers.useMutation({
+		onSuccess: (codes) => {
+			for (const code of codes) {
+				const ticket = tickets.find((ticket) => ticket.tier.id === code.tierId);
 				console.log(ticket);
-				if (ticket !== undefined) {
-					if (ticket.quantity > 1) {
-						alert(' Only one ticket is allowed for this code type');
-					} else {
-						if (ticket.amount === data?.tier.price && data.limit > data._count.tickets) {
-							if (data.type === 'percent') {
-								console.log(data.value);
-								ticket.amount = (1 - data.value) * ticket.amount;
-							} else if (data.type === 'flat') {
-								ticket.amount = ticket.amount - data.value;
-							}
 
-							console.log(Number(ticket.amount.toFixed(2)));
-							let val = 0;
-							for (const ticket of tickets) {
-								val += ticket.amount * ticket.quantity;
-							}
-							setTotal(Number(val.toFixed(2)));
-						}
+				if (!ticket) return;
+
+				if (ticket.quantity > 1) {
+					alert('Only one ticket is allowed for this code type');
+					return
+				} else {
+					const discountNotAppliedToTicket = ticket.amount === code.tier.price
+					const codeIsBelowUsageLimit = code.limit > code._count.tickets;
+					if (discountNotAppliedToTicket && codeIsBelowUsageLimit) {
+						ticket.amount = calculateTicketDiscount(ticket.amount, code)
+
+						console.log(Number(ticket.amount.toFixed(2)));
 					}
 				}
 			}
+			let newTotal = 0;
+			for (const ticket of tickets) {
+				newTotal += ticket.amount * ticket.quantity;
+			}
+			setTotal(Number(newTotal.toFixed(2)));
 		}
 	});
 	const [stripeLoading, setStripeLoading] = useState(false);
@@ -158,7 +157,7 @@ const TicketSummary = ({
 						placeholder="PROMO CODE"
 						onChange={(e) => setCode(e.target.value)}
 						onBlur={() => {
-							code && codeQuery.mutate({ code: code });
+							code && codeQuery.mutate({ code: code, eventId });
 						}}
 					/>
 					<input

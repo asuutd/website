@@ -5,17 +5,37 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 
 export const codeRouter = t.router({
-	getCode: t.procedure
+	/**
+	 * Given a string `code` and `eventId`, returns all the `Code` entities with this code name that are 
+	 * related to the event. This is done because the key attributes of a `Code` entity are the tier and the code -
+	 * code alone does not make a unique `Code` in the database schema.  This means that in the database, it's 
+	 * possible for multiple events to have the same code, and even for the same code to be reused within the same event as
+	 * long as each `Code` entity relates to a different tier. 
+	 * 
+	 * TL;DR: if a code is reused within the same event - for example, if an organizer wants to use the same
+	 * discount code for two different tiers, this will return a list of `Code` entities, or in other words, a list of all
+	 * the tiers which this code is eligible to be applied to.
+	 *
+	 * @returns {Promise<Code[]>}
+	 */
+	getCodeWithEligibleTiers: t.procedure
 		.input(
 			z.object({
-				code: z.string()
+				code: z.string(),
+				eventId: z.string()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			//const userId = ctx.session.user.id;
-			const code = await ctx.prisma.code.findFirst({
+			const codes = await ctx.prisma.code.findMany({
 				where: {
-					code: input.code.toUpperCase()
+					code: input.code.toUpperCase(),
+					tier: {
+						event: {
+							id: {
+								equals: input.eventId
+							}
+						}
+					}
 				},
 				include: {
 					tier: true,
@@ -25,9 +45,9 @@ export const codeRouter = t.router({
 				}
 			});
 
-			return code;
+			return codes;
 		}),
-	getCodes: superAdminProcedure
+	getCodesWithSalesData: superAdminProcedure
 		.input(
 			z.object({
 				eventId: z.string()
