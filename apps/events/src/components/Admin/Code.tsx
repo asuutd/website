@@ -12,7 +12,7 @@ const Code = ({ eventId }: { eventId: string }) => {
 	const router = useRouter();
 
 	const codeRefs = useRef<{
-		[key: string]: React.RefObject<HTMLTableRowElement>;
+		[key: string]: React.RefObject<HTMLTableRowElement | null>;
 	}>({});
 
 	const [newCodes, setNewCodes] = useState<Set<string>>(new Set());

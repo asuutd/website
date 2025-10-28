@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { Adapter, AdapterAccount } from 'next-auth/adapters';
-import { ProviderType } from 'next-auth/providers';
+import type { ProviderType } from 'next-auth/providers/index';
 
 export function CustomPrismaAdapter(p: PrismaClient): Adapter {
 	return {

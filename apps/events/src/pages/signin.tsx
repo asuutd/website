@@ -1,5 +1,5 @@
 import LoginForm from '@/components/LoginForm';
-import { BuiltInProviderType } from 'next-auth/providers';
+import type { BuiltInProviderType } from 'next-auth/providers/index';
 import { ClientSafeProvider, LiteralUnion, getProviders } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';

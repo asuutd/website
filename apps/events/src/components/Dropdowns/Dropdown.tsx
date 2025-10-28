@@ -7,9 +7,9 @@ import {
 	signOut,
 	useSession
 } from 'next-auth/react';
+import type { BuiltInProviderType } from 'next-auth/providers/index';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { BuiltInProviderType } from 'next-auth/providers';
 import { env } from '@/env/client.mjs';
 import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 import posthog from 'posthog-js'

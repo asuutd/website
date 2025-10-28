@@ -123,7 +123,7 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 			<NextSeo
 				title={props?.meta?.title ?? 'Event'}
 				openGraph={{
-					title: `${props?.meta?.title}` ?? 'Event',
+					title: props?.meta?.title ?? 'Event',
 					description: `Event Details of ${props?.meta?.title}`,
 					url: `${env.NEXT_PUBLIC_URL}/event/${props.meta?.id}`,
 					type: 'website',

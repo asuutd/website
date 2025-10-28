@@ -18,13 +18,25 @@ function defineNextConfig(config) {
 export default withSentryConfig(
 	defineNextConfig({
 		reactStrictMode: true,
-		swcMinify: true,
+		turbopack: {},
 		images: {
-			domains: [
-				'lh3.googleusercontent.com',
-				'pbs.twimg.com',
-				'ucarecdn.com',
-				'fastly.picsum.photos'
+			remotePatterns: [
+				{
+					protocol: 'https',
+					hostname: 'lh3.googleusercontent.com'
+				},
+				{
+					protocol: 'https',
+					hostname: 'pbs.twimg.com'
+				},
+				{
+					protocol: 'https',
+					hostname: 'ucarecdn.com'
+				},
+				{
+					protocol: 'https',
+					hostname: 'fastly.picsum.photos'
+				}
 			]
 		},
 		// Next.js i18n docs: https://nextjs.org/docs/advanced-features/i18n-routing

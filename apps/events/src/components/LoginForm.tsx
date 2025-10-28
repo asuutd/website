@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { signIn, useSession } from 'next-auth/react';
 import type { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
-import type { BuiltInProviderType } from 'next-auth/providers';
+import type { BuiltInProviderType } from 'next-auth/providers/index';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { env } from '../env/client.mjs';
 
