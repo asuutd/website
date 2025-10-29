@@ -1,7 +1,7 @@
 import { Event, Ticket, Code } from '@prisma/client';
 
 
-export const calculateTicketDiscount = (ticketUnitCost: number, code: Code) => {
+export const calculateTicketUnitCostWithDiscount = (ticketUnitCost: number, code: Code) => {
 	if (code.type === 'percent') {
 		console.log(code.value);
 		return (1 - code.value) * ticketUnitCost;

@@ -1,8 +1,11 @@
+// TODO(now): make sure this code is semantically correct
+
+
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { t, authedProcedure } from '../trpc';
 import stripe from '@/utils/stripe';
-import { calculateApplicationFee } from '@/utils/misc';
+import { calculateApplicationFee, calculateTicketUnitCostWithDiscount } from '@/utils/misc';
 import { env } from '@/env/server.mjs';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
@@ -22,13 +25,14 @@ export const paymentRouter = t.router({
 						quantity: z.number()
 					})
 				),
-				codeId: z.string().toUpperCase().optional(),
+				codeIds: z.array(z.string().toUpperCase()),
 				refCodeId: z.string().optional(),
 				email: z.string().email().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			let user = ctx.session?.user;
+		
+		let user = ctx.session?.user;
 			if (!user) {
 				if (input.email) {
 					const dbUser = await ctx.prisma.user.upsert({
@@ -55,9 +59,8 @@ export const paymentRouter = t.router({
 				}
 			}
 
-			const [event, code] = await Promise.all([
-				input.eventId
-					? ctx.prisma.event.findFirst({
+			const [event, codes] = await Promise.all([
+				ctx.prisma.event.findFirst({
 							where: {
 								id: input.eventId,
 								Tier: {
@@ -110,12 +113,12 @@ export const paymentRouter = t.router({
 								}
 							}
 					  })
-					: null,
-				//Work on This Code.
-				input.codeId
-					? ctx.prisma.code.findFirst({
+					,
+				ctx.prisma.code.findMany({
 							where: {
-								code: input.codeId.toUpperCase(),
+								code: {
+								  in: input.codeIds
+								},
 								tierId: {
 									in: input.tiers.map((tier) => tier.tierId)
 								}
@@ -126,16 +129,32 @@ export const paymentRouter = t.router({
 								}
 							}
 					  })
-					: null
 			]);
-			//Make sure code is one-time use
-			const codeTier = input.tiers.find((tier) => tier.tierId === code?.tierId);
-
-			if (codeTier && codeTier.quantity > 1) {
+			
+			if (!event) {
+ 			  throw new TRPCError({
+ 					code: 'NOT_FOUND',
+ 					message: 'Event not found'
+   			});
+			}
+			
+			if (!event.organizer.stripeAccountId) {
 				throw new TRPCError({
-					message: 'Only one ticket is allowed for this code type',
-					code: 'BAD_REQUEST'
+					code: 'UNAUTHORIZED',
+					message: 'Organizer has not set up Stripe'
 				});
+			}	
+			
+			//Make sure code is one-time use
+			for (const code of codes) {
+  			const codeTier = input.tiers.find((tier) => tier.tierId === code?.tierId);
+  
+  			if (codeTier && codeTier.quantity > 1) {
+  				throw new TRPCError({
+  					message: `Only one ticket is allowed for this code type. Code ID: ${code.id}, Tier ID: ${codeTier.tierId}`,
+  					code: 'BAD_REQUEST'
+  				});
+  			}
 			}
 
 			console.log(event);
@@ -170,22 +189,19 @@ export const paymentRouter = t.router({
 			}[];
 
 			let total = 0;
-			if (event?.Tier && event.organizer?.stripeAccountId) {
+			if (event?.Tier && event.organizer.stripeAccountId) {
 				const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-				let remaining = 0;
-				if (code) {
-					remaining = code.limit - code._count.tickets;
-					console.log(code._count.tickets);
-				}
-				event.Tier.forEach((tier) => {
+				
+				for (const tier of event.Tier) {
+				  const code = codes.find(c => c.tierId === tier.id)
+  				let remainingUsesOfCode = -1;
+  				if (code) {
+  					remainingUsesOfCode = code.limit - code._count.tickets;
+  					console.log(code._count.tickets);
+  				}
 					let unit_amount = tier.price;
-					if (remaining > 0 && code && input.codeId && tier.id === code.tierId) {
-						console.log(code, input.codeId);
-						if (code.type === 'percent') {
-							unit_amount = (1 - code.value) * tier.price;
-						} else if (code.type === 'flat') {
-							unit_amount = tier.price - code.value;
-						}
+					if (remainingUsesOfCode > 0 && code) {
+						unit_amount = calculateTicketUnitCostWithDiscount(unit_amount, code)
 					}
 					console.log(unit_amount, code?.type, 'line 67');
 					total +=
@@ -211,23 +227,24 @@ export const paymentRouter = t.router({
 					};
 					line_items.push(line_item);
 					if (code && tier.id === code.tierId) {
-						remaining -= 1;
+						remainingUsesOfCode -= 1;
 					}
-				});
+				}
 				console.log(line_items);
 
 				const sameOwner = user.id === input?.refCodeId;
-				const dataArray: Prisma.TicketCreateManyInput[] = [];
+				const ticketsToCreate: Prisma.TicketCreateManyInput[] = [];
 
 				for (const tier of input.tiers) {
+				  const code = codes.find(c => c.tierId === tier.tierId)
 					for (let i = 0; i < tier.quantity; ++i) {
 						if (input.eventId && user.id) {
 							const ticket = {
 								id: createId(),
 								userId: user.id,
-								eventId: input.eventId,
+								eventId: event.id,
 								tierId: tier.tierId,
-								...(code //Make sure to change this. Code should be serched before creating ticket
+								...(code
 									? {
 											codeId: code.id
 									  }
@@ -238,11 +255,11 @@ export const paymentRouter = t.router({
 									  }
 									: {})
 							};
-							dataArray.push(ticket);
+							ticketsToCreate.push(ticket);
 						}
 					}
 				}
-				console.log(dataArray);
+				console.log(ticketsToCreate);
 
 				if (event.fee_holder === 'USER') {
 					line_items.push({
@@ -265,55 +282,59 @@ export const paymentRouter = t.router({
 					}
 				}
 				
-        const session = await ctx.prisma.$transaction(async (tx) => {
-          // TODO: include the payment intent in the ticket creation, add another field to the ticket model to track  payment intent status (pending, succeeded, failed, canceled)
-          
-          await tx.ticket.createMany({
-  					data: dataArray
-  				});
-          
-          if (!event.organizer?.stripeAccountId) {
-  					throw new TRPCError({
-  						code: 'UNAUTHORIZED',
-  						message: 'Organizer has not set up Stripe'
-  					});
-  				}
-          
-          return await stripe.checkout.sessions.create({
-  					line_items,
-  					...(user?.email ? { customer_email: user.email } : {}),
-            mode: 'payment',
-  					success_url: return_url.toString(),
-  					cancel_url: `${ctx.headers.origin}/?canceled=true`,
-  					metadata: {
-  						eventId: input.eventId,
-  						tiers: JSON.stringify(input.tiers),
-  						codeId: input.codeId ?? '',
-  						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-  						userId: (user?.id as string ?? ''),
-  						ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
-  					},
-  					payment_intent_data: {
-  						application_fee_amount: Math.ceil(calculateApplicationFee(total)),
-  						transfer_data: {
-  							destination: event.organizer.stripeAccountId
-  						},
-  						metadata: {
-  							eventId: input.eventId,
-  							eventName: event.name,
-  							eventPhoto: event.ticketImage,
-  							...(user?.email ? {
-  								userEmail: user.email,
-  								userName: user.name ?? user.email
-  							} : {}),
-  							tiers: JSON.stringify(transformTiers),
-  							codeId: input.codeId ?? '',
-  							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
-  							userId: (user?.id as string ?? ''),
-  							ticketIds: JSON.stringify(dataArray.map((ticket) => ticket.id))
-  						}
-  					},
-  				}, undefined);
+      
+			 const stripeCheckoutSession = await stripe.checkout.sessions.create({
+ 					line_items,
+ 					...(user?.email ? { customer_email: user.email } : {}),
+          mode: 'payment',
+ 					success_url: return_url.toString(),
+ 					cancel_url: `${ctx.headers.origin}/?canceled=true`,
+ 					metadata: {
+						eventId: input.eventId,
+						tiers: JSON.stringify(input.tiers),
+						codeIds: JSON.stringify(input.codeIds),
+						refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
+						userId: user.id,
+						ticketIds: JSON.stringify(ticketsToCreate.map((ticket) => ticket.id))
+ 					},
+ 					payment_intent_data: {
+						application_fee_amount: Math.ceil(calculateApplicationFee(total)),
+						transfer_data: {
+ 							destination: event.organizer.stripeAccountId
+						},
+						metadata: {
+ 							eventId: input.eventId,
+ 							eventName: event.name,
+ 							eventPhoto: event.ticketImage,
+ 							...(user?.email ? {
+								userEmail: user.email,
+								userName: user.name ?? user.email
+ 							} : {}),
+ 							tiers: JSON.stringify(transformTiers),
+ 							codeIds: JSON.stringify(input.codeIds),
+ 							refCodeId: !sameOwner && input.refCodeId ? input.refCodeId : '',
+ 							userId: (user?.id as string ?? ''),
+ 							ticketIds: JSON.stringify(ticketsToCreate.map((ticket) => ticket.id))
+						}
+ 					},
+				}, undefined);
+				
+				const paymentIntentId = stripeCheckoutSession.payment_intent ? (typeof stripeCheckoutSession.payment_intent === 'string' ? stripeCheckoutSession.payment_intent : stripeCheckoutSession.payment_intent.id) : null
+				
+        await ctx.prisma.$transaction(async (tx) => {
+          if (paymentIntentId) {
+            await tx.paymentIntent.create({
+              data: {
+                paymentIntentId,
+                // TODO(now): double check this is correct
+                expiresAt: new Date(stripeCheckoutSession.expires_at * 1000)
+                
+              }
+            })
+          } else {
+            console.warn("Missing payment intent id - this is bad")
+          }
+          await tx.ticket.createMany({data: ticketsToCreate.map(t => ({...t, paymentIntentId}))});
         })
 			
 
@@ -322,13 +343,13 @@ export const paymentRouter = t.router({
 					distinctId: user.id,
 					event: 'ticket purchased',
 					properties: {
-						tickets: dataArray,
+						tickets: ticketsToCreate,
 					}
 			  });
 
-				if (session.url) {
+				if (stripeCheckoutSession.url) {
 					return {
-						url: session.url
+						url: stripeCheckoutSession.url
 					};
 				} else {
 					return {

@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { trpc } from '../utils/trpc';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Tier } from '@prisma/client';
-import { calculateApplicationFee, calculateTicketDiscount } from '@/utils/misc';
+import { calculateApplicationFee, calculateTicketUnitCostWithDiscount } from '@/utils/misc';
 import { twJoin } from 'tailwind-merge';
 import { useSession } from 'next-auth/react';
 import { cloneDeep } from 'lodash';
@@ -33,6 +33,7 @@ const TicketSummary = ({
 	const event = trpc.useContext().event.getEvent.getData({
 		eventId
 	});
+	// TODO(now): make this into a query so we can pull code ids in the checkout link mutation, move price calculation side effects into a separate hook
 	const codeQuery = trpc.code.getCodeWithEligibleTiers.useMutation({
 		onSuccess: (codes) => {
 			for (const code of codes) {
@@ -48,7 +49,7 @@ const TicketSummary = ({
 					const discountNotAppliedToTicket = ticket.amount === code.tier.price
 					const codeIsBelowUsageLimit = code.limit > code._count.tickets;
 					if (discountNotAppliedToTicket && codeIsBelowUsageLimit) {
-						ticket.amount = calculateTicketDiscount(ticket.amount, code)
+						ticket.amount = calculateTicketUnitCostWithDiscount(ticket.amount, code)
 
 						console.log(Number(ticket.amount.toFixed(2)));
 					}
