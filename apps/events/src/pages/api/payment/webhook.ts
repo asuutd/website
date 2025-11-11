@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { buffer } from 'node:stream/consumers';
-import type Stripe from 'stripe';
+import Stripe from 'stripe';
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
