@@ -5,7 +5,7 @@ import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db/client';
 import stripe from '@/utils/stripe';
 import { getPostHog } from '@/server/posthog';
-import type { TierPurchase } from '@/lib/ticketEmail';
+import { generateAndSendTicketEmail, type TierPurchase } from '@/lib/ticketEmail';
 
 const client = getPostHog();
 
