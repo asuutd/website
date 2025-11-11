@@ -1,8 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { trpc } from '../utils/trpc';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { Tier } from '@prisma/client';
-import Image from 'next/image';
 import { calculateApplicationFee } from '@/utils/misc';
 import { twJoin } from 'tailwind-merge';
 import { useSession } from 'next-auth/react';
@@ -65,8 +64,9 @@ const TicketSummary = ({
 	});
 	const [stripeLoading, setStripeLoading] = useState(false);
 	const getStripeCheckout = async () => {
-		const tiers: { tierId: string; quantity: number }[] = [];
-
+	  const tiers: { tierId: string; quantity: number }[] = [];
+			
+		if (!confirmEmail()) return;
 		for (const ticket of tickets) {
 			const newTicket = {
 				tierId: ticket.tier.id,
@@ -107,6 +107,18 @@ const TicketSummary = ({
 			}
 		);
 	};
+	
+	const confirmEmail = () => {
+  	if (!email) return true
+
+   // Very common typos seen in Stripe. This is bad since it means people might not receive their tickets, but don't want to validate against TLDs since the list of valid TLDs is constantly changing, so we are just making sure the user is aware of the potential issue with their email before paying for tickets.
+  	const emailIsSuspicious = email.endsWith('.con') || email.endsWith('.ed');
+		if (emailIsSuspicious) {
+			const confirmation = confirm(`Are you sure you want to use this email? ${email} looks like it might have a typo in it.`);
+			return confirmation;
+		
+  	}
+	}
 
 	const [total, setTotal] = useState<number>(0);
 

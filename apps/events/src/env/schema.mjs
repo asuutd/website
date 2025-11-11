@@ -35,7 +35,8 @@ export const serverSchema = z.object({
 	R2_SECRET_ACCESS_KEY: z.string(),
 	QRCODE_BUCKET: z.string(),
 	GOOGLE_WALLET_ISSUER: z.string(),
-	GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64: z.string()
+	GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64: z.string(),
+	CRON_SECRET: z.string()
 });
 
 /**
@@ -60,7 +61,7 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-	NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL ?? ("https://" + process.env.NEXT_PUBLIC_VERCEL_URL),
+	NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL ?? (process.env.NEXT_PUBLIC_VERCEL_URL ? ("https://" + process.env.NEXT_PUBLIC_VERCEL_URL) : undefined),
 	NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 	NEXT_PUBLIC_UPLOADCARE_PUB_KEY: process.env.NEXT_PUBLIC_UPLOADCARE_PUB_KEY,
 	NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
