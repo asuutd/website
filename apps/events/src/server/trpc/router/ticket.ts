@@ -6,7 +6,7 @@ import { TRPCError } from '@trpc/server';
 import stripe from '@/utils/stripe';
 import { getPostHog } from '@/server/posthog';
 import posthog from 'posthog-js';
-import { getQRCodesAndWalletLinksForTickets } from '@/lib/ticketEmail';
+import { generateAndSendTicketEmail, TierPurchase } from '@/lib/ticketEmail';
 
 const client = getPostHog();
 
@@ -262,15 +262,52 @@ export const ticketRouter = t.router({
       paymentIntent: z.string()
     }))
     .mutation(async ({ ctx, input: {paymentIntent} }) => {
-    const ticketIds = (await ctx.prisma.ticket.findMany({
-      where: {
-        paymentIntent
-      },
-      select: {
-        id: true
+      const tickets = (await ctx.prisma.ticket.findMany({
+        where: {
+          paymentIntent
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          user: true,
+          tier: true,
+        }
+    }))
+      
+    console.log({tickets})
+    
+    if (tickets.length === 0) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No tickets found for this payment intent"
+      })
+    }
+    const orderDate = tickets[0]!.createdAt
+    const user = tickets[0]!.user
+    
+    const ticketIds = tickets.map(t => t.id)
+    if (!user) throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR"
+    })
+    const tiersMap = tickets.reduce((acc, curr) => {
+      const tier = curr.tier
+      if (!tier) throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR"
+      })
+      
+      if (!acc[curr.id]) {
+        acc[curr.id] = {tierId: tier.id, tierName: tier.name, tierPrice: tier.price, quantity: 1}
+      } else {
+        acc[curr.id]!["quantity"] += 1
       }
-    })).map(t => t.id)
-    await getQRCodesAndWalletLinksForTickets(ticketIds, ctx.event.id)
+      
+      return acc
+    }, {} as Record<string, TierPurchase>)
+    
+    console.log({tiersMap})
+    
+    const results = await generateAndSendTicketEmail(ticketIds, ctx.event.id, ctx.event.name, ctx.event.image ?? "", user?.email, user.name ?? "", orderDate, Object.values(tiersMap))
+    console.log({results})
   }),
 	getTicket: authedProcedure.query(({ ctx }) => {
 		return ctx.prisma.ticket.findMany({

@@ -57,7 +57,7 @@ export async function generateAndSendTicketEmail(
 ) {
 	const qr_code_links = await getQRCodesAndWalletLinksForTickets(ticketIds, eventId);
 
-	await resend.sendEmail({
+	const emailResult = await resend.sendEmail({
 		from: 'Kazala Tickets <ticket@mails.kazala.co>',
 		to: userEmail,
 		subject: `Your Tickets for ${eventName} are in!`,
@@ -75,4 +75,6 @@ export async function generateAndSendTicketEmail(
 			'X-Entity-Ref-ID': uuidv4()
 		}
 	});
+	
+	return [qr_code_links, emailResult] as const
 }

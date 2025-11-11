@@ -96,7 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					res.status(200).json({ received: true });
 					break;
 				}
-				case 'checkout.session.expired':
+				case 'checkout.session.expired': {
 					const checkoutData = event.data.object as any;
 
 					const checkoutMetadata = checkoutData.metadata as Record<string, string | undefined>;
@@ -110,6 +110,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					});
 					res.status(200).send('Noice');
 					break;
+				}
 				//For now, Do nothing to their ticket.
 				//FUTURE: Add conditions for refund. To enable manual refund in admin dashboard
 				case 'charge.refunded': {
