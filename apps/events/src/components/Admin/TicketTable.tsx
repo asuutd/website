@@ -14,7 +14,7 @@ import {
 
 import { useRouter } from 'next/router';
 import usePrevious from '@/utils/hooks/usePrevious';
-import { z } from 'zod';
+import { UnknownKeysParam, z } from 'zod';
 import useQueryReducer from '@/utils/hooks/useQueryReducer';
 type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']['items']>;
 
@@ -389,17 +389,13 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 						className="inline-block"
 						target="_blank"
 						filename={'ticket-details.csv'}
-						data={table
-							.getRowModel()
-							.flatRows.map((row) =>
-								Object.assign(
-									{},
-									...row
-										.getVisibleCells()
-										.map((visible) => ({ [visible.column.id]: visible.getValue() }))
-								)
-							)}
-						headers={table.getFlatHeaders().map((header) => header.getContext().column.id)}
+						data={table.getRowModel().flatRows.map((row) => {
+							return table.getAllLeafColumns().reduce((rowData, column) => {
+								rowData[column.id] = row.getValue(column.id);
+								return rowData
+							}, {} as Record<string, unknown>);
+						})}
+						headers={table.getAllLeafColumns().map((column) => column.id)}
 					>
 						<button className="btn btn-sm">
 							<svg
