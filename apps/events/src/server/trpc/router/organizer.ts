@@ -92,7 +92,7 @@ export const organizerRouter = t.router({
 			}
 		});
 	}),
-	createInvite: organizerProcedure
+	createInvite: superAdminProcedure
 		.input(
 			z.object({
 				email: z.string().email('Not a valid email')

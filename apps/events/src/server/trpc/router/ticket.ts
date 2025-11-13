@@ -389,7 +389,7 @@ export const ticketRouter = t.router({
 							}
 						},
 						code: {
-							code: input.filter?.code
+							code: input.filter?.code,
 						},
 						refCode: {
 							code: input.filter?.refCode
@@ -411,7 +411,8 @@ export const ticketRouter = t.router({
 						},
 						code: {
 							select: {
-								code: true
+								code: true,
+								notes: true
 							}
 						},
 						event: {
@@ -453,26 +454,14 @@ export const ticketRouter = t.router({
 			};
 		}),
 
-	validateTicket: authedProcedure
+	validateTicket: adminProcedure
 		.input(
 			z.object({
-				eventId: z.string(),
 				ticketId: z.string()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const admin = await ctx.prisma.eventAdmin.findFirst({
-				where: {
-					eventId: input.eventId,
-					userId: ctx.session.user.id
-				}
-			});
-			if (!admin) {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED',
-					message: `You are not an admin for this event`
-				});
-			}
+			
 			const ticket = await ctx.prisma.ticket.findFirst({
 				where: {
 					id: input.ticketId
