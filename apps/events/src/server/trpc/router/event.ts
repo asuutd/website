@@ -421,7 +421,7 @@ export const eventRouter = t.router({
 						response: z.union([z.string(), z.array(z.string())])
 					})
 				),
-				userEmail: z.string().email().optional()
+				userEmail: z.string().email().toLowerCase().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {

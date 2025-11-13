@@ -24,7 +24,7 @@ export const paymentRouter = t.router({
 				),
 				codeId: z.string().toUpperCase().optional(),
 				refCodeId: z.string().optional(),
-				email: z.string().email().optional()
+				email: z.string().email().toLowerCase().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
