@@ -389,7 +389,7 @@ export const ticketRouter = t.router({
 							}
 						},
 						code: {
-							code: input.filter?.code
+							code: input.filter?.code,
 						},
 						refCode: {
 							code: input.filter?.refCode
@@ -411,7 +411,8 @@ export const ticketRouter = t.router({
 						},
 						code: {
 							select: {
-								code: true
+								code: true,
+								notes: true
 							}
 						},
 						event: {

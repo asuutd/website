@@ -1,24 +1,17 @@
-import { RouterOutput } from '@/server/trpc/router';
+import type { RouterOutput } from '@/server/trpc/router';
 import { trpc } from '@/utils/trpc';
-import { format } from 'date-fns';
-import Image from 'next/image';
-import React, { useEffect, useReducer, useState } from 'react';
-import { twJoin } from 'tailwind-merge';
-import { ArrayElement } from '@/utils/misc';
+import { useEffect, useReducer, useState, useMemo } from 'react';
+import type { ArrayElement } from '@/utils/misc';
 import { CSVLink } from 'react-csv';
 import {
-	FilterFn,
-	PaginationState,
-	VisibilityState,
+	type VisibilityState,
 	createColumnHelper,
 	flexRender,
 	functionalUpdate,
 	getCoreRowModel,
 	useReactTable
 } from '@tanstack/react-table';
-import { createPortal } from 'react-dom';
 
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import usePrevious from '@/utils/hooks/usePrevious';
 import { z } from 'zod';
@@ -26,17 +19,6 @@ import useQueryReducer from '@/utils/hooks/useQueryReducer';
 type Ticket = ArrayElement<RouterOutput['ticket']['getTicketsAdmin']['items']['items']>;
 
 const columnHelper = createColumnHelper<Ticket>();
-type OldState = {
-	pagination: {
-		pageIndex: number;
-		pageSize: number;
-	};
-	filters: {
-		tiers?: string[];
-		userEmail?: string;
-		code?: string;
-	};
-};
 
 const zodState = z.object({
 	pagination: z.object({
@@ -162,12 +144,13 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 	const [page, setPage] = useState(0);
 	const [filter, setFilter] = useState<Record<string, any>>();
 	const router = useRouter();
-	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
 		Code: false,
+		CodeNotes: false,
 		'Purchase Time': false,
 		Email: false
 	});
-	const columns = React.useMemo(
+	const columns = useMemo(
 		() => [
 			columnHelper.accessor('user.name', {
 				cell: (info) => (
@@ -219,20 +202,21 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 				header: 'Purchase Time'
 			}),
 
-			columnHelper.accessor('code.code', {
+			columnHelper.accessor("code.code", {
 				cell: (info) => (
 					<>
 						{info.getValue() && info.row.original.codeId && (
 							<div>
 								<button
+								  type="button"
 									className="underline"
 									onClick={() =>
 										router.push({
 											query: {
-												tab: 'code',
+												tab: "code",
 												id: eventId,
-												code: info.row.original.codeId
-											}
+												code: info.row.original.codeId,
+											},
 										})
 									}
 								>
@@ -242,11 +226,15 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 						)}
 					</>
 				),
-				id: 'Code',
-				header: 'Code'
+				id: "Code",
+				header: "Code",
+			}),
+			columnHelper.accessor("code.notes", {
+  			id: 'CodeNotes',
+  			header: 'Code Notes'
 			})
 		],
-		[]
+		[eventId]
 	);
 
 	const [{ pagination, filters, cursor }, dispatch] = useQueryReducer<Action, typeof zodState>(
@@ -340,6 +328,47 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 		getCoreRowModel: getCoreRowModel()
 	});
 
+	const paginator = <div className="flex gap-2 justify-end p-3">
+		<div className="join">
+			<button
+			  type="button"
+				className="join-item btn"
+				onClick={() => table.previousPage()}
+				disabled={!table.getCanPreviousPage()}
+			>
+				«
+			</button>
+			<button type="button" className="join-item btn">
+				Page {table.getState().pagination.pageIndex + 1}{' '}
+			</button>
+			<button
+			  type="button"
+				className="join-item btn"
+				onClick={() => table.nextPage()}
+				disabled={!table.getCanNextPage()}
+			>
+				»
+			</button>
+		</div>
+
+		<div>
+			<select
+				value={table.getState().pagination.pageSize}
+				onChange={(e) => {
+				  const allCount = myQuery.data?.pages[0]?.items.count
+					const value = e.target.value
+					table.setPageSize(value === "All" ? (allCount ?? 1000) : Number(e.target.value))
+				}}
+				className="select"
+			>
+				{[10, 20, 30, 40, 50, "All"].map((pageSize) => (
+					<option key={pageSize} value={pageSize}>
+						Show {pageSize} Tickets
+					</option>
+				))}
+			</select>
+		</div>
+	</div>
 	return (
 		<div className="">
 			<div className="flex justify-between items-center w-full">
@@ -444,6 +473,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 						dispatch={dispatch}
 					/>
 				</div>
+				{paginator}
 			</div>
 
 			<div className="overflow-x-auto p-4 border-2 border-base-300 rounded-lg shadow-lg">
@@ -475,44 +505,7 @@ const TicketTable = ({ eventId }: { eventId: string }) => {
 					</tbody>
 				</table>
 			</div>
-
-			<div className="flex gap-2 justify-end p-3">
-				<div className="join">
-					<button
-						className="join-item btn"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						«
-					</button>
-					<button className="join-item btn">
-						Page {table.getState().pagination.pageIndex + 1}{' '}
-					</button>
-					<button
-						className="join-item btn"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						»
-					</button>
-				</div>
-
-				<div>
-					<select
-						value={table.getState().pagination.pageSize}
-						onChange={(e) => {
-							table.setPageSize(Number(e.target.value));
-						}}
-						className="select"
-					>
-						{[10, 20, 30, 40, 50, myQuery.data?.pages[0]?.items.count].map((pageSize) => (
-							<option key={pageSize} value={pageSize}>
-								Show {pageSize === myQuery.data?.pages[0]?.items.count ? 'All' : pageSize}
-							</option>
-						))}
-					</select>
-				</div>
-			</div>
+			{paginator}
 		</div>
 	);
 };
