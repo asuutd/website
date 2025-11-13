@@ -1,6 +1,6 @@
 import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@/server/db/generated';
 
 import { TRPCError } from '@trpc/server';
 import stripe from '@/utils/stripe';

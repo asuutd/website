@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Modal from '../Modal';
 import TiersForm from './TiersForm';
-import { Tier } from '@prisma/client';
-import { format, formatISO } from 'date-fns';
+import { Tier } from '@/server/db/generated';
+import { format } from 'date-fns';
 import Link from 'next/link';
 
 const Tiers = ({ eventId }: { eventId: string }) => {

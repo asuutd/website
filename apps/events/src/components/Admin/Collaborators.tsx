@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 import ImageWithFallback from '../Utils/ImageWithFallback';
 import { twJoin } from 'tailwind-merge';
-import { Admin_Type } from '@prisma/client';
+import type { Admin_Type } from '@/server/db/generated';
 import { useToast } from '@/components/ui/use-toast';
 type Collaborator = ArrayElement<RouterOutput['organizer']['getCollaborators']>;
 

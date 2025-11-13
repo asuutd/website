@@ -1,14 +1,12 @@
-import type { Tier, Event } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+import type { Tier, Event } from '@/server/db/generated';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { GetServerSideProps, NextPage, InferGetServerSidePropsType } from 'next/types';
+import type { GetServerSideProps, NextPage, InferGetServerSidePropsType } from 'next/types';
 import React, { useEffect, useState } from 'react';
 import Modal from '../../components/Modal';
 import RefCode from '../../components/RefCode';
 import TicketSummary from '../../components/TicketSummary';
 import Timer from '../../components/Timer/Timer';
-import { useModalStore } from '../../utils/modalStore';
 import { trpc } from '../../utils/trpc';
 import { prisma } from '../../server/db/client';
 import isbot from 'isbot';

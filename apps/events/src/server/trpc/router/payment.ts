@@ -4,8 +4,8 @@ import { t, authedProcedure } from '../trpc';
 import stripe from '@/utils/stripe';
 import { calculateApplicationFee } from '@/utils/misc';
 import { env } from '@/env/server.mjs';
-import Stripe from 'stripe';
-import { Prisma } from '@prisma/client';
+import type Stripe from 'stripe';
+import type { Prisma } from '@/server/db/generated';
 import { createId } from '@paralleldrive/cuid2';
 import { getPostHog } from '@/server/posthog';
 

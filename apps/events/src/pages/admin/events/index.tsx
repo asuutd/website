@@ -1,7 +1,7 @@
 import { Tab } from '@headlessui/react';
-import type { Event } from '@prisma/client';
+import type { Event } from '@/server/db/generated';
 import Head from 'next/head';
-import { NextPage } from 'next/types';
+import type { NextPage } from 'next/types';
 import React, { useState } from 'react';
 import Modal from '../../../components/Modal';
 import { trpc } from '../../../utils/trpc';

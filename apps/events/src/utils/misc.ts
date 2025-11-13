@@ -1,4 +1,4 @@
-import { Event, Ticket } from '@prisma/client';
+import type { Event, Ticket } from '@/server/db/generated';
 
 export const calculateApplicationFee = (total: number): number => {
   const KAZALA_TRANSACTION_FEE_PERCENTAGE = 0.065

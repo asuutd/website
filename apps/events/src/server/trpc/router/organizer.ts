@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import Collaborator from '@/lib/emails/collaborator';
 import { Resend } from 'resend';
-import { Admin_Type, EventAdmin, User } from '@prisma/client';
+import { Admin_Type } from '@/server/db/generated';
 const resend = new Resend(env.RESEND_API_KEY);
 
 export const organizerRouter = t.router({

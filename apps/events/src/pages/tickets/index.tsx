@@ -1,7 +1,7 @@
 import { Tab } from '@headlessui/react';
-import type { Ticket, Event, Tier } from '@prisma/client';
+import type { Ticket, Event, Tier } from '@/server/db/generated';
 import Image from 'next/image';
-import { NextPage } from 'next/types';
+import type { NextPage } from 'next/types';
 import React, { Fragment, useState } from 'react';
 import Modal from '../../components/Modal';
 import TicketDetails from '../../components/TicketDetails';

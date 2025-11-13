@@ -1,6 +1,6 @@
-import type { Ticket, Event, Tier, Organizer, User, EventLocation } from '@prisma/client';
+import type { Ticket, Event, Tier, Organizer, User, EventLocation } from '@/server/db/generated';
 import { Template, constants } from '@walletpass/pass-js';
-import { tmpdir } from 'os';
+import { tmpdir } from 'node:os';
 import { join } from 'path';
 import { writeFile, mkdir, readFile } from 'fs/promises';
 import sharp from 'sharp';
