@@ -54,7 +54,6 @@ model User {
   RefCode       RefCode[]
   EventAdmin    EventAdmin[]
   forms         FormResponse[]
-  invites       AdminInvite[]
   Organizer     Organizer?
 
   @@index(email)
@@ -113,7 +112,6 @@ model AdminInvite {
   eventId   String
   event     Event    @relation(fields: [eventId], references: [id], onDelete: NoAction)
   email     String
-  user      User?    @relation(fields: [email], references: [email], onDelete: Cascade)
   expiresAt DateTime @default(dbgenerated("NOW() + interval '72h'"))
 
   @@unique([eventId, email])

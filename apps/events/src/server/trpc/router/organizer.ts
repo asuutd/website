@@ -308,11 +308,6 @@ export const organizerRouter = t.router({
 					token: input.token
 				},
 				include: {
-					user: {
-						select: {
-							id: true
-						}
-					},
 					event: {
 						select: {
 							name: true,
@@ -325,7 +320,7 @@ export const organizerRouter = t.router({
 					}
 				}
 			});
-			if (!result || !result.user) {
+			if (!result) {
 				throw new TRPCError({
 					code: 'NOT_FOUND'
 				});
@@ -368,7 +363,7 @@ export const organizerRouter = t.router({
 				ctx.prisma.eventAdmin.create({
 					data: {
 						eventId: result.eventId,
-						userId: result.user.id
+						userId: ctx.session.user.id
 					}
 				}),
 				ctx.prisma.adminInvite.delete({
