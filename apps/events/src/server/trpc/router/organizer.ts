@@ -279,7 +279,7 @@ export const organizerRouter = t.router({
 				}
 			}
 		}),
-	removeInvite: organizerProcedure
+	removeInvite: superAdminProcedure
 		.input(
 			z.object({
 				email: z.string(),
