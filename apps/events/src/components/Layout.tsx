@@ -1,5 +1,3 @@
-import { BuiltInProviderType } from 'next-auth/providers';
-import { ClientSafeProvider, getProviders, LiteralUnion } from 'next-auth/react';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import Footer from './Footer';

@@ -2,7 +2,7 @@
 import { neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from './generated';
+import { PrismaClient } from '@/server/db/generated/client';
 import { env } from '../../env/server.mjs';
 import ws from 'ws';
 

@@ -1,4 +1,4 @@
-import type { Tier, Event } from '@/server/db/generated';
+import type { Tier, Event } from '@/server/db/generated/client';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import type { GetServerSideProps, NextPage, InferGetServerSidePropsType } from 'next/types';
@@ -121,7 +121,7 @@ const Event: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = 
 			<NextSeo
 				title={props?.meta?.title ?? 'Event'}
 				openGraph={{
-					title: `${props?.meta?.title}` ?? 'Event',
+					title: props?.meta?.title ?? 'Event',
 					description: `Event Details of ${props?.meta?.title}`,
 					url: `${env.NEXT_PUBLIC_URL}/event/${props.meta?.id}`,
 					type: 'website',

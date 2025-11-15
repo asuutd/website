@@ -1,7 +1,7 @@
 import { superAdminProcedure, authedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import generateCode from '../../../utils/generateCode';
-import { Prisma } from '../../db/generated';
+import { Prisma } from '@/server/db/generated/client';
 import { TRPCError } from '@trpc/server';
 
 export const codeRouter = t.router({

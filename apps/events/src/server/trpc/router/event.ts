@@ -1,7 +1,7 @@
 import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { Fee_Holder } from '@/server/db/generated';
+import { Fee_Holder } from '@/server/db/generated/client';
 import { env } from '@/env/server.mjs';
 import { ZodCustomField } from '@/utils/forms';
 import { splitEvents } from '@/utils/misc';

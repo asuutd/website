@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type RefObject, createRef } from 'react';
 import Modal from '../Modal';
 import { trpc } from '@/utils/trpc';
 import CodeForm from './CodeForm';
@@ -12,7 +12,7 @@ const Code = ({ eventId }: { eventId: string }) => {
 	const router = useRouter();
 
 	const codeRefs = useRef<{
-		[key: string]: React.RefObject<HTMLTableRowElement>;
+		[key: string]: RefObject<HTMLTableRowElement | null>;
 	}>({});
 
 	const [newCodes, setNewCodes] = useState<Set<string>>(new Set());
@@ -48,7 +48,7 @@ const Code = ({ eventId }: { eventId: string }) => {
 	return (
 		<>
 			<div className="text-right">
-				<button className="btn btn-primary btn-sm" onClick={() => setIsOpen(true)}>
+				<button type='button' className="btn btn-primary btn-sm" onClick={() => setIsOpen(true)}>
 					+ Add Code
 				</button>
 			</div>
@@ -70,7 +70,7 @@ const Code = ({ eventId }: { eventId: string }) => {
 						{/* row 1 */}
 						{codes.data?.map((code) => {
 							if (!codeRefs.current[code.id]) {
-								codeRefs.current[code.id] = React.createRef();
+								codeRefs.current[code.id] = createRef();
 							}
 
 							return (

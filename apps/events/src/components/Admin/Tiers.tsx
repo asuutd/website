@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Modal from '../Modal';
 import TiersForm from './TiersForm';
-import { Tier } from '@/server/db/generated';
+import type { Tier } from '@/server/db/generated/client';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
