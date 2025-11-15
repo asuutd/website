@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import Collaborator from '@/lib/emails/collaborator';
 import { Resend } from 'resend';
-import { Admin_Type, EventAdmin, User } from '@prisma/client';
+import { Admin_Type } from '@/server/db/generated';
 const resend = new Resend(env.RESEND_API_KEY);
 
 export const organizerRouter = t.router({
@@ -92,10 +92,10 @@ export const organizerRouter = t.router({
 			}
 		});
 	}),
-	createInvite: organizerProcedure
+	createInvite: superAdminProcedure
 		.input(
 			z.object({
-				email: z.string().email('Not a valid email')
+				email: z.string().email('Not a valid email').toLowerCase()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -279,7 +279,7 @@ export const organizerRouter = t.router({
 				}
 			}
 		}),
-	removeInvite: organizerProcedure
+	removeInvite: superAdminProcedure
 		.input(
 			z.object({
 				email: z.string(),
@@ -303,16 +303,11 @@ export const organizerRouter = t.router({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const result = await ctx.prisma.adminInvite.findFirst({
+			const existingEventAdmin = await ctx.prisma.adminInvite.findFirst({
 				where: {
 					token: input.token
 				},
 				include: {
-					user: {
-						select: {
-							id: true
-						}
-					},
 					event: {
 						select: {
 							name: true,
@@ -325,16 +320,16 @@ export const organizerRouter = t.router({
 					}
 				}
 			});
-			if (!result || !result.user) {
+			if (!existingEventAdmin) {
 				throw new TRPCError({
 					code: 'NOT_FOUND'
 				});
 			}
-			if (result.expiresAt < new Date()) {
+			if (existingEventAdmin.expiresAt < new Date()) {
 				try {
 					await ctx.prisma.adminInvite.delete({
 						where: {
-							token: result.token
+							token: existingEventAdmin.token
 						}
 					});
 				} catch (e) {
@@ -346,16 +341,16 @@ export const organizerRouter = t.router({
 					});
 				}
 			}
-			if (result.email !== ctx.session.user.email) {
+			if (existingEventAdmin.email !== ctx.session.user.email) {
 				throw new TRPCError({
 					code: 'FORBIDDEN',
 					message: 'Email on invite is not the user who is currently logged in'
 				});
 			}
-			if (result.event.EventAdmin.length !== 0) {
+			if (existingEventAdmin.event.EventAdmin.length !== 0) {
 				await ctx.prisma.adminInvite.delete({
 					where: {
-						token: result.token
+						token: existingEventAdmin.token
 					}
 				});
 				throw new TRPCError({
@@ -367,13 +362,13 @@ export const organizerRouter = t.router({
 			await ctx.prisma.$transaction([
 				ctx.prisma.eventAdmin.create({
 					data: {
-						eventId: result.eventId,
-						userId: result.user.id
+						eventId: existingEventAdmin.eventId,
+						userId: ctx.session.user.id
 					}
 				}),
 				ctx.prisma.adminInvite.delete({
 					where: {
-						token: result.token
+						token: existingEventAdmin.token
 					}
 				})
 			]);
@@ -381,8 +376,8 @@ export const organizerRouter = t.router({
 			return {
 				status: 'successful',
 				event: {
-					id: result.eventId,
-					name: result.event.name
+					id: existingEventAdmin.eventId,
+					name: existingEventAdmin.event.name
 				}
 			};
 		})

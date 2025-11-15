@@ -6,7 +6,7 @@ import Editor from '../Forms/Editor';
 import Preview from '../Forms/Parser';
 import { isEqual } from 'lodash';
 import { trpc } from '@/utils/trpc';
-import type { EventForm } from '@prisma/client';
+import type { EventForm } from '@/server/db/generated';
 import { format } from 'date-fns';
 import { twJoin } from 'tailwind-merge';
 import { transformData } from '@/utils/forms';

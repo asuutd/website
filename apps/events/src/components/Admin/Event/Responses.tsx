@@ -1,5 +1,5 @@
 import { trpc } from '@/utils/trpc';
-import { EventForm, FormResponse } from '@prisma/client';
+import { EventForm, FormResponse } from '@/server/db/generated';
 import {
 	RowModel,
 	Table,

@@ -17,6 +17,7 @@ import {
 } from '@react-email/components';
 import React from 'react';
 import { CSSProperties } from 'react';
+import type { TicketDisplayData, TierPurchase } from '../ticketEmail';
 
 // {QR_code}, {not right now;order_number}}
 
@@ -25,8 +26,8 @@ interface purchaseEmailProps {
 	event_name: string;
 	event_photo: string;
 	order_date: string;
-	tiers: { tierName: string; quantity: number; tierId: string; tierPrice: number }[];
-	tickets: {codeImg:string, googleWalletLink: string, appleWalletLink: string}[];
+	tiers: TierPurchase[];
+	tickets: TicketDisplayData[];
 	baseUrl: string
 	googleWalletEnabled: boolean
 }

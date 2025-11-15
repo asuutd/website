@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { trpc } from '../utils/trpc';
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import type { Tier } from '@prisma/client';
+import type { Tier } from '@/server/db/generated';
 import { calculateApplicationFee } from '@/utils/misc';
 import { twJoin } from 'tailwind-merge';
 import { useSession } from 'next-auth/react';
@@ -108,7 +108,7 @@ const TicketSummary = ({
 		);
 	};
 	
-	const confirmEmail = () => {
+	const confirmEmail: () => boolean = () => {
   	if (!email) return true
 
    // Very common typos seen in Stripe. This is bad since it means people might not receive their tickets, but don't want to validate against TLDs since the list of valid TLDs is constantly changing, so we are just making sure the user is aware of the potential issue with their email before paying for tickets.
@@ -116,8 +116,8 @@ const TicketSummary = ({
 		if (emailIsSuspicious) {
 			const confirmation = confirm(`Are you sure you want to use this email? ${email} looks like it might have a typo in it.`);
 			return confirmation;
-		
   	}
+		return true
 	}
 
 	const [total, setTotal] = useState<number>(0);

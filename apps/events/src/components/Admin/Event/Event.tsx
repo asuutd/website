@@ -6,8 +6,7 @@ import { twJoin } from 'tailwind-merge';
 import Details from './Details';
 import Form from './Form';
 import { FormContext } from '../Forms/Creator';
-import { CustomField, CustomFormData, transformData } from '@/utils/forms';
-import { Prisma } from '@prisma/client';
+import { transformData } from '@/utils/forms';
 
 type Event = RouterOutput['event']['getEventAdmin'];
 

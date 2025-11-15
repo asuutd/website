@@ -2,8 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider        = "prisma-client"
+  engineType = "client"
+  output = "../src/server/db/generated"
 }
 
 datasource db {
@@ -13,6 +14,8 @@ datasource db {
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  
 }
 
 // Necessary for Next auth
@@ -54,7 +57,6 @@ model User {
   RefCode       RefCode[]
   EventAdmin    EventAdmin[]
   forms         FormResponse[]
-  invites       AdminInvite[]
   Organizer     Organizer?
 
   @@index(email)
@@ -113,7 +115,6 @@ model AdminInvite {
   eventId   String
   event     Event    @relation(fields: [eventId], references: [id], onDelete: NoAction)
   email     String
-  user      User?    @relation(fields: [email], references: [email], onDelete: Cascade)
   expiresAt DateTime @default(dbgenerated("NOW() + interval '72h'"))
 
   @@unique([eventId, email])

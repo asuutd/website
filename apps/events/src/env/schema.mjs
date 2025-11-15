@@ -35,7 +35,8 @@ export const serverSchema = z.object({
 	R2_SECRET_ACCESS_KEY: z.string(),
 	QRCODE_BUCKET: z.string(),
 	GOOGLE_WALLET_ISSUER: z.string(),
-	GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64: z.string()
+	GOOGLE_WALLET_SERVICE_ACCOUNT_CREDENTIALS_BASE64: z.string(),
+	CRON_SECRET: z.string()
 });
 
 /**

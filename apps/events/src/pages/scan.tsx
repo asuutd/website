@@ -13,29 +13,29 @@ export default function ScanPage() {
 	const [validationData, setValidationData] = useState<ValidateMut | null>(null);
 	const resetTime = 3000;
 
-  const validateTicket = (text: string) => {
-    const url = new URL(text);
-    const ticketId = url.searchParams.get('id');
-    const eventId = url.searchParams.get('eventId');
+	const validateTicket = (text: string) => {
+		const url = new URL(text);
+		const ticketId = url.searchParams.get('id');
+		const eventId = url.searchParams.get('eventId');
 
-    if (ticketId && eventId) {
-      validateMut.mutate(
-        {
-          eventId,
-          ticketId
-        },
-        {
-          onSuccess: (r) => {
-            setText('Checked In');
-            setValidationData(r);
-          },
-          onError: ({ message }) => {
-            setText(message);
-          }
-        }
-      );
-    }
-  }
+		if (ticketId && eventId) {
+			validateMut.mutate(
+				{
+					eventId,
+					ticketId
+				},
+				{
+					onSuccess: (r) => {
+						setText('Checked In');
+						setValidationData(r);
+					},
+					onError: ({ message }) => {
+						setText(message);
+					}
+				}
+			);
+		}
+	};
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
@@ -54,13 +54,17 @@ export default function ScanPage() {
 		<>
 			<NextSeo nofollow={true} />
 
-			<Modal isOpen={!!validationData} closeModal={()=>setValidationData(null)}>
-				<TicketDetails showQR={false} ticket={validationData ?? undefined} user={validationData?.user ?? undefined} />
+			<Modal isOpen={!!validationData} closeModal={() => setValidationData(null)}>
+				<TicketDetails
+					showQR={false}
+					ticket={validationData ?? undefined}
+					user={validationData?.user ?? undefined}
+				/>
 			</Modal>
 
 			<div className="flex justify-start items-center gap-2">
-			  {validateMut.isLoading && <span className="loading loading-dots loading-md" />}
-					
+				{validateMut.isLoading && <span className="loading loading-dots loading-md" />}
+
 				{!!text && validateMut.isSuccess && (
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -101,13 +105,14 @@ export default function ScanPage() {
 				<h2 className="font-semibold text-xl text-center">&nbsp;{text}</h2>
 			</div>
 
-			<Scanner formats={["qr_code"]} onScan={(results) => {
-				  for (const result of results) {
-            validateTicket(result.rawValue);
- 					}
-				}
-			} />
+			<Scanner
+				formats={['qr_code']}
+				onScan={(results) => {
+					for (const result of results) {
+						validateTicket(result.rawValue);
+					}
+				}}
+			/>
 		</>
 	);
 }
-

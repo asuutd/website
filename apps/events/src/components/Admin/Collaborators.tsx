@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 import ImageWithFallback from '../Utils/ImageWithFallback';
 import { twJoin } from 'tailwind-merge';
-import { Admin_Type } from '@prisma/client';
+import type { Admin_Type } from '@/server/db/generated';
 import { useToast } from '@/components/ui/use-toast';
 type Collaborator = ArrayElement<RouterOutput['organizer']['getCollaborators']>;
 
@@ -137,13 +137,13 @@ const Collaborators = ({ eventId }: { eventId: string }) => {
 					<>
 						<select
 							className="select select-bordered max-w-xs m-2"
-							disabled={info.cell.row.original.role === 'OWNER'}
+							disabled={info.cell.row.original.invite || info.cell.row.original.role === 'OWNER'}
 							onChange={(e) => handleSelect(info.getValue(), e.target.value as Admin_Type)}
 						>
 							{[
-								{ label: 'Owner', value: 'OWNER' },
+								{ label: 'Admin', value: 'ADMIN' },
 								{ label: 'Super Admin', value: 'SUPER_ADMIN' },
-								{ label: 'Admin', value: 'ADMIN' }
+								{ label: 'Owner', value: 'OWNER' }
 							].map((role) => (
 								<option
 									key={role.value}
