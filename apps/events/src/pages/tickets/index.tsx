@@ -1,5 +1,5 @@
 import { Tab } from '@headlessui/react';
-import type { Ticket, Event, Tier } from '@/server/db/generated';
+import type { Ticket, Event, Tier } from '@/server/db/generated/client';
 import Image from 'next/image';
 import type { NextPage } from 'next/types';
 import React, { Fragment, useState } from 'react';

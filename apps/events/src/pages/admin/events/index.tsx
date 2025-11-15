@@ -1,5 +1,5 @@
 import { Tab } from '@headlessui/react';
-import type { Event } from '@/server/db/generated';
+import type { Event } from '@/server/db/generated/client';
 import Head from 'next/head';
 import type { NextPage } from 'next/types';
 import React, { useState } from 'react';

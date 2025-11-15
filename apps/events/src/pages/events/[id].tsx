@@ -1,4 +1,4 @@
-import type { Tier, Event } from '@/server/db/generated';
+import type { Tier, Event } from '@/server/db/generated/client';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import type { GetServerSideProps, NextPage, InferGetServerSidePropsType } from 'next/types';

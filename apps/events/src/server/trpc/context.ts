@@ -4,7 +4,7 @@ import * as trpcNext from '@trpc/server/adapters/next';
 import { Session } from 'next-auth';
 import { getServerAuthSession } from '../common/get-server-auth-session';
 import { prisma } from '../db/client';
-import { IncomingHttpHeaders } from 'http';
+import type { IncomingHttpHeaders } from 'http';
 
 
 type CreateContextOptions = {

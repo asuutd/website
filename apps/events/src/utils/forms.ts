@@ -1,4 +1,4 @@
-import type { EventForm, Prisma } from '@/server/db/generated';
+import type { EventForm, Prisma } from '@/server/db/generated/client';
 import { z } from 'zod';
 
 export const ZodCustomTextField = z.object({

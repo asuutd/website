@@ -1,7 +1,7 @@
 import { Transition, Dialog } from '@headlessui/react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
-import type { Event, Tier } from '@/server/db/generated';
+import type { Event, Tier } from '@/server/db/generated/client';
 import { useRouter } from 'next/router';
 
 const RefCode = ({

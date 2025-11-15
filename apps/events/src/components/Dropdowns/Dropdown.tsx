@@ -1,9 +1,9 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
+import { type MouseEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
-	ClientSafeProvider,
+	type ClientSafeProvider,
+	type LiteralUnion,
 	getProviders,
-	LiteralUnion,
 	signOut,
 	useSession
 } from 'next-auth/react';

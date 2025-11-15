@@ -1,6 +1,6 @@
-import { Prisma, type PrismaClient } from '../server/db/generated';
-import type { Adapter } from 'next-auth/adapters';
-import type { ProviderType } from 'next-auth/providers';
+import { Prisma, type PrismaClient } from '@/server/db/generated/client';
+import type { Adapter, AdapterAccount } from 'next-auth/adapters';
+import type { ProviderType } from 'next-auth/providers/index';
 
 export function CustomPrismaAdapter(p: PrismaClient): Adapter {
 	return {
@@ -48,12 +48,12 @@ export function CustomPrismaAdapter(p: PrismaClient): Adapter {
 				? _a
 				: null;
 		},
-		updateUser: ({ id, ...data }) => {
+		updateUser: async ({ id, ...data }) => {
 			console.log('UPDATING USER');
-			return p.user.update({ where: { id }, data });
+			return await p.user.update({ where: { id }, data });
 		},
-		deleteUser: (id) => p.user.delete({ where: { id } }),
-		linkAccount: async (data) => {
+		deleteUser: async (id) => await p.user.delete({ where: { id } }),
+		linkAccount: async (data: AdapterAccount) => {
 			console.log('LINK IN PROGRESS');
 			if (data.scope === undefined) {
 				throw new Error('Scope must be defined');
@@ -84,7 +84,7 @@ export function CustomPrismaAdapter(p: PrismaClient): Adapter {
 				userId: createdAccount.userId,
 				provider: createdAccount.provider,
 				type: createdAccount.type as ProviderType
-			};
+			} as AdapterAccount;
 		},
 		unlinkAccount: async (provider_providerAccountId) => {
 			const deleted = await p.account.delete({
@@ -101,7 +101,7 @@ export function CustomPrismaAdapter(p: PrismaClient): Adapter {
 				userId: deleted.userId,
 				provider: deleted.provider,
 				type: deleted.type as ProviderType
-			};
+			} as AdapterAccount;
 		},
 		async getSessionAndUser(sessionToken) {
 			console.log('74 GETTTING SESSION');

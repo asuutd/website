@@ -1,4 +1,4 @@
-import type { Ticket, Event, Tier, Organizer, User, EventLocation } from '@/server/db/generated';
+import type { Ticket, Event, Tier, Organizer, User, EventLocation } from '@/server/db/generated/client';
 import { Template, constants } from '@walletpass/pass-js';
 import { tmpdir } from 'node:os';
 import { join } from 'path';

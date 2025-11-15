@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import type { Tier } from '@/server/db/generated';
+import type { Tier } from '@/server/db/generated/client';
 import React, { Fragment, useEffect } from 'react';
 
 type Ticket = {
