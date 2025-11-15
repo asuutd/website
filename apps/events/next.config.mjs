@@ -61,9 +61,7 @@ export default withSentryConfig(
 		// Suppresses source map uploading logs during build
 		silent: true,
 		org: 'asu-utd',
-		project: 'kazala'
-	},
-	{
+		project: 'kazala',
 		// For all available options, see:
 		// https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
