@@ -9,8 +9,8 @@ import { DefaultSeo } from 'next-seo';
 import Layout from '../components/Layout';
 import SEOConfig from '../utils/nextseo-config';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import React from 'react';
 import { Toaster } from 'sonner';
+import { NuqsAdapter } from 'nuqs/adapters/next/pages'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
@@ -48,7 +48,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 			<SessionProvider session={session}>
 				<Layout>
 					<Toaster richColors />
-					<Component {...pageProps} />
+					<NuqsAdapter>
+					  <Component {...pageProps} />
+					</NuqsAdapter>
 				</Layout>
 				<ReactQueryDevtools initialIsOpen={false} />
 			</SessionProvider>
