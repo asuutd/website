@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useQueryState } from 'next-usequerystate';
-import { ZodTypeAny, z } from 'zod';
+import { type Dispatch, useMemo } from 'react';
+import { useQueryState } from 'nuqs';
+import type { ZodTypeAny, z } from 'zod';
 type Opts<Z extends ZodTypeAny> = {
 	// ...other db opts
 	schema: Z;
@@ -14,7 +14,7 @@ export default function useQueryReducer<A, Z extends z.ZodTypeAny = z.ZodNever>(
 ): [z.infer<Z>, (action: A) => void] {
 	const [state, setState] = useQueryState(queryKey);
 
-	const dispatch: React.Dispatch<A> = (action: A) => {
+	const dispatch: Dispatch<A> = (action: A) => {
 		//For empty case
 		const parsedState = schema.safeParse((state && JSON.parse(state)) ?? initialState);
 		console.log(parsedState, state, 20);
@@ -25,7 +25,7 @@ export default function useQueryReducer<A, Z extends z.ZodTypeAny = z.ZodNever>(
 		}
 	};
 
-	const parsedState = React.useMemo(() => {
+	const parsedState = useMemo(() => {
 		const result = schema.safeParse((state && JSON.parse(state)) ?? initialState);
 		if (result.success) {
 			return result.data;

@@ -2,8 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider        = "prisma-client"
+  engineType = "client"
+  output = "../src/server/db/generated"
+  importFileExtension = "ts"
 }
 
 datasource db {
@@ -13,6 +15,8 @@ datasource db {
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  
 }
 
 // Necessary for Next auth

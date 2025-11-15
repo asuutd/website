@@ -1,7 +1,7 @@
 import { trpc } from '@/utils/trpc';
 import { Dialog, Transition } from '@headlessui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Tier, Event } from '@prisma/client';
+import type { Tier, Event } from '@/server/db/generated/client';
 import { parseISO } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import React, { Fragment, useEffect, useRef, useState } from 'react';

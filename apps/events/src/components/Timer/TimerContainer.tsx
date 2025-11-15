@@ -20,23 +20,28 @@ export const TimerContainer = ({ days, hours, minutes, seconds, urgent, classNam
 		console.log(urgent);
 	}, []);
 
-	if (seconds <= 0 && minutes <= 0 && hours <= 0 && days <= 0) {
+	const daysNum = Number(days);
+	const hoursNum = Number(hours);
+	const minutesNum = Number(minutes);
+	const secondsNum = Number(seconds);
+
+	if (secondsNum <= 0 && minutesNum <= 0 && hoursNum <= 0 && daysNum <= 0) {
 		daysFlip = false;
 		hoursFlip = false;
 		minutesFlip = false;
 		secondsFlip = false;
 	}
 
-	if (seconds == 0) {
-		if (minutes != 0) {
+	if (secondsNum == 0) {
+		if (minutesNum != 0) {
 			seconds = 59;
 		}
 
 		secondsFlip = false;
 		minutesFlip = true;
 	}
-	if (minutes == 0) {
-		if (hours != 0) {
+	if (minutesNum == 0) {
+		if (hoursNum != 0) {
 			minutes = 59;
 		}
 
@@ -44,26 +49,26 @@ export const TimerContainer = ({ days, hours, minutes, seconds, urgent, classNam
 		hoursFlip = true;
 	}
 
-	if (hours == 0) {
+	if (hoursNum == 0) {
 		hoursFlip = false;
-		if (days != 0) {
+		if (daysNum != 0) {
 			daysFlip = true;
 		}
 	}
 
-	if (days < 10) {
+	if (daysNum < 10) {
 		days = '0' + days;
 	}
 
-	if (hours < 10) {
+	if (hoursNum < 10) {
 		hours = '0' + hours;
 	}
 
-	if (minutes < 10) {
+	if (minutesNum < 10) {
 		minutes = '0' + minutes;
 	}
 
-	if (seconds < 10) {
+	if (secondsNum < 10) {
 		seconds = '0' + seconds;
 	}
 

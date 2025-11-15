@@ -1,7 +1,8 @@
 // src/server/db/client.ts
-import { Pool, neonConfig } from '@neondatabase/serverless';
+import { neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
-import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@/server/db/generated/client';
 import { env } from '../../env/server.mjs';
 import ws from 'ws';
 
@@ -10,28 +11,29 @@ declare global {
 	var prisma: PrismaClient | undefined;
 }
 
-const initNeonPrismaServerlessAdapter = () => {
-	const connectionString = `${process.env.DATABASE_URL}`;
+const initAdapter = () => {
+	const connectionString = env.DATABASE_URL;
 	const url = new URL(connectionString);
 	if (!url.host.endsWith('.neon.tech')) {
-		return null;
+		return new PrismaPg({connectionString})
 	}
 
 	neonConfig.webSocketConstructor = ws;
-	const pool = new Pool({ connectionString });
-	const adapter = new PrismaNeon(pool);
-	return adapter;
+  return new PrismaNeon({ connectionString });
 };
 
+console.log("abc")
 const initPrisma = () => {
 	const prisma = new PrismaClient({
 		log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-		adapter: initNeonPrismaServerlessAdapter()
+		adapter: initAdapter()
 	});
 	return prisma;
 };
+console.log("def")
 
 export const prisma = global.prisma || initPrisma();
+console.log("get")
 
 if (env.NODE_ENV !== 'production') {
 	global.prisma = prisma;

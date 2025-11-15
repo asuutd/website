@@ -1,8 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
-import { prisma } from '../../../server/db/client';
-import { getServerAuthSession } from '../../../server/common/get-server-auth-session';
+import { useEffect } from 'react';;
 import { trpc } from '@/utils/trpc';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';

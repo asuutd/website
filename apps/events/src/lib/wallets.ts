@@ -1,6 +1,6 @@
-import type { Ticket, Event, Tier, Organizer, User, EventLocation } from '@prisma/client';
+import type { Ticket, Event, Tier, Organizer, User, EventLocation } from '@/server/db/generated/client';
 import { Template, constants } from '@walletpass/pass-js';
-import { tmpdir } from 'os';
+import { tmpdir } from 'node:os';
 import { join } from 'path';
 import { writeFile, mkdir, readFile } from 'fs/promises';
 import sharp from 'sharp';
@@ -44,7 +44,7 @@ export const createApplePass = async (
 	const pass = template.createPass({
 		serialNumber: `event-${event.id}-ticket-${ticket.id}`,
 		description:
-			`${"'" + tier?.name + "' t" ?? 'T'}icket, ` +
+			`${tier?.name ? "'" + tier.name + "' t" : 'T'}icket, ` +
 			`${event.name}` +
 			(event?.organizer?.user.name ? ` - ${event?.organizer?.user.name}` : ''),
 		relevantDate: event.start,

@@ -1,7 +1,7 @@
 import { authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { Fee_Holder } from '@prisma/client';
+import { Fee_Holder } from '@/server/db/generated/client';
 import { env } from '@/env/server.mjs';
 import { ZodCustomField } from '@/utils/forms';
 import { splitEvents } from '@/utils/misc';
@@ -421,7 +421,7 @@ export const eventRouter = t.router({
 						response: z.union([z.string(), z.array(z.string())])
 					})
 				),
-				userEmail: z.string().email().optional()
+				userEmail: z.string().email().toLowerCase().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {

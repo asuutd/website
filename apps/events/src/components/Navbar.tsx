@@ -10,7 +10,7 @@ import {
 } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { BuiltInProviderType } from 'next-auth/providers';
+import type { BuiltInProviderType } from 'next-auth/providers/index';
 import Dropdown from './Dropdowns/Dropdown';
 import LoginDropDown from './Dropdowns/Login';
 

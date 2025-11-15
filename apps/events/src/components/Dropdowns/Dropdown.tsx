@@ -1,15 +1,15 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
+import { type MouseEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
-	ClientSafeProvider,
+	type ClientSafeProvider,
+	type LiteralUnion,
 	getProviders,
-	LiteralUnion,
 	signOut,
 	useSession
 } from 'next-auth/react';
+import type { BuiltInProviderType } from 'next-auth/providers/index';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { BuiltInProviderType } from 'next-auth/providers';
 import { env } from '@/env/client.mjs';
 import { DEFAULT_PROFILE_IMAGE_PATH } from '@/utils/constants';
 import posthog from 'posthog-js'

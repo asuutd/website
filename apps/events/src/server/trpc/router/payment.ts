@@ -4,8 +4,8 @@ import { t, authedProcedure } from '../trpc';
 import stripe from '@/utils/stripe';
 import { calculateApplicationFee } from '@/utils/misc';
 import { env } from '@/env/server.mjs';
-import Stripe from 'stripe';
-import { Prisma } from '@prisma/client';
+import type Stripe from 'stripe';
+import type { Prisma } from '@/server/db/generated/client';
 import { createId } from '@paralleldrive/cuid2';
 import { getPostHog } from '@/server/posthog';
 
@@ -24,7 +24,7 @@ export const paymentRouter = t.router({
 				),
 				codeId: z.string().toUpperCase().optional(),
 				refCodeId: z.string().optional(),
-				email: z.string().email().optional()
+				email: z.string().email().toLowerCase().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {

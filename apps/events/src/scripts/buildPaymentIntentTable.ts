@@ -6,9 +6,9 @@
 */
 
 import stripe from '@/utils/stripe';
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
 import {prisma} from '@/server/db/client';
-import { PaymentIntentStatus } from '@prisma/client';
+import { PaymentIntentStatus } from '@/server/db/generated/enums';
 
 const getPaymentIntentIdsFromTickets = async () => {
   const intents = await prisma.ticket.findMany({

@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { trpc } from '../utils/trpc';
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import type { Tier } from '@prisma/client';
+import type { Tier } from '@/server/db/generated/client';
 import { calculateApplicationFee } from '@/utils/misc';
 import { twJoin } from 'tailwind-merge';
 import { useSession } from 'next-auth/react';
