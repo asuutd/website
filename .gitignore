@@ -9,3 +9,4 @@ node_modules
 /src/routes/test.svelte
 .turbo
 .vercel
+specs/

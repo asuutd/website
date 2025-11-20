@@ -103,7 +103,7 @@ Run the dev server (`pnpm dev` in `apps/events`) and use an admin/staff account 
 
 ### Scenario D: Chargeback Investigation (DB-Level Check)
 
-- Using your DB explorer or a one-off script:
+- Using your DB explorer (Prisma Studio, psql, etc.) to inspect records:
   - Look up the ticket by `id`.  
   - Query `TicketScan` rows for that `ticketId`, ordered by `scannedAt`.  
 - **Expected**:
@@ -222,7 +222,7 @@ Run the dev server (`pnpm dev` in `apps/events`) and use an admin/staff account 
 
 ### Scenario D: Chargeback Investigation (DB-Level Check)
 
-- Using your DB explorer or a one-off script:
+- Using your DB explorer (Prisma Studio, psql, etc.) to inspect records:
   - Look up the ticket by `id`.  
   - Query `TicketScan` rows for that `ticketId`, ordered by `scannedAt`.  
 - **Expected**:

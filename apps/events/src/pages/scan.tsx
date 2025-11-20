@@ -1,28 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { trpc } from '@/utils/trpc';
 import { NextSeo } from 'next-seo';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import type { RouterOutput } from '@/server/trpc/router';
 import TicketDetails from '@/components/TicketDetails';
 import Modal from '@/components/Modal';
+import { useSession } from 'next-auth/react';
+import { imageUpload } from '@/utils/imageUpload';
+
 type ValidateMut = RouterOutput['ticket']['validateTicket'];
 
 export default function ScanPage() {
+	const { data: session } = useSession();
 	const [text, setText] = useState<string | null>(null);
 	const validateMut = trpc.ticket.validateTicket.useMutation();
 	const [validationData, setValidationData] = useState<ValidateMut | null>(null);
 	const resetTime = 3000;
+	const scannerRef = useRef<HTMLDivElement>(null);
 
-	const validateTicket = (text: string) => {
+	const validateTicket = async (text: string) => {
+		if (validateMut.isLoading) {
+			return;
+		}
+
 		const url = new URL(text);
 		const ticketId = url.searchParams.get('id');
 		const eventId = url.searchParams.get('eventId');
 
 		if (ticketId && eventId) {
+			const metadata = await collectMetadata();
+
 			validateMut.mutate(
 				{
 					eventId,
-					ticketId
+					ticketId,
+					gpsLat: metadata.gpsLat,
+					gpsLng: metadata.gpsLng,
+					imageUrl: metadata.imageUrl
 				},
 				{
 					onSuccess: (r) => {
@@ -37,6 +51,96 @@ export default function ScanPage() {
 		}
 	};
 
+	const getLocation = useCallback(async () => {
+		if (typeof window === 'undefined' || !navigator.geolocation) {
+			return null;
+		}
+
+		return await new Promise<{ lat: number; lng: number } | null>((resolve) => {
+			navigator.geolocation.getCurrentPosition(
+				(position) =>
+					resolve({
+						lat: position.coords.latitude,
+						lng: position.coords.longitude
+					}),
+				() => resolve(null),
+				{
+					enableHighAccuracy: true,
+					timeout: 5000,
+					maximumAge: 0
+				}
+			);
+		});
+	}, []);
+
+	const captureImageFromVideo = useCallback(async () => {
+		if (typeof window === 'undefined') {
+			return undefined;
+		}
+
+		const video = scannerRef.current?.querySelector('video');
+		if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+			return undefined;
+		}
+
+		const canvas = document.createElement('canvas');
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) {
+			return undefined;
+		}
+
+		ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+		const blob = await new Promise<Blob | null>((resolve) => {
+			canvas.toBlob((result) => resolve(result), 'image/jpeg', 0.9);
+		});
+
+		if (!blob) {
+			return undefined;
+		}
+
+		const file = new File([blob], `ticket-scan-${Date.now()}.jpg`, {
+			type: 'image/jpeg'
+		});
+
+		try {
+			const response = await imageUpload(file, { user: session?.user?.id ?? '' });
+			if (!response.ok) {
+				return undefined;
+			}
+
+			const payload = await response.json();
+			const [fileId] = Object.values(payload);
+			if (typeof fileId !== 'string') {
+				return undefined;
+			}
+
+			return `https://ucarecdn.com/${fileId}/`;
+		} catch (error) {
+			console.error('Unable to upload scan image', error);
+			return undefined;
+		}
+	}, [session?.user?.id]);
+
+	const collectMetadata = useCallback(async () => {
+		try {
+			const [coords, imageUrl] = await Promise.all([getLocation(), captureImageFromVideo()]);
+
+			return {
+				gpsLat: coords?.lat,
+				gpsLng: coords?.lng,
+				imageUrl
+			};
+		} catch (error) {
+			console.error('Failed to collect scan metadata', error);
+			return { gpsLat: undefined, gpsLng: undefined, imageUrl: undefined };
+		}
+	}, [captureImageFromVideo, getLocation]);
+
+	
+
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
 			// Reset the state after 3 seconds
@@ -48,7 +152,7 @@ export default function ScanPage() {
 			// Clear the timeout if the component unmounts or if the state changes
 			clearTimeout(timeoutId);
 		};
-	}, [text]);
+	}, []);
 
 	return (
 		<>
@@ -105,14 +209,16 @@ export default function ScanPage() {
 				<h2 className="font-semibold text-xl text-center">&nbsp;{text}</h2>
 			</div>
 
-			<Scanner
-				formats={['qr_code']}
-				onScan={(results) => {
-					for (const result of results) {
-						validateTicket(result.rawValue);
-					}
-				}}
-			/>
+			<div ref={scannerRef}>
+				<Scanner
+					formats={['qr_code']}
+					onScan={(results) => {
+						for (const result of results) {
+							void validateTicket(result.rawValue);
+						}
+					}}
+				/>
+			</div>
 		</>
 	);
 }
