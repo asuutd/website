@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { trpc } from '@/utils/trpc';
 import { NextSeo } from 'next-seo';
-import { Scanner, useDevices } from '@yudiel/react-qr-scanner';
+import { type IDetectedBarcode, Scanner, useDevices } from '@yudiel/react-qr-scanner';
 import type { RouterOutput } from '@/server/trpc/router';
 import TicketDetails from '@/components/TicketDetails';
 import Modal from '@/components/Modal';
 import { useSession } from 'next-auth/react';
 import { imageUpload } from '@/utils/imageUpload';
 import { useGeolocated } from "react-geolocated";
+import { useHaptic } from 'react-haptic';
 
 
 type ValidateMut = RouterOutput['ticket']['validateTicket'];
@@ -19,6 +20,8 @@ export default function ScanPage() {
 	const [validationData, setValidationData] = useState<ValidateMut | null>(null);
 	const resetTime = 3000;
 	const scannerRef = useRef<HTMLDivElement>(null);
+	const lastScanned = useRef<{ value: string; timestamp: number } | null>(null);
+	const { vibrate } = useHaptic();
 
 	const { coords } =
         useGeolocated({
@@ -28,42 +31,8 @@ export default function ScanPage() {
 			isOptimisticGeolocationEnabled: false,
 			watchPosition: true,
 			watchLocationPermissionChange: true,
-            userDecisionTimeout: 5000,
+            userDecisionTimeout: 20000,
         });
-
-
-	const validateTicket = async (text: string) => {
-		if (validateMut.isLoading) {
-			return;
-		}
-
-		const url = new URL(text);
-		const ticketId = url.searchParams.get('id');
-		const eventId = url.searchParams.get('eventId');
-
-		if (ticketId && eventId) {
-			const metadata = await collectMetadata();
-
-			validateMut.mutate(
-				{
-					eventId,
-					ticketId,
-					gpsLat: metadata.gpsLat,
-					gpsLng: metadata.gpsLng,
-					imageUrl: metadata.imageUrl
-				},
-				{
-					onSuccess: (r) => {
-						setText('Checked In');
-						setValidationData(r);
-					},
-					onError: ({ message }) => {
-						setText(message);
-					}
-				}
-			);
-		}
-	};
 
 	const getLocation = useCallback(async () => {
 		if (coords) {
@@ -172,6 +141,54 @@ export default function ScanPage() {
 	const devices = useDevices();
   	const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
+
+	  const validateTicket = useCallback(async (text: string) => {
+		// Prevent duplicate scans within 5 seconds
+		if (lastScanned.current?.value === text && Date.now() - lastScanned.current.timestamp < 5000) {
+			return;
+		}
+
+		if (validateMut.isLoading) {
+			return;
+		}
+
+		// Update tracking before processing
+		lastScanned.current = { value: text, timestamp: Date.now() };
+
+		const url = new URL(text);
+		const ticketId = url.searchParams.get('id');
+		const eventId = url.searchParams.get('eventId');
+
+		if (ticketId && eventId) {
+			const metadata = await collectMetadata();
+
+			validateMut.mutate(
+				{
+					eventId,
+					ticketId,
+					gpsLat: metadata.gpsLat,
+					gpsLng: metadata.gpsLng,
+					imageUrl: metadata.imageUrl
+				},
+				{
+					onSuccess: (r) => {
+						setText('Checked In');
+						setValidationData(r);
+					},
+					onError: ({ message }) => {
+						setText(message);
+					}
+				}
+			);
+		}
+	}, [validateMut, collectMetadata]);
+
+	const handleScan = useCallback((results: IDetectedBarcode[]) => {
+		vibrate();
+		for (const result of results) {
+			void validateTicket(result.rawValue);
+		}
+	}, [validateTicket, vibrate]);
 	return (
 		<>
 			<NextSeo nofollow={true} />
@@ -230,11 +247,7 @@ export default function ScanPage() {
 			<div ref={scannerRef}>
 				<Scanner
 					formats={['qr_code']}
-					onScan={(results) => {
-						for (const result of results) {
-							void validateTicket(result.rawValue);
-						}
-					}}
+					onScan={handleScan}
 					constraints={{
 						deviceId: selectedDevice ?? undefined
 					}}
