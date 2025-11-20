@@ -34,15 +34,6 @@ export default function ScanPage() {
             userDecisionTimeout: 20000,
         });
 
-	const getLocation = useCallback(async () => {
-		if (coords) {
-			return {
-				lat: coords.latitude,
-				lng: coords.longitude
-			};
-		}
-	}, [coords]);
-
 	const [captureCanvasEl, setCaptureCanvasEl] = useState<HTMLCanvasElement | null>(null);
 
 	useEffect(() => {
@@ -108,24 +99,25 @@ export default function ScanPage() {
 		}
 	}, [session?.user?.id, captureCanvasEl]);
 
-	const collectMetadata = useCallback(async () => {
+	const collectMetadata = async () => {
 		try {
-			const [coords, imageUrl] = await Promise.all([getLocation(), captureImageFromVideo()]);
+			const imageUrl = await captureImageFromVideo();
 
 			return {
-				gpsLat: coords?.lat,
-				gpsLng: coords?.lng,
+				gpsLat: coords?.latitude,
+				gpsLng: coords?.longitude,
 				imageUrl
 			};
 		} catch (error) {
 			console.error('Failed to collect scan metadata', error);
 			return { gpsLat: undefined, gpsLng: undefined, imageUrl: undefined };
 		}
-	}, [captureImageFromVideo, getLocation]);
+	}
 
 	
 
 	useEffect(() => {
+		if (!(text || validationData)) return
 		const timeoutId = setTimeout(() => {
 			// Reset the state after 3 seconds
 			setText(null);
@@ -136,28 +128,36 @@ export default function ScanPage() {
 			// Clear the timeout if the component unmounts or if the state changes
 			clearTimeout(timeoutId);
 		};
-	}, []);
+	}, [text, validationData]);
 
 	const devices = useDevices();
   	const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
 
-	  const validateTicket = useCallback(async (text: string) => {
+	  const validateTicket = async (text: string) => {
 		// Prevent duplicate scans within 5 seconds
 		if (lastScanned.current?.value === text && Date.now() - lastScanned.current.timestamp < 5000) {
 			return;
 		}
 
-		if (validateMut.isLoading) {
+		if (validateMut.isPending) {
 			return;
 		}
 
 		// Update tracking before processing
 		lastScanned.current = { value: text, timestamp: Date.now() };
 
-		const url = new URL(text);
-		const ticketId = url.searchParams.get('id');
-		const eventId = url.searchParams.get('eventId');
+		let url: URL;
+		let ticketId: string | null = null;
+		let eventId: string | null = null;
+		try {
+			url = new URL(text);
+			ticketId = url.searchParams.get('id');
+			eventId = url.searchParams.get('eventId');
+		} catch (err) {
+			setText('Invalid QR code: not a valid URL');
+			return;
+		}
 
 		if (ticketId && eventId) {
 			const metadata = await collectMetadata();
@@ -181,7 +181,7 @@ export default function ScanPage() {
 				}
 			);
 		}
-	}, [validateMut, collectMetadata]);
+	};
 
 	const handleScan = useCallback((results: IDetectedBarcode[]) => {
 		vibrate();
@@ -202,7 +202,7 @@ export default function ScanPage() {
 			</Modal>
 
 			<div className="flex justify-start items-center gap-2">
-				{validateMut.isLoading && <span className="loading loading-dots loading-md" />}
+				{validateMut.isPending && <span className="loading loading-dots loading-md" />}
 
 				{!!text && validateMut.isSuccess && (
 					<svg
