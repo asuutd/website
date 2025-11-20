@@ -65,7 +65,7 @@ The implementation will extend the existing Next.js + tRPC + Prisma stack used i
 ### Documentation (this feature)
 
 ```text
-apps/website/apps/events/specs/1-ticket-scan-audit-log/
+apps/events/specs/1-ticket-scan-audit-log/
 ├── spec.md              # Feature spec (existing)
 ├── plan.md              # This file (/events/speckit.plan output)
 ├── research.md          # Phase 0 output (/events/speckit.plan)
@@ -98,7 +98,7 @@ apps/events/
     └── memory/constitution.md       # Governance document (no code changes)
 ```
 
-**Structure Decision**: Single Next.js project (`apps/events`) with server (tRPC + Prisma) and client code co-located; feature work will be scoped to `schema.prisma`, `ticket.ts` router, any necessary utilities for capturing metadata, and SpecKit docs in `apps/website/apps/events/specs/1-ticket-scan-audit-log`.
+**Structure Decision**: Single Next.js project (`apps/events`) with server (tRPC + Prisma) and client code co-located; feature work will be scoped to `schema.prisma`, `ticket.ts` router, any necessary utilities for capturing metadata, and SpecKit docs in `apps/events/specs/1-ticket-scan-audit-log`.
 
 ## Complexity Tracking
 
@@ -170,7 +170,7 @@ The implementation will extend the existing Next.js + tRPC + Prisma stack used i
 ### Documentation (this feature)
 
 ```text
-apps/website/apps/events/specs/1-ticket-scan-audit-log/
+apps/events/specs/1-ticket-scan-audit-log/
 ├── spec.md              # Feature spec (existing)
 ├── plan.md              # This file (/events/speckit.plan output)
 ├── research.md          # Phase 0 output (/events/speckit.plan)
@@ -203,7 +203,7 @@ apps/events/
     └── memory/constitution.md       # Governance document (no code changes)
 ```
 
-**Structure Decision**: Single Next.js project (`apps/events`) with server (tRPC + Prisma) and client code co-located; feature work will be scoped to `schema.prisma`, `ticket.ts` router, any necessary utilities for capturing metadata, and SpecKit docs in `apps/website/apps/events/specs/1-ticket-scan-audit-log`.
+**Structure Decision**: Single Next.js project (`apps/events`) with server (tRPC + Prisma) and client code co-located; feature work will be scoped to `schema.prisma`, `ticket.ts` router, any necessary utilities for capturing metadata, and SpecKit docs in `apps/events/specs/1-ticket-scan-audit-log`.
 
 ## Complexity Tracking
 
