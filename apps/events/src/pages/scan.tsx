@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { trpc } from '@/utils/trpc';
 import { NextSeo } from 'next-seo';
-import { Scanner } from '@yudiel/react-qr-scanner';
+import { Scanner, useDevices } from '@yudiel/react-qr-scanner';
 import type { RouterOutput } from '@/server/trpc/router';
 import TicketDetails from '@/components/TicketDetails';
 import Modal from '@/components/Modal';
 import { useSession } from 'next-auth/react';
 import { imageUpload } from '@/utils/imageUpload';
+import { useGeolocated } from "react-geolocated";
+
 
 type ValidateMut = RouterOutput['ticket']['validateTicket'];
 
@@ -17,6 +19,18 @@ export default function ScanPage() {
 	const [validationData, setValidationData] = useState<ValidateMut | null>(null);
 	const resetTime = 3000;
 	const scannerRef = useRef<HTMLDivElement>(null);
+
+	const { coords } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: true,
+            },
+			isOptimisticGeolocationEnabled: false,
+			watchPosition: true,
+			watchLocationPermissionChange: true,
+            userDecisionTimeout: 5000,
+        });
+
 
 	const validateTicket = async (text: string) => {
 		if (validateMut.isLoading) {
@@ -52,25 +66,22 @@ export default function ScanPage() {
 	};
 
 	const getLocation = useCallback(async () => {
-		if (typeof window === 'undefined' || !navigator.geolocation) {
-			return null;
+		if (coords) {
+			return {
+				lat: coords.latitude,
+				lng: coords.longitude
+			};
 		}
+	}, [coords]);
 
-		return await new Promise<{ lat: number; lng: number } | null>((resolve) => {
-			navigator.geolocation.getCurrentPosition(
-				(position) =>
-					resolve({
-						lat: position.coords.latitude,
-						lng: position.coords.longitude
-					}),
-				() => resolve(null),
-				{
-					enableHighAccuracy: true,
-					timeout: 5000,
-					maximumAge: 0
-				}
-			);
-		});
+	const [captureCanvasEl, setCaptureCanvasEl] = useState<HTMLCanvasElement | null>(null);
+
+	useEffect(() => {
+		if (typeof window === 'undefined') {
+			return;
+		}
+		const canvas = document.createElement('canvas');
+		setCaptureCanvasEl(canvas);
 	}, []);
 
 	const captureImageFromVideo = useCallback(async () => {
@@ -83,18 +94,22 @@ export default function ScanPage() {
 			return undefined;
 		}
 
-		const canvas = document.createElement('canvas');
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
-		const ctx = canvas.getContext('2d');
+
+		if (!captureCanvasEl) {
+			return undefined;
+		}
+
+		captureCanvasEl.width = video.videoWidth;
+		captureCanvasEl.height = video.videoHeight;
+		const ctx = captureCanvasEl.getContext('2d');
 		if (!ctx) {
 			return undefined;
 		}
 
-		ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+		ctx.drawImage(video, 0, 0, captureCanvasEl.width, captureCanvasEl.height);
 
 		const blob = await new Promise<Blob | null>((resolve) => {
-			canvas.toBlob((result) => resolve(result), 'image/jpeg', 0.9);
+			captureCanvasEl.toBlob((result) => resolve(result), 'image/jpeg', 0.9);
 		});
 
 		if (!blob) {
@@ -122,7 +137,7 @@ export default function ScanPage() {
 			console.error('Unable to upload scan image', error);
 			return undefined;
 		}
-	}, [session?.user?.id]);
+	}, [session?.user?.id, captureCanvasEl]);
 
 	const collectMetadata = useCallback(async () => {
 		try {
@@ -153,6 +168,9 @@ export default function ScanPage() {
 			clearTimeout(timeoutId);
 		};
 	}, []);
+
+	const devices = useDevices();
+  	const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
 	return (
 		<>
@@ -217,8 +235,19 @@ export default function ScanPage() {
 							void validateTicket(result.rawValue);
 						}
 					}}
+					constraints={{
+						deviceId: selectedDevice ?? undefined
+					}}
 				/>
 			</div>
+			<select onChange={(e) => setSelectedDevice(e.target.value as string)} value={selectedDevice ?? ''}>
+				<option value="">Select a camera</option>
+				{devices.map((device) => (
+				<option key={device.deviceId} value={device.deviceId}>
+					{device.label || `Camera ${device.deviceId}`}
+				</option>
+				))}
+			</select>
 		</>
 	);
 }

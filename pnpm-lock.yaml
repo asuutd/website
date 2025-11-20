@@ -179,6 +179,9 @@ importers:
       react-email:
         specifier: ^2.1.6
         version: 2.1.6(@opentelemetry/api@1.9.0)(@swc/helpers@0.5.17)(bufferutil@4.0.9)(eslint@8.57.1)(sass@1.77.4)(ts-node@10.9.2(@swc/core@1.3.101(@swc/helpers@0.5.17))(@types/node@22.19.1)(typescript@5.9.3))(utf-8-validate@5.0.10)
+      react-geolocated:
+        specifier: ^4.4.0
+        version: 4.4.0(react@18.3.1)
       react-hook-form:
         specifier: ^7.52.1
         version: 7.66.0(react@18.3.1)
@@ -8209,6 +8212,11 @@ packages:
     resolution: {integrity: sha512-b6PwbdSv8XeOSYvjt8LpgpKrZ0yGdtZokYwkwV2wlcZbxgopHX/hgPl5VgpnoVOWd868n1hktM8Qm4b+02MiLQ==}
     peerDependencies:
       react: '>=16.13.1'
+
+  react-geolocated@4.4.0:
+    resolution: {integrity: sha512-FkNa2O6AhFYblK3tXEnmhqiubvjuMuiiDd2Semfw16eSNwX5OqB91+0HP4iyHn+ciGoFuK4yVGJ9fHQUlhz/8g==}
+    peerDependencies:
+      react: '>= 16.8.0 < 20.0.0'
 
   react-hook-form@7.66.0:
     resolution: {integrity: sha512-xXBqsWGKrY46ZqaHDo+ZUYiMUgi8suYu5kdrS20EG8KiL7VRQitEbNjm+UcrDYrNi1YLyfpmAeGjCZYXLT9YBw==}
@@ -18337,6 +18345,10 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.4
       react: 19.0.0-rc-49496d49-20240814
+
+  react-geolocated@4.4.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   react-hook-form@7.66.0(react@18.3.1):
     dependencies:

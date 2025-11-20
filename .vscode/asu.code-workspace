@@ -28,7 +28,8 @@
     
     "settings": {
         "tailwind-fold.foldStyle": "QUOTES",
-        "tailwind-fold.unfoldIfLineSelected": true
+        "tailwind-fold.unfoldIfLineSelected": true,
+        "prisma.pinToPrisma6": true
     },
     "extensions": {
         "recommendations": [

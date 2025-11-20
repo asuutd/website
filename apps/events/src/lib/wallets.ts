@@ -187,11 +187,11 @@ const getImageAsPngBuffer = async (url: string, key: string, resize?: { w: numbe
 	const png = await img.toFormat('png').toBuffer();
 
 	try {
-		await mkdir(dir);
+		await mkdir(dir, { recursive: true });
+		await writeFile(path, png);
 	} catch (e) {
 		console.log(e);
 	}
-	await writeFile(path, png);
 
 	return png;
 };
