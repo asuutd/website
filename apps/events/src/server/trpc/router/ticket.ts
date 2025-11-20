@@ -457,56 +457,99 @@ export const ticketRouter = t.router({
 	validateTicket: adminProcedure
 		.input(
 			z.object({
-				ticketId: z.string()
+				ticketId: z.string(),
+				gpsLat: z.number().min(-90).max(90).optional(),
+				gpsLng: z.number().min(-180).max(180).optional(),
+				imageUrl: z.string().url().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			
 			const ticket = await ctx.prisma.ticket.findFirst({
 				where: {
 					id: input.ticketId
+				},
+				include: {
+					tier: true,
+					user: true,
+					event: true
 				}
 			});
-			
-			if (!ticket) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Ticket not found'
-        })
-			}
 
-			if (ticket.checkedInAt !== null) {
+			if (!ticket) {
 				throw new TRPCError({
-					code: 'CONFLICT',
-					message: 'Already checked in'
+					code: 'NOT_FOUND',
+					message: 'Ticket not found'
 				});
 			}
 
-			const ticketsuccess = await ctx.prisma.ticket.update({
-				where: {
-					id: input.ticketId
-				},
-				data: {
-					checkedInAt: new Date()
-				},
-				include: {
-          tier: true, 
-          user: true,
-          event: true
+			const isFirstCheckIn = ticket.checkedInAt === null;
+			const userAgentHeader = ctx.headers['user-agent'];
+			const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader ?? null;
+
+			const { updatedTicket, ticketScan } = await ctx.prisma.$transaction(async (tx) => {
+				const createdScan = await tx.ticketScan.create({
+					data: {
+						ticketId: ticket.id,
+						scannedByUserId: ctx.session.user.id,
+						isCheckIn: isFirstCheckIn,
+						gpsLat: input.gpsLat,
+						gpsLng: input.gpsLng,
+						imageUrl: input.imageUrl,
+						userAgent: userAgent ?? undefined
+					}
+				});
+
+				if (!isFirstCheckIn) {
+					return {
+						ticketScan: createdScan,
+						updatedTicket: ticket
+					};
 				}
+
+				const refreshedTicket = await tx.ticket.update({
+					where: {
+						id: ticket.id
+					},
+					data: {
+						checkedInAt: new Date()
+					},
+					include: {
+						tier: true,
+						user: true,
+						event: true
+					}
+				});
+
+				return {
+					ticketScan: createdScan,
+					updatedTicket: refreshedTicket
+				};
 			});
 
 			client.capture({
 				distinctId: ctx.session.user.id,
 				event: 'ticket scanned',
 				properties: {
-					
-					ticketsuccess
-
+					ticketsuccess: updatedTicket,
+					status: isFirstCheckIn ? 'checked_in' : 'duplicate'
 				}
-			})
-			return ticketsuccess
+			});
+
+			if (!isFirstCheckIn) {
+				throw new TRPCError({
+					code: 'CONFLICT',
+					message: 'Already checked in'
+				});
+			}
+
+			return {
+				...updatedTicket,
+				ticketScanId: ticketScan.id
+			};
 		}),
+
+
+
 
 	getTicOrRef: authedProcedure
 		.input(

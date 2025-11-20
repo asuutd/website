@@ -1,41 +1,129 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { trpc } from '@/utils/trpc';
 import { NextSeo } from 'next-seo';
-import { Scanner } from '@yudiel/react-qr-scanner';
+import { type IDetectedBarcode, Scanner, useDevices } from '@yudiel/react-qr-scanner';
 import type { RouterOutput } from '@/server/trpc/router';
 import TicketDetails from '@/components/TicketDetails';
 import Modal from '@/components/Modal';
+import { useSession } from 'next-auth/react';
+import { imageUpload } from '@/utils/imageUpload';
+import { useGeolocated } from "react-geolocated";
+import { useHaptic } from 'react-haptic';
+
+
 type ValidateMut = RouterOutput['ticket']['validateTicket'];
 
 export default function ScanPage() {
+	const { data: session } = useSession();
 	const [text, setText] = useState<string | null>(null);
 	const validateMut = trpc.ticket.validateTicket.useMutation();
 	const [validationData, setValidationData] = useState<ValidateMut | null>(null);
 	const resetTime = 3000;
+	const scannerRef = useRef<HTMLDivElement>(null);
+	const lastScanned = useRef<{ value: string; timestamp: number } | null>(null);
+	const { vibrate } = useHaptic();
 
-	const validateTicket = (text: string) => {
-		const url = new URL(text);
-		const ticketId = url.searchParams.get('id');
-		const eventId = url.searchParams.get('eventId');
+	const { coords } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: true,
+            },
+			isOptimisticGeolocationEnabled: false,
+			watchPosition: true,
+			watchLocationPermissionChange: true,
+            userDecisionTimeout: 20000,
+        });
 
-		if (ticketId && eventId) {
-			validateMut.mutate(
-				{
-					eventId,
-					ticketId
-				},
-				{
-					onSuccess: (r) => {
-						setText('Checked In');
-						setValidationData(r);
-					},
-					onError: ({ message }) => {
-						setText(message);
-					}
-				}
-			);
+	const getLocation = useCallback(async () => {
+		if (coords) {
+			return {
+				lat: coords.latitude,
+				lng: coords.longitude
+			};
 		}
-	};
+	}, [coords]);
+
+	const [captureCanvasEl, setCaptureCanvasEl] = useState<HTMLCanvasElement | null>(null);
+
+	useEffect(() => {
+		if (typeof window === 'undefined') {
+			return;
+		}
+		const canvas = document.createElement('canvas');
+		setCaptureCanvasEl(canvas);
+	}, []);
+
+	const captureImageFromVideo = useCallback(async () => {
+		if (typeof window === 'undefined') {
+			return undefined;
+		}
+
+		const video = scannerRef.current?.querySelector('video');
+		if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+			return undefined;
+		}
+
+
+		if (!captureCanvasEl) {
+			return undefined;
+		}
+
+		captureCanvasEl.width = video.videoWidth;
+		captureCanvasEl.height = video.videoHeight;
+		const ctx = captureCanvasEl.getContext('2d');
+		if (!ctx) {
+			return undefined;
+		}
+
+		ctx.drawImage(video, 0, 0, captureCanvasEl.width, captureCanvasEl.height);
+
+		const blob = await new Promise<Blob | null>((resolve) => {
+			captureCanvasEl.toBlob((result) => resolve(result), 'image/jpeg', 0.9);
+		});
+
+		if (!blob) {
+			return undefined;
+		}
+
+		const file = new File([blob], `ticket-scan-${Date.now()}.jpg`, {
+			type: 'image/jpeg'
+		});
+
+		try {
+			const response = await imageUpload(file, { user: session?.user?.id ?? '' });
+			if (!response.ok) {
+				return undefined;
+			}
+
+			const payload = await response.json();
+			const [fileId] = Object.values(payload);
+			if (typeof fileId !== 'string') {
+				return undefined;
+			}
+
+			return `https://ucarecdn.com/${fileId}/`;
+		} catch (error) {
+			console.error('Unable to upload scan image', error);
+			return undefined;
+		}
+	}, [session?.user?.id, captureCanvasEl]);
+
+	const collectMetadata = useCallback(async () => {
+		try {
+			const [coords, imageUrl] = await Promise.all([getLocation(), captureImageFromVideo()]);
+
+			return {
+				gpsLat: coords?.lat,
+				gpsLng: coords?.lng,
+				imageUrl
+			};
+		} catch (error) {
+			console.error('Failed to collect scan metadata', error);
+			return { gpsLat: undefined, gpsLng: undefined, imageUrl: undefined };
+		}
+	}, [captureImageFromVideo, getLocation]);
+
+	
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
@@ -48,8 +136,59 @@ export default function ScanPage() {
 			// Clear the timeout if the component unmounts or if the state changes
 			clearTimeout(timeoutId);
 		};
-	}, [text]);
+	}, []);
 
+	const devices = useDevices();
+  	const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+
+
+	  const validateTicket = useCallback(async (text: string) => {
+		// Prevent duplicate scans within 5 seconds
+		if (lastScanned.current?.value === text && Date.now() - lastScanned.current.timestamp < 5000) {
+			return;
+		}
+
+		if (validateMut.isLoading) {
+			return;
+		}
+
+		// Update tracking before processing
+		lastScanned.current = { value: text, timestamp: Date.now() };
+
+		const url = new URL(text);
+		const ticketId = url.searchParams.get('id');
+		const eventId = url.searchParams.get('eventId');
+
+		if (ticketId && eventId) {
+			const metadata = await collectMetadata();
+
+			validateMut.mutate(
+				{
+					eventId,
+					ticketId,
+					gpsLat: metadata.gpsLat,
+					gpsLng: metadata.gpsLng,
+					imageUrl: metadata.imageUrl
+				},
+				{
+					onSuccess: (r) => {
+						setText('Checked In');
+						setValidationData(r);
+					},
+					onError: ({ message }) => {
+						setText(message);
+					}
+				}
+			);
+		}
+	}, [validateMut, collectMetadata]);
+
+	const handleScan = useCallback((results: IDetectedBarcode[]) => {
+		vibrate();
+		for (const result of results) {
+			void validateTicket(result.rawValue);
+		}
+	}, [validateTicket, vibrate]);
 	return (
 		<>
 			<NextSeo nofollow={true} />
@@ -105,14 +244,23 @@ export default function ScanPage() {
 				<h2 className="font-semibold text-xl text-center">&nbsp;{text}</h2>
 			</div>
 
-			<Scanner
-				formats={['qr_code']}
-				onScan={(results) => {
-					for (const result of results) {
-						validateTicket(result.rawValue);
-					}
-				}}
-			/>
+			<div ref={scannerRef}>
+				<Scanner
+					formats={['qr_code']}
+					onScan={handleScan}
+					constraints={{
+						deviceId: selectedDevice ?? undefined
+					}}
+				/>
+			</div>
+			<select onChange={(e) => setSelectedDevice(e.target.value as string)} value={selectedDevice ?? ''}>
+				<option value="">Select a camera</option>
+				{devices.map((device) => (
+				<option key={device.deviceId} value={device.deviceId}>
+					{device.label || `Camera ${device.deviceId}`}
+				</option>
+				))}
+			</select>
 		</>
 	);
 }
