@@ -6,7 +6,7 @@ import { TRPCError } from '@trpc/server';
 import stripe from '@/utils/stripe';
 import { getPostHog } from '@/server/posthog';
 import posthog from 'posthog-js';
-import { generateAndSendTicketEmail, TierPurchase } from '@/lib/ticketEmail';
+import { generateAndSendTicketEmail, type TierPurchase } from '@/lib/ticketEmail';
 
 const client = getPostHog();
 
@@ -453,7 +453,50 @@ export const ticketRouter = t.router({
 				nextCursor
 			};
 		}),
+	getTicketsGroupedByUserForEvent: adminProcedure.query(async ({ ctx, input: { eventId } }) => {
+		const tickets = await ctx.prisma.ticket.findMany({
+			where: {
+				eventId: eventId
+			},
+			select: {
+				id: true,
+				createdAt: true,
+				checkedInAt: true,
+				user: {
+					select: {
+						name: true,
+						email: true,
+						id: true,
+						image: true,
+					}
+				},
+				tier: {
+					select: {
+						id: true,
+						name: true,
+						price: true,
+					}
+				},
+				scans: true
+			}
+		})
 
+		type StrippedUser = (typeof tickets[number]["user"])
+		type StrippedTicket = Omit<(typeof tickets[number]), "user">
+
+		const groupedTickets = tickets.reduce((acc, curr) => {
+			if (!acc[curr.user.id]) {
+				acc[curr.user.id] = {
+					user: curr.user,
+					tickets: []
+				}
+			}
+			acc[curr.user.id].tickets.push(curr)
+			return acc
+		}, {} as Record<string, { user: StrippedUser, tickets: StrippedTicket[] }>)
+
+		return groupedTickets
+	}),
 	validateTicket: adminProcedure
 		.input(
 			z.object({
