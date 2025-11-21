@@ -64,9 +64,9 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 			checkInDate.getFullYear() === today.getFullYear();
 		
 		if (isToday) {
-			return `Checked In: ${checkInDate.toLocaleTimeString()}`;
+			return `${checkInDate.toLocaleTimeString()}`;
 		} else {
-			return `Checked In: ${checkInDate.toLocaleDateString()} ${checkInDate.toLocaleTimeString()}`;
+			return `${checkInDate.toLocaleDateString()} ${checkInDate.toLocaleTimeString()}`;
 		}
 	};
 
@@ -268,7 +268,7 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 																			</td>
 																			<td>
 																				{isCheckedIn ? (
-																					<span className="badge badge-success">
+																					<span className="badge badge-success h-min">
 																						{formatCheckInTime(ticket.checkedInAt)}
 																					</span>
 																				) : (
@@ -296,7 +296,7 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 																							Checking In...
 																						</>
 																					) : isCheckedIn ? (
-																						'Already Checked In'
+																						'Checked In'
 																					) : (
 																						'Check In'
 																					)}
