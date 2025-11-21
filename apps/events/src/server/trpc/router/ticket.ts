@@ -476,8 +476,7 @@ export const ticketRouter = t.router({
 						name: true,
 						price: true,
 					}
-				},
-				scans: true
+				}
 			}
 		})
 
