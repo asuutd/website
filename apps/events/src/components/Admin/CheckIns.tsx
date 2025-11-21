@@ -51,28 +51,34 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 		});
 	};
 
-	if (isLoading) {
-		return (
-			<div className="flex justify-center items-center p-8">
-				<span className="loading loading-spinner loading-lg" />
-			</div>
-		);
-	}
+	const formatCheckInTime = (checkedInAt: string | Date | null) => {
+		if (!checkedInAt) return '';
+		
+		const checkInDate = new Date(checkedInAt);
+		const today = new Date();
+		
+		// Check if the check-in date is today
+		const isToday =
+			checkInDate.getDate() === today.getDate() &&
+			checkInDate.getMonth() === today.getMonth() &&
+			checkInDate.getFullYear() === today.getFullYear();
+		
+		if (isToday) {
+			return `Checked In: ${checkInDate.toLocaleTimeString()}`;
+		} else {
+			return `Checked In: ${checkInDate.toLocaleDateString()} ${checkInDate.toLocaleTimeString()}`;
+		}
+	};
 
-	if (!groupedTickets || Object.keys(groupedTickets).length === 0) {
-		return (
-			<div className="p-8 text-center">
-				<p className="text-gray-500">No tickets found for this event.</p>
-			</div>
-		);
-	}
+	
 
-	const userGroups: UserGroup[] = Object.values(groupedTickets);
-
-	// Filter user groups based on search query
+		// Filter user groups based on search query
 	const filteredUserGroups = useMemo(() => {
-		if (!searchQuery.trim()) {
-			return userGroups;
+        if (!groupedTickets) return [];
+
+        const userGroups: UserGroup[] = Object.values(groupedTickets);
+        if (!searchQuery.trim()) {
+            return userGroups;
 		}
 
 		const query = searchQuery.toLowerCase().trim();
@@ -94,7 +100,24 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 
 			return false;
 		});
-	}, [userGroups, searchQuery]);
+	}, [groupedTickets, searchQuery]);
+
+    
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center p-8">
+				<span className="loading loading-spinner loading-lg" />
+			</div>
+		);
+	}
+
+    if (!groupedTickets || Object.keys(groupedTickets).length === 0) {
+        return (
+            <div className="p-8 text-center">
+                <p className="text-gray-500">No tickets found for this event.</p>
+            </div>
+        );
+    }
 
 	return (
 		<div className="p-3">
@@ -216,7 +239,7 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 																<tr>
 																	<th>Ticket ID</th>
 																	<th>Tier</th>
-																	<th>Created</th>
+																	<th>Purchased</th>
 																	<th>Check-in Status</th>
 																	<th>Action</th>
 																</tr>
@@ -241,14 +264,12 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 																				)}
 																			</td>
 																			<td>
-																				{new Date(ticket.createdAt).toLocaleDateString()}
+																				{ticket.createdAt.toLocaleDateString()} {ticket.createdAt.toLocaleTimeString()}
 																			</td>
 																			<td>
 																				{isCheckedIn ? (
 																					<span className="badge badge-success">
-																						Checked In
-																						{ticket.checkedInAt &&
-																							` at ${new Date(ticket.checkedInAt).toLocaleTimeString()}`}
+																						{formatCheckInTime(ticket.checkedInAt)}
 																					</span>
 																				) : (
 																					<span className="badge badge-ghost">Not Checked In</span>
