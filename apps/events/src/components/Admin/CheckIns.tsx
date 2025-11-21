@@ -1,5 +1,5 @@
 import { trpc } from '@/utils/trpc';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { RouterOutput } from '@/server/trpc/router';
 import { twJoin } from 'tailwind-merge';
 import ImageWithFallback from '../Utils/ImageWithFallback';
@@ -9,6 +9,7 @@ type UserGroup = GroupedTickets[string];
 
 const CheckIns = ({ eventId }: { eventId: string }) => {
 	const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
+	const [searchQuery, setSearchQuery] = useState('');
 	const utils = trpc.useContext();
 
 	const { data: groupedTickets, isLoading } = trpc.ticket.getTicketsGroupedByUserForEvent.useQuery(
@@ -68,8 +69,54 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 
 	const userGroups: UserGroup[] = Object.values(groupedTickets);
 
+	// Filter user groups based on search query
+	const filteredUserGroups = useMemo(() => {
+		if (!searchQuery.trim()) {
+			return userGroups;
+		}
+
+		const query = searchQuery.toLowerCase().trim();
+
+		return userGroups.filter((userGroup) => {
+			// Search in user name
+			const userName = (userGroup.user.name ?? '').toLowerCase();
+			if (userName.includes(query)) return true;
+
+			// Search in email
+			const email = (userGroup.user.email ?? '').toLowerCase();
+			if (email.includes(query)) return true;
+
+			// Search in ticket IDs
+			const hasMatchingTicket = userGroup.tickets.some((ticket) =>
+				ticket.id.toLowerCase().includes(query)
+			);
+			if (hasMatchingTicket) return true;
+
+			return false;
+		});
+	}, [userGroups, searchQuery]);
+
 	return (
 		<div className="p-3">
+			<div className="max-w-6xl mx-auto mb-4">
+				<label className="form-control w-full">
+					<div className="label">
+						<span className="label-text">Search</span>
+					</div>
+					<input
+						type="text"
+						placeholder="Search by name, email, or ticket ID..."
+						className="input input-bordered w-full"
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+					/>
+				</label>
+				{searchQuery && (
+					<p className="text-sm text-gray-500 mt-2">
+						Found {filteredUserGroups.length} user{filteredUserGroups.length !== 1 ? 's' : ''}
+					</p>
+				)}
+			</div>
 			<div className="overflow-x-auto max-w-6xl mx-auto">
 				<table className="table table-zebra">
 					<thead>
@@ -82,7 +129,18 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 						</tr>
 					</thead>
 					<tbody>
-						{userGroups.map((userGroup) => {
+						{filteredUserGroups.length === 0 ? (
+							<tr>
+								<td colSpan={5} className="text-center p-8">
+									<p className="text-gray-500">
+										{searchQuery
+											? 'No users found matching your search.'
+											: 'No tickets found for this event.'}
+									</p>
+								</td>
+							</tr>
+						) : (
+							filteredUserGroups.map((userGroup) => {
 							const isExpanded = expandedUsers.has(userGroup.user.id);
 							const checkedInCount = userGroup.tickets.filter((t) => t.checkedInAt !== null).length;
 							const totalTickets = userGroup.tickets.length;
@@ -235,7 +293,8 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 									)}
 								</>
 							);
-						})}
+							})
+						)}
 					</tbody>
 				</table>
 			</div>
