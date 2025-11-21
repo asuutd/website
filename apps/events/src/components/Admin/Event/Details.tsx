@@ -78,7 +78,7 @@ const Details = ({ event }: { event: Event }) => {
 	});
 
 	const updateMutation = trpc.event.updateEvent.useMutation();
-	const utils = trpc.useContext();
+	const utils = trpc.useUtils();
 	useEffect(() => {
 		console.log(event);
 	}, []);

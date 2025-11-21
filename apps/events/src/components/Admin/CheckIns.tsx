@@ -10,7 +10,7 @@ type UserGroup = GroupedTickets[string];
 const CheckIns = ({ eventId }: { eventId: string }) => {
 	const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
 	const [searchQuery, setSearchQuery] = useState('');
-	const utils = trpc.useContext();
+	const utils = trpc.useUtils();
 
 	const { data: groupedTickets, isLoading } = trpc.ticket.getTicketsGroupedByUserForEvent.useQuery(
 		{

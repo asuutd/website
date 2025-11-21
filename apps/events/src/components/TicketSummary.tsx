@@ -30,7 +30,7 @@ const TicketSummary = ({
 	const [tickets, setTickets] = useState(cloneDeep(initialTickets));
 	const { status } = useSession();
 	const [email, setEmail] = useState<string>();
-	const event = trpc.useContext().event.getEvent.getData({
+	const event = trpc.useUtils().event.getEvent.getData({
 		eventId
 	});
 	const codeQuery = trpc.code.getCode.useMutation({

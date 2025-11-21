@@ -40,7 +40,7 @@ export type EventFormInput = z.infer<typeof FormSchema>;
 
 const EventForm: React.FC<Props> = ({ closeModal }) => {
 	const { data: session } = useSession();
-	const utils = trpc.useContext();
+	const utils = trpc.useUtils();
 
 	const mutation = trpc.event.createEvent.useMutation();
 
