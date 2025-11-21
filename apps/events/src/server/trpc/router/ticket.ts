@@ -453,10 +453,10 @@ export const ticketRouter = t.router({
 				nextCursor
 			};
 		}),
-	getTicketsGroupedByUserForEvent: adminProcedure.query(async ({ ctx, input: { eventId } }) => {
+	getTicketsGroupedByUserForEvent: adminProcedure.query(async ({ ctx }) => {
 		const tickets = await ctx.prisma.ticket.findMany({
 			where: {
-				eventId: eventId
+				eventId: ctx.event.id
 			},
 			select: {
 				id: true,

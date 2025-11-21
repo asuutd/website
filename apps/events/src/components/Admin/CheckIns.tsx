@@ -1,0 +1,265 @@
+import { trpc } from '@/utils/trpc';
+import { useState } from 'react';
+import type { RouterOutput } from '@/server/trpc/router';
+import { twJoin } from 'tailwind-merge';
+import ImageWithFallback from '../Utils/ImageWithFallback';
+
+type GroupedTickets = RouterOutput['ticket']['getTicketsGroupedByUserForEvent'];
+type UserGroup = GroupedTickets[string];
+
+const CheckIns = ({ eventId }: { eventId: string }) => {
+	const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
+	const utils = trpc.useContext();
+
+	const { data: groupedTickets, isLoading } = trpc.ticket.getTicketsGroupedByUserForEvent.useQuery(
+		{
+			eventId
+		},
+		{
+			refetchInterval: 30000 // Refetch every 30 seconds to keep data fresh
+		}
+	);
+
+	const validateTicket = trpc.ticket.validateTicket.useMutation({
+		onSuccess: () => {
+			// Refetch the data to update the UI
+			utils.ticket.getTicketsGroupedByUserForEvent.invalidate({ eventId });
+		},
+		onError: (error) => {
+			// Error handling is done via the mutation state
+			console.error('Check-in error:', error);
+		}
+	});
+
+	const toggleUser = (userId: string) => {
+		setExpandedUsers((prev) => {
+			const next = new Set(prev);
+			if (next.has(userId)) {
+				next.delete(userId);
+			} else {
+				next.add(userId);
+			}
+			return next;
+		});
+	};
+
+	const handleCheckIn = async (ticketId: string) => {
+		validateTicket.mutate({
+			eventId,
+			ticketId
+		});
+	};
+
+	if (isLoading) {
+		return (
+			<div className="flex justify-center items-center p-8">
+				<span className="loading loading-spinner loading-lg" />
+			</div>
+		);
+	}
+
+	if (!groupedTickets || Object.keys(groupedTickets).length === 0) {
+		return (
+			<div className="p-8 text-center">
+				<p className="text-gray-500">No tickets found for this event.</p>
+			</div>
+		);
+	}
+
+	const userGroups: UserGroup[] = Object.values(groupedTickets);
+
+	return (
+		<div className="p-3">
+			<div className="overflow-x-auto max-w-6xl mx-auto">
+				<table className="table table-zebra">
+					<thead>
+						<tr>
+							<th></th>
+							<th>User</th>
+							<th>Email</th>
+							<th>Tickets</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						{userGroups.map((userGroup) => {
+							const isExpanded = expandedUsers.has(userGroup.user.id);
+							const checkedInCount = userGroup.tickets.filter((t) => t.checkedInAt !== null).length;
+							const totalTickets = userGroup.tickets.length;
+
+							return (
+								<>
+									<tr
+										key={userGroup.user.id}
+										className="cursor-pointer hover:bg-base-200"
+										onClick={() => toggleUser(userGroup.user.id)}
+									>
+										<td>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 24 24"
+												strokeWidth={1.5}
+												stroke="currentColor"
+												className={twJoin(
+													'w-5 h-5 transition-transform',
+													isExpanded && 'rotate-90'
+												)}
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="M8.25 4.5l7.5 7.5-7.5 7.5"
+												/>
+											</svg>
+										</td>
+										<td>
+											<div className="flex items-center space-x-3 gap-2">
+												<div className="h-10 w-10">
+													<ImageWithFallback
+														src={userGroup.user.image ?? '/placeholder.svg'}
+														width={40}
+														height={40}
+														className="rounded-full"
+														alt=""
+													/>
+												</div>
+												<div>
+													<p className="font-semibold">
+														{userGroup.user.name ?? 'No Name'}
+													</p>
+												</div>
+											</div>
+										</td>
+										<td>{userGroup.user.email}</td>
+										<td>
+											<span className="badge badge-neutral">{totalTickets}</span>
+										</td>
+										<td>
+											{checkedInCount === totalTickets ? (
+												<span className="badge badge-success">All Checked In</span>
+											) : checkedInCount > 0 ? (
+												<span className="badge badge-warning">
+													{checkedInCount}/{totalTickets} Checked In
+												</span>
+											) : (
+												<span className="badge badge-ghost">Not Checked In</span>
+											)}
+										</td>
+									</tr>
+									{isExpanded && (
+										<tr key={`${userGroup.user.id}-expanded`}>
+											<td colSpan={5} className="bg-base-200 p-4">
+												<div className="space-y-2">
+													<h3 className="font-semibold text-lg mb-3">Tickets</h3>
+													<div className="overflow-x-auto">
+														<table className="table table-sm table-zebra">
+															<thead>
+																<tr>
+																	<th>Ticket ID</th>
+																	<th>Tier</th>
+																	<th>Created</th>
+																	<th>Check-in Status</th>
+																	<th>Action</th>
+																</tr>
+															</thead>
+															<tbody>
+																{userGroup.tickets.map((ticket) => {
+																	const isCheckedIn = ticket.checkedInAt !== null;
+																	const isCheckingIn =
+																		validateTicket.isPending &&
+																		validateTicket.variables?.ticketId === ticket.id;
+
+																	return (
+																		<tr key={ticket.id}>
+																			<td>
+																				<code className="text-xs">
+																					{ticket.id.slice(0, 8)}...
+																				</code>
+																			</td>
+																			<td>
+																				{ticket.tier?.name ?? (
+																					<span className="text-gray-500">Free Ticket</span>
+																				)}
+																			</td>
+																			<td>
+																				{new Date(ticket.createdAt).toLocaleDateString()}
+																			</td>
+																			<td>
+																				{isCheckedIn ? (
+																					<span className="badge badge-success">
+																						Checked In
+																						{ticket.checkedInAt &&
+																							` at ${new Date(ticket.checkedInAt).toLocaleTimeString()}`}
+																					</span>
+																				) : (
+																					<span className="badge badge-ghost">Not Checked In</span>
+																				)}
+																			</td>
+																			<td>
+																				<button
+																					className={twJoin(
+																						'btn btn-sm',
+																						isCheckedIn
+																							? 'btn-disabled'
+																							: 'btn-primary',
+																						isCheckingIn && 'loading'
+																					)}
+																					disabled={isCheckedIn || isCheckingIn}
+																					onClick={(e) => {
+																						e.stopPropagation();
+																						handleCheckIn(ticket.id);
+																					}}
+																				>
+																					{isCheckingIn ? (
+																						<>
+																							<span className="loading loading-spinner loading-xs" />
+																							Checking In...
+																						</>
+																					) : isCheckedIn ? (
+																						'Already Checked In'
+																					) : (
+																						'Check In'
+																					)}
+																				</button>
+																			</td>
+																		</tr>
+																	);
+																})}
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</td>
+										</tr>
+									)}
+								</>
+							);
+						})}
+					</tbody>
+				</table>
+			</div>
+			{validateTicket.isError && (
+				<div className="alert alert-error mt-4 max-w-6xl mx-auto">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						className="stroke-current shrink-0 h-6 w-6"
+						fill="none"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth="2"
+							d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					<span>{validateTicket.error?.message ?? 'An error occurred during check-in'}</span>
+				</div>
+			)}
+		</div>
+	);
+};
+
+export default CheckIns;
+

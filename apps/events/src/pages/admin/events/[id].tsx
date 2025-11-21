@@ -7,6 +7,7 @@ import React from 'react';
 import Event from '@/components/Admin/Event/Event';
 import CreatorProvider from '@/components/Admin/Forms/Creator';
 import Collaborators from '@/components/Admin/Collaborators';
+import CheckIns from '@/components/Admin/CheckIns';
 import * as Tabs from '@radix-ui/react-tabs';
 import { twJoin } from 'tailwind-merge';
 function classNames(...classes: any[]) {
@@ -226,7 +227,7 @@ const EventsDetailsPage = () => {
 									<Collaborators eventId={eventId} />
 								</Tabs.Content>
 								<Tabs.Content className="" value="checkins">
-									{/* <CheckIns eventId={eventId} /> */}
+									<CheckIns eventId={eventId} />
 								</Tabs.Content>
 							</>
 						</Tabs.Root>
