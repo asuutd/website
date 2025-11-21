@@ -42,7 +42,8 @@ const createApplePassRoute = async (req: NextApiRequest, res: NextApiResponse) =
 	}
 
 	const { pass, filename } = await createApplePass(ticket, ticket.event, ticket.tier);
-	res.setHeader('Content-Disposition', `attachment; filename=${encodeURIComponent(filename)}`);
+	
+	res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
 	res.setHeader('Content-Type', constants.PASS_MIME_TYPE);
 	res.status(200).send(pass);
 };
