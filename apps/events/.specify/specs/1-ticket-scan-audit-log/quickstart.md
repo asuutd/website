@@ -7,7 +7,7 @@ This guide explains how to implement, run, and manually validate the ticket scan
 - Node.js and PNPM installed.  
 - Access to the events app repository (`apps/events`).  
 - Valid `.env`/environment configuration for:
-  - `DATABASE_URL` / `DIRECT_URL` (PostgreSQL)
+  - `DATABASE_URL` / `DATABASE_URL_UNPOOLED` (PostgreSQL)
   - Uploadcare public key (`NEXT_PUBLIC_UPLOADCARE_PUB_KEY`) for image uploads
   - NextAuth and Stripe configuration (unchanged from existing setup)
 
@@ -126,7 +126,7 @@ This guide explains how to implement, run, and manually validate the ticket scan
 - Node.js and PNPM installed.  
 - Access to the events app repository (`apps/events`).  
 - Valid `.env`/environment configuration for:
-  - `DATABASE_URL` / `DIRECT_URL` (PostgreSQL)
+  - `DATABASE_URL` / `DATABASE_URL_UNPOOLED` (PostgreSQL)
   - Uploadcare public key (`NEXT_PUBLIC_UPLOADCARE_PUB_KEY`) for image uploads
   - NextAuth and Stripe configuration (unchanged from existing setup)
 
