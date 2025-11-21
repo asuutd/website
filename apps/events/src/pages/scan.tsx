@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react';
 import { imageUpload } from '@/utils/imageUpload';
 import { useGeolocated } from "react-geolocated";
 import { useHaptic } from 'react-haptic';
+import { useRouter } from 'next/router';
 
 
 type ValidateMut = RouterOutput['ticket']['validateTicket'];
@@ -22,6 +23,14 @@ export default function ScanPage() {
 	const scannerRef = useRef<HTMLDivElement>(null);
 	const lastScanned = useRef<{ value: string; timestamp: number } | null>(null);
 	const { vibrate } = useHaptic();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (session == null){
+			router.push('/signin?callbackUrl=%2Fscan');
+		}
+	}, [session, router])
+
 
 	const { coords } =
         useGeolocated({
@@ -32,6 +41,7 @@ export default function ScanPage() {
 			watchPosition: true,
 			watchLocationPermissionChange: true,
             userDecisionTimeout: 20000,
+			suppressLocationOnMount: session === null,
         });
 
 	const [captureCanvasEl, setCaptureCanvasEl] = useState<HTMLCanvasElement | null>(null);
@@ -183,12 +193,16 @@ export default function ScanPage() {
 		}
 	};
 
-	const handleScan = useCallback((results: IDetectedBarcode[]) => {
+	const handleScan = (results: IDetectedBarcode[]) => {
 		vibrate();
 		for (const result of results) {
 			void validateTicket(result.rawValue);
 		}
-	}, [validateTicket, vibrate]);
+	}
+
+	if (session == null){
+		return <div>Not logged in. Redirecting to login...</div>;
+	}
 	return (
 		<>
 			<NextSeo nofollow={true} />
