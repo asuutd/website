@@ -64,7 +64,7 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 			checkInDate.getFullYear() === today.getFullYear();
 		
 		if (isToday) {
-			return `${checkInDate.toLocaleTimeString()}`;
+			return `today ${checkInDate.toLocaleTimeString()}`;
 		} else {
 			return `${checkInDate.toLocaleDateString()} ${checkInDate.toLocaleTimeString()}`;
 		}
@@ -172,7 +172,7 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 								<>
 									<tr
 										key={userGroup.user.id}
-										className="cursor-pointer hover:bg-base-200"
+										className="cursor-pointer hover:bg-base-200 h-min"
 										onClick={() => toggleUser(userGroup.user.id)}
 									>
 										<td>
@@ -196,15 +196,13 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 										</td>
 										<td>
 											<div className="flex items-center space-x-3 gap-2">
-												<div className="h-10 w-10">
-													<ImageWithFallback
-														src={userGroup.user.image ?? '/placeholder.svg'}
-														width={40}
-														height={40}
-														className="rounded-full"
-														alt=""
-													/>
-												</div>
+                                                <ImageWithFallback
+                                                    src={userGroup.user.image ?? '/placeholder.svg'}
+                                                    width={30}
+                                                    height={30}
+                                                    className="rounded-full"
+                                                    alt=""
+                                                />
 												<div>
 													<p className="font-semibold">
 														{userGroup.user.name ?? 'No Name'}
@@ -214,17 +212,17 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 										</td>
 										<td>{userGroup.user.email}</td>
 										<td>
-											<span className="badge badge-neutral">{totalTickets}</span>
+											<span className="badge badge-neutral h-min">{totalTickets}</span>
 										</td>
 										<td>
 											{checkedInCount === totalTickets ? (
-												<span className="badge badge-success">All Checked In</span>
+												<span className="badge badge-success h-min">All Checked In</span>
 											) : checkedInCount > 0 ? (
-												<span className="badge badge-warning">
+												<span className="badge badge-warning h-min">
 													{checkedInCount}/{totalTickets} Checked In
 												</span>
 											) : (
-												<span className="badge badge-ghost">Not Checked In</span>
+												<span className="badge badge-ghost h-min">Not Checked In</span>
 											)}
 										</td>
 									</tr>
@@ -272,11 +270,12 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 																						{formatCheckInTime(ticket.checkedInAt)}
 																					</span>
 																				) : (
-																					<span className="badge badge-ghost">Not Checked In</span>
+																					<span className="badge badge-ghost h-min">Not Checked In</span>
 																				)}
 																			</td>
 																			<td>
 																				<button
+																					type="button"
 																					className={twJoin(
 																						'btn btn-sm',
 																						isCheckedIn
