@@ -1,11 +1,10 @@
 import { Dialog, Transition } from '@headlessui/react';
-import React, { Fragment, useRef } from 'react';
+import { Fragment, useRef } from 'react';
 
 const ModalChild = ({ children }: { children: React.ReactNode }) => {
 	const root = useRef(null);
 
 	return (
-		<>
 			<Transition.Child
 				as={Fragment}
 				enter="ease-out duration-300"
@@ -22,7 +21,6 @@ const ModalChild = ({ children }: { children: React.ReactNode }) => {
 					{children}
 				</Dialog.Panel>
 			</Transition.Child>
-		</>
 	);
 };
 export default ModalChild;

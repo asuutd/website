@@ -6,7 +6,7 @@ import { TRPCError } from '@trpc/server';
 import stripe from '@/utils/stripe';
 import { getPostHog } from '@/server/posthog';
 import posthog from 'posthog-js';
-import { generateAndSendTicketEmail, TierPurchase } from '@/lib/ticketEmail';
+import { generateAndSendTicketEmail, type TierPurchase } from '@/lib/ticketEmail';
 
 const client = getPostHog();
 
@@ -453,60 +453,145 @@ export const ticketRouter = t.router({
 				nextCursor
 			};
 		}),
+	getTicketsGroupedByUserForEvent: adminProcedure.query(async ({ ctx }) => {
+		const tickets = await ctx.prisma.ticket.findMany({
+			where: {
+				eventId: ctx.event.id
+			},
+			select: {
+				id: true,
+				createdAt: true,
+				checkedInAt: true,
+				user: {
+					select: {
+						name: true,
+						email: true,
+						id: true,
+						image: true,
+					}
+				},
+				tier: {
+					select: {
+						id: true,
+						name: true,
+						price: true,
+					}
+				}
+			}
+		})
 
+		type StrippedUser = (typeof tickets[number]["user"])
+		type StrippedTicket = Omit<(typeof tickets[number]), "user">
+
+		const groupedTickets = tickets.reduce((acc, curr) => {
+			if (!acc[curr.user.id]) {
+				acc[curr.user.id] = {
+					user: curr.user,
+					tickets: []
+				}
+			}
+			acc[curr.user.id].tickets.push(curr)
+			return acc
+		}, {} as Record<string, { user: StrippedUser, tickets: StrippedTicket[] }>)
+
+		return groupedTickets
+	}),
 	validateTicket: adminProcedure
 		.input(
 			z.object({
-				ticketId: z.string()
+				ticketId: z.string(),
+				gpsLat: z.number().min(-90).max(90).optional(),
+				gpsLng: z.number().min(-180).max(180).optional(),
+				imageUrl: z.string().url().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			
 			const ticket = await ctx.prisma.ticket.findFirst({
 				where: {
 					id: input.ticketId
+				},
+				include: {
+					tier: true,
+					user: true,
+					event: true
 				}
 			});
-			
-			if (!ticket) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Ticket not found'
-        })
-			}
 
-			if (ticket.checkedInAt !== null) {
+			if (!ticket) {
 				throw new TRPCError({
-					code: 'CONFLICT',
-					message: 'Already checked in'
+					code: 'NOT_FOUND',
+					message: 'Ticket not found'
 				});
 			}
 
-			const ticketsuccess = await ctx.prisma.ticket.update({
-				where: {
-					id: input.ticketId
-				},
-				data: {
-					checkedInAt: new Date()
-				},
-				include: {
-          tier: true, 
-          user: true,
-          event: true
+			const isFirstCheckIn = ticket.checkedInAt === null;
+			const userAgentHeader = ctx.headers['user-agent'];
+			const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader ?? null;
+
+			const { updatedTicket, ticketScan } = await ctx.prisma.$transaction(async (tx) => {
+				const createdScan = await tx.ticketScan.create({
+					data: {
+						ticketId: ticket.id,
+						scannedByUserId: ctx.session.user.id,
+						isCheckIn: isFirstCheckIn,
+						gpsLat: input.gpsLat,
+						gpsLng: input.gpsLng,
+						imageUrl: input.imageUrl,
+						userAgent: userAgent ?? undefined
+					}
+				});
+
+				if (!isFirstCheckIn) {
+					return {
+						ticketScan: createdScan,
+						updatedTicket: ticket
+					};
 				}
+
+				const refreshedTicket = await tx.ticket.update({
+					where: {
+						id: ticket.id
+					},
+					data: {
+						checkedInAt: new Date()
+					},
+					include: {
+						tier: true,
+						user: true,
+						event: true
+					}
+				});
+
+				return {
+					ticketScan: createdScan,
+					updatedTicket: refreshedTicket
+				};
 			});
 
 			client.capture({
 				distinctId: ctx.session.user.id,
 				event: 'ticket scanned',
 				properties: {
-					
-					ticketsuccess
-
+					ticketsuccess: updatedTicket,
+					status: isFirstCheckIn ? 'checked_in' : 'duplicate'
 				}
-			})
-			return ticketsuccess
+			});
+
+			if (!isFirstCheckIn) {
+				throw new TRPCError({
+					code: 'CONFLICT',
+					message: 'Already checked in'
+				});
+			}
+
+			return {
+				...updatedTicket,
+				ticketScanId: ticketScan.id
+			};
 		}),
+
+
+
 
 	getTicOrRef: authedProcedure
 		.input(

@@ -7,6 +7,7 @@ import React from 'react';
 import Event from '@/components/Admin/Event/Event';
 import CreatorProvider from '@/components/Admin/Forms/Creator';
 import Collaborators from '@/components/Admin/Collaborators';
+import CheckIns from '@/components/Admin/CheckIns';
 import * as Tabs from '@radix-ui/react-tabs';
 import { twJoin } from 'tailwind-merge';
 function classNames(...classes: any[]) {
@@ -195,6 +196,12 @@ const EventsDetailsPage = () => {
 									</div>
 									<div className="stat-title">Collaborators</div>
 								</Tabs.Trigger>
+								<Tabs.Trigger
+									className={twJoin('stat', activeTab === 'checkins' && 'bg-base-200')}
+									value="checkins"
+								>
+									<div className="stat-title">Check-in</div>
+								</Tabs.Trigger>
 							</Tabs.List>
 							<>
 								<Tabs.Content className="" value="info">
@@ -218,6 +225,9 @@ const EventsDetailsPage = () => {
 
 								<Tabs.Content className="" value="collaborators">
 									<Collaborators eventId={eventId} />
+								</Tabs.Content>
+								<Tabs.Content className="" value="checkins">
+									<CheckIns eventId={eventId} />
 								</Tabs.Content>
 							</>
 						</Tabs.Root>

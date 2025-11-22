@@ -15,7 +15,7 @@ datasource db {
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
   
 }
 
@@ -55,6 +55,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   tickets       Ticket[]
+  ticketScans   TicketScan[]
   RefCode       RefCode[]
   EventAdmin    EventAdmin[]
   forms         FormResponse[]
@@ -166,6 +167,7 @@ model Ticket {
   tier                Tier?          @relation(fields: [tierId], references: [id], onDelete: NoAction)
   refCode             RefCode?       @relation(fields: [refCodeId], references: [id], onDelete: NoAction)
   code                Code?          @relation(fields: [codeId], references: [id], onDelete: NoAction)
+  scans               TicketScan[]
   // TODO: Need to run the buildPaymentIntentTable script before this will work due to FK constraints
   // paymentIntentObject PaymentIntent? @relation(fields: [paymentIntent], references: [paymentIntentId], onDelete: NoAction)
 }
@@ -208,6 +210,24 @@ model RefCode {
 
   @@unique([userId, eventId])
 }
+
+model TicketScan {
+  id               String   @id @default(cuid())
+  ticketId         String
+  scannedByUserId  String
+  scannedAt        DateTime @default(now())
+  isCheckIn        Boolean
+  gpsLat           Float?
+  gpsLng           Float?
+  userAgent        String?
+  imageUrl         String?
+  ticket           Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  scannedBy        User     @relation(fields: [scannedByUserId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, scannedAt])
+  @@index([scannedByUserId, scannedAt])
+}
+
 
 enum Fee_Holder {
   USER

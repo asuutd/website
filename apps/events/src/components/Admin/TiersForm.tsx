@@ -16,7 +16,7 @@ const TiersForm: React.FC<Props> = ({ eventId, closeModal }) => {
 	const tiers = trpc.tier.getTiers.useQuery({
 		eventId
 	});
-	const utils = trpc.useContext();
+	const utils = trpc.useUtils();
 
 	const root = useRef(null);
 	const [startDate, setStartDate] = useState<Date>(new Date());

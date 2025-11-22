@@ -68,7 +68,7 @@ const TierCard = ({
 		}
 	});
 	const mutation = trpc.tier.editTier.useMutation();
-	const utils = trpc.useContext();
+	const utils = trpc.useUtils();
 
 	const onSubmit = (fields: FormInput) => {
 		mutation.mutate(

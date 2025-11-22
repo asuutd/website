@@ -13,6 +13,20 @@ const ticketQRContent = (ticket: Ticket) => `${env.NEXT_PUBLIC_URL}/tickets/vali
 const eventPage = (event: Event) => `${env.NEXT_PUBLIC_URL}/events/${event.id}`
 export const googlePassClass = (event: Event) => `${env.GOOGLE_WALLET_ISSUER}.${event.id}`
 
+const loadPassTemplate = async () => {
+	const template = await Template.load(join(process.cwd(), 'src/lib/ticket.pass'));
+
+	const cert = Buffer.from(env.APPLE_PASS_CERTIFICATE, 'base64').toString('ascii');
+	const key = Buffer.from(env.APPLE_PASS_PRIVATE_KEY, 'base64').toString('ascii');
+
+	template.setPrivateKey(key, env.APPLE_PASS_PRIVATE_KEY_PASSPHRASE);
+	template.setCertificate(cert, env.APPLE_PASS_CERTIFICATE_PASSWORD);
+
+	return template;
+}
+
+let passTemplate: Template | null = null;
+
 export const createApplePass = async (
 	ticket: Ticket & {
 		user: User;
@@ -27,13 +41,9 @@ export const createApplePass = async (
 	},
 	tier: Tier | null
 ) => {
-	const template = await Template.load(join(process.cwd(), 'src/lib/ticket.pass'));
-
-	const cert = Buffer.from(env.APPLE_PASS_CERTIFICATE, 'base64').toString('ascii');
-	const key = Buffer.from(env.APPLE_PASS_PRIVATE_KEY, 'base64').toString('ascii');
-
-	template.setPrivateKey(key, env.APPLE_PASS_PRIVATE_KEY_PASSPHRASE);
-	template.setCertificate(cert, env.APPLE_PASS_CERTIFICATE_PASSWORD);
+	if (!passTemplate) {
+		passTemplate = await loadPassTemplate();
+	}
 
 	const barcode: BarcodeDescriptor = {
 		message: ticketQRContent(ticket),
@@ -41,7 +51,7 @@ export const createApplePass = async (
 		messageEncoding: 'iso-8859-1'
 	};
 
-	const pass = template.createPass({
+	const pass = passTemplate.createPass({
 		serialNumber: `event-${event.id}-ticket-${ticket.id}`,
 		description:
 			`${tier?.name ? "'" + tier.name + "' t" : 'T'}icket, ` +
@@ -187,11 +197,11 @@ const getImageAsPngBuffer = async (url: string, key: string, resize?: { w: numbe
 	const png = await img.toFormat('png').toBuffer();
 
 	try {
-		await mkdir(dir);
+		await mkdir(dir, { recursive: true });
+		await writeFile(path, png);
 	} catch (e) {
 		console.log(e);
 	}
-	await writeFile(path, png);
 
 	return png;
 };

@@ -10,7 +10,7 @@ To contribute, talk to an ASU officer so the technical director can add you as a
 
 1. Clone the repository (Local)
    ```sh
-   git clone https://github.com/asuutd/events_website.git
+   git clone https://github.com/asuutd/website.git
    ```
    If you don't have git, follow [this guide](https://github.com/git-guides/install-git)
    OR  
@@ -26,7 +26,7 @@ To contribute, talk to an ASU officer so the technical director can add you as a
 
 **Client:** React, TailwindCSS, React Query(tRPC)
 
-**Server:** tRPC, NextJS, MySQL(PlanetScale)
+**Server:** tRPC, NextJS, PostgreSQL (Neon)
 
 ### Setting up Apple Wallet generation
 
