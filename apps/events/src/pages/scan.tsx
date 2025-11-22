@@ -10,6 +10,7 @@ import { imageUpload } from '@/utils/imageUpload';
 import { useGeolocated } from "react-geolocated";
 import { useHaptic } from 'react-haptic';
 import { useRouter } from 'next/router';
+import { TicketValidationMethod } from '@/server/db/generated/enums';
 
 
 type ValidateMut = RouterOutput['ticket']['validateTicket'];
@@ -178,7 +179,8 @@ export default function ScanPage() {
 					ticketId,
 					gpsLat: metadata.gpsLat,
 					gpsLng: metadata.gpsLng,
-					imageUrl: metadata.imageUrl
+					imageUrl: metadata.imageUrl,
+					validationMethod: TicketValidationMethod.CODE_SCAN_ON_PLATFORM
 				},
 				{
 					onSuccess: (r) => {

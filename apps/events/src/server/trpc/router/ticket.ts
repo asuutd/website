@@ -1,6 +1,6 @@
 import { adminProcedure, authedProcedure, superAdminProcedure, t } from '../trpc';
 import { z } from 'zod';
-import type { Prisma } from '@/server/db/generated/client';
+import { TicketValidationMethod, type Prisma } from '@/server/db/generated/client';
 
 import { TRPCError } from '@trpc/server';
 import stripe from '@/utils/stripe';
@@ -502,7 +502,8 @@ export const ticketRouter = t.router({
 				ticketId: z.string(),
 				gpsLat: z.number().min(-90).max(90).optional(),
 				gpsLng: z.number().min(-180).max(180).optional(),
-				imageUrl: z.string().url().optional()
+				imageUrl: z.string().url().optional(),
+				validationMethod: z.enum(Object.values(TicketValidationMethod) as [TicketValidationMethod, ...TicketValidationMethod[]])
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -537,7 +538,8 @@ export const ticketRouter = t.router({
 						gpsLat: input.gpsLat,
 						gpsLng: input.gpsLng,
 						imageUrl: input.imageUrl,
-						userAgent: userAgent ?? undefined
+						userAgent,
+						validationMethod: input.validationMethod
 					}
 				});
 

@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react';
 import type { RouterOutput } from '@/server/trpc/router';
 import { twJoin } from 'tailwind-merge';
 import ImageWithFallback from '../Utils/ImageWithFallback';
+import { TicketValidationMethod } from '@/server/db/generated/enums';
 
 type GroupedTickets = RouterOutput['ticket']['getTicketsGroupedByUserForEvent'];
 type UserGroup = GroupedTickets[string];
@@ -47,7 +48,8 @@ const CheckIns = ({ eventId }: { eventId: string }) => {
 	const handleCheckIn = async (ticketId: string) => {
 		validateTicket.mutate({
 			eventId,
-			ticketId
+			ticketId,
+			validationMethod: TicketValidationMethod.MANUAL_CHECK_IN
 		});
 	};
 

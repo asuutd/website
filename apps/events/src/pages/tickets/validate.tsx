@@ -1,9 +1,12 @@
+// TODO: collect location here
+
 import type { TRPCError } from '@trpc/server';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
 import { NextSeo } from 'next-seo';
+import { TicketValidationMethod } from '@/server/db/generated/enums';
 
 const ValidatePage: NextPage = () => {
 	const router = useRouter();
@@ -41,7 +44,8 @@ const ValidatePage: NextPage = () => {
 		admin &&
 			validate.mutate({
 				eventId: admin.eventId,
-				ticketId: ticketId
+				ticketId: ticketId,
+				validationMethod: TicketValidationMethod.CODE_SCAN_ON_EXTERNAL
 			});
 	};
 

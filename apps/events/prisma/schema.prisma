@@ -211,18 +211,28 @@ model RefCode {
   @@unique([userId, eventId])
 }
 
+enum TicketValidationMethod {
+  MANUAL_CHECK_IN // For manual check-ins created by an event admin on the organizer tab
+  CODE_SCAN_ON_PLATFORM // For QR code scans initiated on the /scan page
+  CODE_SCAN_ON_EXTERNAL // For QR code scans initiated outside of Kazala, which lead to the /tickets/validate page
+}
+
+// TODO: rename this to TicketValidations or something like that.
 model TicketScan {
   id               String   @id @default(cuid())
   ticketId         String
   scannedByUserId  String
   scannedAt        DateTime @default(now())
+  // TODO: rename to isFirstCheckIn. this is lowkey redundant anyway - we can just check if this is the first scan for a ticket id to see if it is the first check in.
   isCheckIn        Boolean
   gpsLat           Float?
   gpsLng           Float?
   userAgent        String?
   imageUrl         String?
   ticket           Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  // TODO: rename this to something that doesn't imply that the method of scanning is important.
   scannedBy        User     @relation(fields: [scannedByUserId], references: [id], onDelete: Cascade)
+  validationMethod TicketValidationMethod
 
   @@index([ticketId, scannedAt])
   @@index([scannedByUserId, scannedAt])
